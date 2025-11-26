@@ -1,66 +1,57 @@
 import { useState } from "react";
-import { Moon, Sun, Menu, X, Search, LogIn, GraduationCap } from "lucide-react";
+import { Moon, Sun, Menu, X, Search, LogIn, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
-
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "News", path: "/news" },
-    { name: "Events", path: "/events" },
-    { name: "Parents", path: "/parents" },
-    { name: "Students", path: "/students" },
-    { name: "Contact", path: "/contact" },
-  ];
-
-  return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  const {
+    theme,
+    setTheme
+  } = useTheme();
+  const navLinks = [{
+    name: "Home",
+    path: "/"
+  }, {
+    name: "News",
+    path: "/news"
+  }, {
+    name: "Events",
+    path: "/events"
+  }, {
+    name: "Parents",
+    path: "/parents"
+  }, {
+    name: "Students",
+    path: "/students"
+  }, {
+    name: "Contact",
+    path: "/contact"
+  }];
+  return <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <GraduationCap className="h-8 w-8 text-primary" />
+          <Coffee className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold">School Blog</span>
         </NavLink>
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
-            <NavLink
-              key={link.path}
-              to={link.path}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
-              activeClassName="text-primary"
-            >
+          {navLinks.map(link => <NavLink key={link.path} to={link.path} className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground" activeClassName="text-primary">
               {link.name}
-            </NavLink>
-          ))}
+            </NavLink>)}
         </div>
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex"
-            onClick={() => setSearchOpen(true)}
-            aria-label="Search"
-          >
+          <Button variant="ghost" size="icon" className="hidden sm:inline-flex" onClick={() => setSearchOpen(true)} aria-label="Search">
             <Search className="h-5 w-5" />
           </Button>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            aria-label="Toggle theme"
-            className="transition-transform hover:scale-105"
-          >
+          <Button variant="ghost" size="icon" onClick={() => setTheme(theme === "dark" ? "light" : "dark")} aria-label="Toggle theme" className="transition-transform hover:scale-105">
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
@@ -71,49 +62,27 @@ const Header = () => {
           </Button>
 
           {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="Toggle menu"
-          >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
         </div>
       </nav>
 
       {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="border-b border-border bg-background md:hidden">
+      {mobileMenuOpen && <div className="border-b border-border bg-background md:hidden">
           <div className="container mx-auto space-y-1 px-4 py-4">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                activeClassName="bg-accent text-primary"
-              >
+            {navLinks.map(link => <NavLink key={link.path} to={link.path} onClick={() => setMobileMenuOpen(false)} className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground" activeClassName="bg-accent text-primary">
                 {link.name}
-              </NavLink>
-            ))}
+              </NavLink>)}
             <Button className="mt-4 w-full gap-2">
               <LogIn className="h-4 w-4" />
               Login to Portal
             </Button>
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Search Dialog */}
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-    </header>
-  );
+    </header>;
 };
-
 export default Header;
