@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import News from "./pages/News";
 import SchoolCalendar from "./pages/SchoolCalendar";
 import BellSuggest from "./pages/BellSuggest";
+import WeeklyPoll from "./pages/WeeklyPoll";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
 
@@ -25,6 +26,7 @@ const App = () => (
             <Route path="/news" element={<News />} />
             <Route path="/events" element={<SchoolCalendar />} />
             <Route path="/bell-suggest" element={<BellSuggest />} />
+            <Route path="/weekly-poll" element={<WeeklyPoll />} />
             <Route path="/login" element={<Login/>}/>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
