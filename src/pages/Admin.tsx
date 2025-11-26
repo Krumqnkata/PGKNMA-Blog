@@ -13,7 +13,31 @@ type NewsItem = { id: number; title: string; summary: string };
 type EventItem = { id: number; title: string; date: string; place: string };
 type PollConfig = { title: string; subtitle: string; code: string; options: string[] };
 type ContactInfo = { email: string; phone: string; address: string };
-type Suggestion = { name: string; link: string };
+type Suggestion = { name: string; link: string; status: "pending" | "approved" | "rejected" };
+
+const getYoutubeEmbed = (link: string): string | null => {
+  try {
+    const url = new URL(link);
+    const host = url.hostname.replace(/^www\./, "");
+    let id: string | null = null;
+
+    if (host === "youtu.be") {
+      id = url.pathname.replace("/", "");
+    } else if (host.includes("youtube.com")) {
+      id = url.searchParams.get("v");
+      if (!id && url.pathname.startsWith("/shorts/")) {
+        id = url.pathname.split("/")[2] || null;
+      }
+      if (!id && url.pathname.startsWith("/embed/")) {
+        id = url.pathname.split("/")[2] || null;
+      }
+    }
+
+    return id ? `https://www.youtube.com/embed/${id}` : null;
+  } catch {
+    return null;
+  }
+};
 
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "password";
@@ -44,10 +68,15 @@ const Admin = () => {
     phone: "+359 888 123 456",
     address: "ул. Школо 1, София",
   });
-  const [suggestions] = useState<Suggestion[]>([
-    { name: "Мария, 10Б", link: "https://youtu.be/dQw4w9WgXcQ" },
-    { name: "Иван, 9А", link: "https://youtu.be/abcd" },
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([
+    { name: "Мария, 10Б", link: "https://youtu.be/dQw4w9WgXcQ", status: "pending" },
+    { name: "Иван, 9А", link: "https://youtu.be/abcd", status: "pending" },
   ]);
+  const [openEmbeds, setOpenEmbeds] = useState<Record<number, boolean>>({});
+
+  const updateSuggestionStatus = (idx: number, status: "approved" | "rejected") => {
+    setSuggestions((prev) => prev.map((s, i) => (i === idx ? { ...s, status } : s)));
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem(TOKEN_KEY);
@@ -215,12 +244,51 @@ const Admin = () => {
           </CardHeader>
           <CardContent className="space-y-3">
             {suggestions.map((s, idx) => (
-              <div key={idx} className="flex items-center justify-between rounded-lg border border-border px-4 py-2">
-                <div>
+              <div
+                key={idx}
+                className="rounded-lg border border-border px-4 py-3"
+              >
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="space-y-2 w-full sm:max-w-2xl">
                   <p className="font-semibold">{s.name}</p>
-                  <p className="text-sm text-muted-foreground">{s.link}</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm text-muted-foreground break-all">{s.link}</p>
+                    {getYoutubeEmbed(s.link) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setOpenEmbeds((prev) => ({ ...prev, [idx]: !prev[idx] }))}
+                      >
+                        {openEmbeds[idx] ? "Скрий видео" : "Покажи видео"}
+                      </Button>
+                    )}
+                  </div>
+                  {getYoutubeEmbed(s.link) && openEmbeds[idx] && (
+                    <div className="w-full max-w-sm overflow-hidden rounded-lg border border-border/70 bg-muted/30">
+                      <div className="relative w-full overflow-hidden" style={{ paddingBottom: "56.25%", maxHeight: "170px" }}>
+                        <iframe
+                          title={`suggestion-${idx}`}
+                          src={`${getYoutubeEmbed(s.link)}?rel=0`}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="absolute left-0 top-0 h-full w-full"
+                        />
+                      </div>
+                    </div>
+                  )}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2 sm:flex-col sm:items-end sm:gap-2">
+                    <Badge variant={s.status === "approved" ? "default" : s.status === "rejected" ? "destructive" : "secondary"}>
+                      {s.status === "approved" ? "Одобрено" : s.status === "rejected" ? "Отхвърлено" : "В изчакване"}
+                    </Badge>
+                    <Button size="sm" variant="outline" onClick={() => updateSuggestionStatus(idx, "approved")}>
+                      Одобри
+                    </Button>
+                    <Button size="sm" variant="destructive" onClick={() => updateSuggestionStatus(idx, "rejected")}>
+                      Откажи
+                    </Button>
+                  </div>
                 </div>
-                <Badge variant="secondary">Bell</Badge>
               </div>
             ))}
             <p className="text-xs text-muted-foreground">* Тези данни са примерни. Свържете реално API, ако има бекенд.</p>
