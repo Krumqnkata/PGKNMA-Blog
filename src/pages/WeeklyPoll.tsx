@@ -130,7 +130,7 @@ const WeeklyPoll = () => {
 
             <div className="space-y-3">
               <p className="text-sm font-semibold text-muted-foreground">Изберете правилния отговор:</p>
-              <RadioGroup value={selected} onValueChange={(val) => setSelected(val as any)} className="space-y-2">
+              <RadioGroup value={selected} onValueChange={(val) => setSelected(val as "a" | "b" | "c" | "d" | "")} className="space-y-2">
                 {current.options.map((opt) => (
                   <label
                     key={opt.key}
