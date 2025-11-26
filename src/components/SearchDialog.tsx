@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { FileText, Calendar, Music2, GraduationCap, Mail, Home } from "lucide-react";
+import { FileText, Calendar, Music2, GraduationCap, Mail, Home, Vote } from "lucide-react";
 
 interface SearchDialogProps {
   open: boolean;
@@ -24,6 +24,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
     { name: "News & Updates", path: "/news", icon: FileText, keywords: "articles blog posts announcements" },
     { name: "School Calendar", path: "/events", icon: Calendar, keywords: "events schedule dates activities" },
     { name: "Bell Suggest", path: "/bell-suggest#bell-song", icon: Music2, keywords: "song suggest bell bell-song form" },
+    { name: "Weekly Poll", path: "/weekly-poll", icon: Vote, keywords: "code of the week poll challenge question" },
     { name: "For Students", path: "/students", icon: GraduationCap, keywords: "student portal grades schedule" },
     { name: "Contact", path: "/contact", icon: Mail, keywords: "contact us reach out email" },
   ];
