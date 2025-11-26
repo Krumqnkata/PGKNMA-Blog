@@ -59,7 +59,7 @@ const NewsGrid = () => {
           {newsItems.map((item) => (
             <Card
               key={item.id}
-              className="group overflow-hidden border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
+              className="group overflow-hidden border-border bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-2 hover:scale-[1.02]"
             >
               {/* Image */}
               <div className="relative h-48 overflow-hidden">

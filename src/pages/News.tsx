@@ -138,7 +138,7 @@ const News = () => {
                 {filteredArticles.map((article) => (
                   <Card
                     key={article.id}
-                    className="group overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                    className="group overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg hover:scale-[1.02]"
                   >
                     <div className="aspect-video w-full overflow-hidden bg-muted">
                       <img
