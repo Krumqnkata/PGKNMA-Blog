@@ -60,7 +60,7 @@ const Header = () => {
           <NavLink to="/login">
             <Button className="hidden gap-2 sm:inline-flex">
               <LogIn className="h-4 w-4" />
-              Login 
+              Вход
             </Button>
           </NavLink>
 
@@ -79,7 +79,7 @@ const Header = () => {
               </NavLink>)}
             <Button className="mt-4 w-full gap-2">
               <LogIn className="h-4 w-4" />
-              Login to Portal
+              Вход
             </Button>
           </div>
         </div>}
