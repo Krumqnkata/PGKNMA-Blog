@@ -18,13 +18,13 @@ const Header = () => {
   const activeTheme = theme === "system" ? systemTheme : theme;
   const logo = activeTheme === "dark" ? logoDark : logoLight;
 
-  const navLinks = [
-    { name: "Home", path: "/" },
-    { name: "News", path: "/news" },
-    { name: "Events", path: "/events" },
-    { name: "Bell Suggest", path: "/bell-suggest" },
-    { name: "Students", path: "/students" },
-    { name: "Contact", path: "/contact" },
+const navLinks = [
+    { name: "Начало", path: "/" },
+    { name: "Новини", path: "/news" },
+    { name: "Събития", path: "/events" },
+    { name: "Предложения за звънец", path: "/bell-suggest" },
+    { name: "Седмична анкета", path: "/weekly-poll" },
+    { name: "Контакт", path: "/contact" },
   ];
 
   return (
