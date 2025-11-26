@@ -77,3 +77,4 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
 };
 
 export default SearchDialog;
+{/*yes*/}
