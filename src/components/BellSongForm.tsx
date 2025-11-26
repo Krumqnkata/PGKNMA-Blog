@@ -15,24 +15,6 @@ type BellSongFormValues = {
   note: string;
 };
 
-const deriveTitleFromLink = (link: string) => {
-  try {
-    const url = new URL(link);
-    const host = url.hostname.replace(/^www\./, "");
-    if (host.includes("youtube")) {
-      const idFromQuery = url.searchParams.get("v");
-      const lastSegment = url.pathname.split("/").filter(Boolean).pop();
-      if (idFromQuery) return `YouTube • ${idFromQuery}`;
-      if (url.pathname.includes("/shorts/") && lastSegment) return `YouTube Shorts • ${lastSegment}`;
-      if (host === "youtu.be" && lastSegment) return `YouTube • ${lastSegment}`;
-      return "YouTube линк";
-    }
-    return host || "Линк";
-  } catch {
-    return "Няма валиден линк";
-  }
-};
-
 const BellSongForm = () => {
   const {
     register,
@@ -51,16 +33,14 @@ const BellSongForm = () => {
   });
 
   const onSubmit = (values: BellSongFormValues) => {
-    const derivedTitle = values.link ? deriveTitleFromLink(values.link) : "Без линк";
     toast({
       title: "Благодарим за предложението!",
-      description: derivedTitle,
+      description: values.link || "Без линк",
     });
     reset();
   };
 
   const linkValue = watch("link");
-  const derivedTitle = linkValue ? deriveTitleFromLink(linkValue) : "Добавете линк за заглавие";
 
   return (
     <section id="bell-song" className="border-b border-border bg-secondary/40 py-16 sm:py-20">
@@ -113,23 +93,16 @@ const BellSongForm = () => {
                           <SelectValue placeholder="Изберете момент" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="morning">Сутрешна пауза</SelectItem>
-                          <SelectItem value="noon">Обедна почивка</SelectItem>
-                          <SelectItem value="endday">Край на учебния ден</SelectItem>
+                          <SelectItem value="startClass">Начало на час</SelectItem>
+                          <SelectItem value="endClass">Край на час</SelectItem>
+                          <SelectItem value="beforeLunch">Преди голямо</SelectItem>
+                          <SelectItem value="afterLunch">След голямо</SelectItem>
                         </SelectContent>
                       </Select>
                     )}
                   />
                   {errors.slot && <p className="text-sm text-destructive">{errors.slot.message}</p>}
                 </div>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Заглавие на песента</Label>
-                <div className="rounded-lg border border-border bg-muted/40 p-3 text-sm">
-                  {derivedTitle}
-                </div>
-                <p className="text-xs text-muted-foreground">Тук автоматично ще се попълни заглавие от линка.</p>
               </div>
 
               <div className="space-y-2">

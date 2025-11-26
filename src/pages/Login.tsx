@@ -113,15 +113,15 @@ const Login: React.FC = () => {
               {isLoading ? 'Зареждане...' : 'Вход'}
             </button>
 
-            {/* Допълнителни връзки */}
-            <div className="flex items-center justify-between text-sm mt-6">
-              <a 
-                href="/register" 
-                className="text-[#1e3c72] font-semibold hover:text-[#2a5298] hover:underline transition"
-              >
-                Регистрация
-              </a>
-            </div>
+          {/* Допълнителни връзки */}
+          <div className="flex items-center justify-center text-sm mt-6">
+            <a 
+              href="/login" 
+              className="text-[#1e3c72] font-semibold hover:text-[#2a5298] hover:underline transition"
+            >
+              Към страницата за вход
+            </a>
+          </div>
           </form>
         </div>
       </main>
