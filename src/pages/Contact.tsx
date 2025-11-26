@@ -19,13 +19,14 @@ const Contact = () => {
               <p className="mb-2"><strong>Имейл:</strong> info-2400020@edu.mon.bg</p>
               <div className="mt-4">
                 <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d0!2d${lng}!3d${lat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sen!2sbg!4v169--EXAMPLE--"
+                  src="https://maps.google.com/maps?width=100%25&amp;height=600&amp;hl=en&amp;q=%D0%A1%D1%82%D0%B5%D1%84%D0%B0%D0%BD%20%D1%81%D0%BB%D0%B8%D0%B2%D0%BA%D0%BE%D0%B2%207+(%D0%9F%D0%93%D0%9A%D0%9D%D0%9C%D0%90)&amp;t=&amp;z=15&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
                   width="100%"
                   height="300"
                   style={{ border: 0 }}
-                  allowFullScreen= ""
+                  allowFullScreen={false}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
+                  className="gmap-iframe"
                 ></iframe>
               </div>
             </div>
