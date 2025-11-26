@@ -29,7 +29,7 @@ const Header = () => {
     path: "/events"
   }, {
     name: "Bell Suggest",
-    path: "/bell-suggest#bell-song"
+    path: "/bell-suggest"
   }, {
     name: "Students",
     path: "/students"
@@ -42,7 +42,7 @@ const Header = () => {
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
         <img src={logo} className="w-14 h-auto"/>
-          <span className="text-xl font-bold">PGKNMA Blog</span>
+          <span className="text-xl font-bold">ПГКНМА блог</span>
         </NavLink>
 
         {/* Desktop Navigation */}
