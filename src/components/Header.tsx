@@ -3,10 +3,9 @@ import { Moon, Sun, Menu, X, Search, LogIn, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
-import Login from "@/pages/Login";
 import { useTheme } from "next-themes";
-  import logoLight from "/logo-light.png";
-  import logoDark from "/logo-dark.png";
+import logoLight from "/logo-light.png";
+import logoDark from "/logo-dark.png";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -31,8 +30,8 @@ const Header = () => {
     name: "Bell Suggest",
     path: "/bell-suggest"
   }, {
-    name: "Students",
-    path: "/students"
+    name: "Weekly Poll",
+    path: "/weekly-poll"
   }, {
     name: "Contact",
     path: "/contact"
