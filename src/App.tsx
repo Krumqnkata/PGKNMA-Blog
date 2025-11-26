@@ -9,6 +9,7 @@ import News from "./pages/News";
 import SchoolCalendar from "./pages/SchoolCalendar";
 import BellSuggest from "./pages/BellSuggest";
 import NotFound from "./pages/NotFound";
+import Login from "./pages/Login";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
             <Route path="/news" element={<News />} />
             <Route path="/events" element={<SchoolCalendar />} />
             <Route path="/bell-suggest" element={<BellSuggest />} />
+            <Route path="/login" element={<Login/>}/>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

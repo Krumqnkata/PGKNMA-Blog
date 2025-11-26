@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
+import Login from "@/pages/Login";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -56,10 +57,12 @@ const Header = () => {
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
 
-          <Button className="hidden gap-2 sm:inline-flex">
-            <LogIn className="h-4 w-4" />
-            Login
-          </Button>
+          <NavLink to="/login">
+            <Button className="hidden gap-2 sm:inline-flex">
+              <LogIn className="h-4 w-4" />
+              Login 
+            </Button>
+          </NavLink>
 
           {/* Mobile Menu Button */}
           <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} aria-label="Toggle menu">
