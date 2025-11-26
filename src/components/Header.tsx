@@ -1,17 +1,22 @@
 import { useState } from "react";
 import { Moon, Sun, Menu, X, Search, LogIn, Coffee } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
-import Login from "@/pages/Login";
+import { useTheme } from "next-themes";
+import logoLight from "/logo-light.png";
+import logoDark from "/logo-dark.png";
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const {
     theme,
-    setTheme
+    setTheme, systemTheme
   } = useTheme();
+  const activeTheme = theme === "system" ? systemTheme : theme;
+    const logo = activeTheme === "dark" ? logoDark : logoLight;
+
   const navLinks = [{
     name: "Home",
     path: "/"
@@ -23,10 +28,10 @@ const Header = () => {
     path: "/events"
   }, {
     name: "Bell Suggest",
-    path: "/bell-suggest#bell-song"
+    path: "/bell-suggest"
   }, {
-    name: "Students",
-    path: "/students"
+    name: "Weekly Poll",
+    path: "/weekly-poll"
   }, {
     name: "Contact",
     path: "/contact"
@@ -35,8 +40,8 @@ const Header = () => {
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <Coffee className="h-8 w-8 text-primary" />
-          <span className="text-xl font-bold">PGKNMA Blog</span>
+        <img src={logo} className="w-14 h-auto"/>
+          <span className="text-xl font-bold">ПГКНМА блог</span>
         </NavLink>
 
         {/* Desktop Navigation */}
