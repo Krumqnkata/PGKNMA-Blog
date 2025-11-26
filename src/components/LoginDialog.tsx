@@ -15,9 +15,10 @@ import { Button } from "@/components/ui/button";
 interface LoginDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onOpenRegister?: () => void;
 }
 
-const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
+const LoginDialog = ({ open, onOpenChange, onOpenRegister }: LoginDialogProps) => {
   const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
@@ -70,7 +71,19 @@ const LoginDialog = ({ open, onOpenChange }: LoginDialogProps) => {
           {error && (
             <div className="text-red-500 text-sm font-medium">{error}</div>
           )}
-          <p>Нямаш профил? <a href="/register">Регистрирай се!</a></p>
+          <p className="text-sm text-muted-foreground">
+            Нямаш профил?{" "}
+            <button
+              type="button"
+              className="text-primary font-semibold hover:underline"
+              onClick={() => {
+                onOpenChange(false);
+                onOpenRegister?.();
+              }}
+            >
+              Регистрирай се!
+            </button>
+          </p>
           <Button className="w-full mt-2" onClick={handleLogin}>
             Влез
           </Button>

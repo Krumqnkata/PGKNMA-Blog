@@ -1,156 +1,132 @@
-import React, { useState } from 'react';
-import Header from '@/components/Header';
+import { useState } from "react";
+import Header from "@/components/Header";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { toast } from "@/components/ui/use-toast";
 
+type RegisterForm = {
+  email: string;
+  username: string;
+  password: string;
+  className: string;
+};
 
-const Register: React.FC = () => {
-  // Състояние за данните
-  const [formData, setFormData] = useState({
-    username: '',
-    password: ''
+const Register = () => {
+  const [formData, setFormData] = useState<RegisterForm>({
+    email: "",
+    username: "",
+    password: "",
+    className: "",
   });
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-
-    // Симулация на заявка (тук свържи твоя Backend)
     setTimeout(() => {
-      console.log('Login details:', formData);
       setIsLoading(false);
-      // Ако има грешка: setError("Невалидно име или парола");
-      alert(`Успешен опит за вход: ${formData.username}`);
-    }, 1000);
+      toast({ title: "Регистрация изпратена", description: `${formData.username} • ${formData.email}` });
+    }, 800);
   };
-     
+
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#F5E5E1] to-[#427A76] font-sans">
+    <div className="relative min-h-screen w-full overflow-hidden font-sans text-white bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.06),_transparent_35%),_radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.04),_transparent_35%),_#0b1b1d]">
       <Header />
+      <div className="absolute inset-0 bg-black/65 backdrop-blur-sm" />
 
-      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-10">
-        {/* Основна Карта */}
-        <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-all hover:-translate-y-1 duration-300">
-          
-          {/* Заглавие */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-800 mb-2">Добре дошли</h2>
-            <p className="text-gray-500 text-sm">
-              Регистрация <span className="font-semibold text-[#1e3c72]">ПГКНМА Блог</span>
-            </p>
-          </div>
-
-          {/* Форма */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            
-            {/* Поле за Потребителско име */}
-            <div>
-              <label 
-                htmlFor="username" 
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Имейл
-              </label>
-              <input
-                type="text"
-                id="email"
-                name="email"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Имейл"
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1e3c72] focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
-              />
-            </div>
-            
-            {/*Username*/}
-            <div>
-              <label 
-                htmlFor="username" 
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Имейл
-              </label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Потребителско име"
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1e3c72] focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
-              />
-            </div>
-
-            
-
-            {/* Поле за Парола */}
-            <div>
-              <label 
-                htmlFor="password" 
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Парола
-              </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#1e3c72] focus:border-transparent transition duration-200 text-gray-900 placeholder-gray-400"
-              />
-            </div>
-
-            {/* Съобщение за грешка */}
-            {error && (
-              <div className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">
-                {error}
+      <main className="relative z-10 flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-lg border border-border/60 bg-[hsl(var(--background))]/92 shadow-2xl">
+          <CardHeader className="text-left">
+            <CardTitle className="text-2xl text-[hsl(var(--header-foreground))]">Регистрация</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">
+              Попълнете данните си, за да създадете профил в портала.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Имейл</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="example@school.bg"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
               </div>
-            )}
 
-            {/* Бутон за Вход */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full py-3 px-4 rounded-lg text-white font-semibold text-lg shadow-md transition-all duration-300 
-                ${isLoading 
-                  ? 'bg-gray-400 cursor-not-allowed' 
-                  : 'bg-[#1e3c72] hover:bg-[#162b55] hover:shadow-lg active:scale-95'
-                }`}
-            >
-              {isLoading ? 'Зареждане...' : 'Вход'}
-            </button>
+              <div className="space-y-2">
+                <Label htmlFor="username">Потребителско име</Label>
+                <Input
+                  id="username"
+                  name="username"
+                  placeholder="Вашето име..."
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-            {/* Допълнителни връзки */}
-            <div className="flex items-center justify-between text-sm mt-6">
-              <a 
-                href="/register" 
-                className="text-[#1e3c72] font-semibold hover:text-[#2a5298] hover:underline transition"
+              <div className="space-y-2">
+                <Label htmlFor="password">Парола</Label>
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="className">Клас</Label>
+                <Input
+                  id="className"
+                  name="className"
+                  placeholder="10Б, 11А..."
+                  value={formData.className}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              {error && (
+                <div className="text-red-500 text-sm text-center bg-red-50/80 p-2 rounded">
+                  {error}
+                </div>
+              )}
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:opacity-90"
               >
-                Регистрация
-              </a>
-            </div>
-          </form>
-        </div>
-      </main>
+                {isLoading ? "Зареждане..." : "Регистрация"}
+              </Button>
 
-      <div className="pb-6 text-center text-white/70 text-xs">
-        © {new Date().getFullYear()} ПГКНМА Блог. Всички права запазени.
-      </div>
+              <div className="text-center text-sm text-muted-foreground">
+                Вече имаш профил?{" "}
+                <a href="/login" className="text-primary font-semibold hover:underline">
+                  Вход
+                </a>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 };
