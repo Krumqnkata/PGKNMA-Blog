@@ -33,7 +33,7 @@ const Header = () => {
   return <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
-        <NavLink to="/bell-suggest#bell-song" className="flex items-center gap-2 transition-opacity hover:opacity-80">
+        <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <Coffee className="h-8 w-8 text-primary" />
           <span className="text-xl font-bold">PGKNMA Blog</span>
         </NavLink>
