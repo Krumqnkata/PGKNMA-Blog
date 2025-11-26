@@ -24,9 +24,9 @@ const questions: Question[] = [
     code: `const nums = [1, 2, 3];\nconst result = nums\n  .map((n) => n * 2)\n  .filter((n) => n > 3);\nconsole.log(result.join("-"));`,
     options: [
       { key: "a", text: "2-4-6" },
-      { key: "b", text: "4-6" },
+      { key: "b", text: "4-6", correct: true },
       { key: "c", text: "6" },
-      { key: "d", text: "4-6-8", correct: true },
+      { key: "d", text: "4-6-8" },
     ],
   },
   {
