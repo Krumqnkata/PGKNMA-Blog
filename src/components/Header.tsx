@@ -31,8 +31,8 @@ const Header = () => {
     name: "Bell Suggest",
     path: "/bell-suggest"
   }, {
-    name: "Students",
-    path: "/students"
+    name: "Weekly Poll",
+    path: "/weekly-poll"
   }, {
     name: "Contact",
     path: "/contact"
