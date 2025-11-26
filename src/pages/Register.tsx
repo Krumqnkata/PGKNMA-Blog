@@ -39,13 +39,14 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#0f2628] via-[#0b1b1d] to-[#0f2628] text-white font-sans">
+    <div className="relative min-h-screen w-full overflow-hidden font-sans text-white bg-[radial-gradient(circle_at_top_left,_rgba(255,255,255,0.06),_transparent_35%),_radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.04),_transparent_35%),_#0b1b1d]">
       <Header />
+      <div className="absolute inset-0 bg-black/65 backdrop-blur-sm" />
 
-      <main className="flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-10">
-        <Card className="w-full max-w-lg border-border bg-[hsl(var(--background))]/90 shadow-xl">
+      <main className="relative z-10 flex min-h-[calc(100vh-4rem)] items-center justify-center px-4 py-12">
+        <Card className="w-full max-w-lg border border-border/60 bg-[hsl(var(--background))]/92 shadow-2xl">
           <CardHeader className="text-left">
-            <CardTitle className="text-2xl">Регистрация</CardTitle>
+            <CardTitle className="text-2xl text-[hsl(var(--header-foreground))]">Регистрация</CardTitle>
             <CardDescription className="text-sm text-muted-foreground">
               Попълнете данните си, за да създадете профил в портала.
             </CardDescription>

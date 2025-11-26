@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
 import LoginDialog from "@/components/LoginDialog";
+import RegisterDialog from "@/components/RegisterDialog";
 import { useTheme } from "next-themes";
 
 import logoLight from "/logo-light.png";
@@ -13,6 +14,7 @@ const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
+  const [registerOpen, setRegisterOpen] = useState(false);
 
   const { theme, setTheme, systemTheme } = useTheme();
   const activeTheme = theme === "system" ? systemTheme : theme;
@@ -130,7 +132,8 @@ const navLinks = [
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
 
       {/* Login Dialog */}
-      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} onOpenRegister={() => setRegisterOpen(true)} />
+      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
     </header>
   );
 };
