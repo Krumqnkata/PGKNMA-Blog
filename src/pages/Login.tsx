@@ -33,8 +33,9 @@ const Login: React.FC = () => {
       alert(`Успешен опит за вход: ${formData.username}`);
     }, 1000);
   };
-
+ 
   return (
+    
     <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#F5E5E1] to-[#427A76] p-4 font-sans">
       {/* Основна Карта */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 transform transition-all hover:-translate-y-1 duration-300">
