@@ -11,6 +11,7 @@ import BellSuggest from "./pages/BellSuggest";
 import WeeklyPoll from "./pages/WeeklyPoll";
 import NotFound from "./pages/NotFound";
 import Login from "./pages/Login";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/bell-suggest" element={<BellSuggest />} />
             <Route path="/weekly-poll" element={<WeeklyPoll />} />
             <Route path="/login" element={<Login/>}/>
+            <Route path="/admin" element={<Admin/>}/>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

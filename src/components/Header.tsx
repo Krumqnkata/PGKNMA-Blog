@@ -18,22 +18,22 @@ const Header = () => {
     const logo = activeTheme === "dark" ? logoDark : logoLight;
 
   const navLinks = [{
-    name: "Home",
+    name: "Начало",
     path: "/"
   }, {
-    name: "News",
+    name: "Новини",
     path: "/news"
   }, {
-    name: "Events",
+    name: "Събития",
     path: "/events"
   }, {
     name: "Bell Suggest",
     path: "/bell-suggest"
   }, {
-    name: "Weekly Poll",
+    name: "Седмична анкета",
     path: "/weekly-poll"
   }, {
-    name: "Contact",
+    name: "Контакт",
     path: "/contact"
   }];
   return <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm">
