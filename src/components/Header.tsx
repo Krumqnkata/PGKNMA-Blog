@@ -3,9 +3,11 @@ import { Moon, Sun, Menu, X, Search, LogIn, GraduationCap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { NavLink } from "@/components/NavLink";
+import SearchDialog from "@/components/SearchDialog";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { theme, setTheme } = useTheme();
 
   const navLinks = [
@@ -46,6 +48,7 @@ const Header = () => {
             variant="ghost"
             size="icon"
             className="hidden sm:inline-flex"
+            onClick={() => setSearchOpen(true)}
             aria-label="Search"
           >
             <Search className="h-5 w-5" />
@@ -106,6 +109,9 @@ const Header = () => {
           </div>
         </div>
       )}
+
+      {/* Search Dialog */}
+      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
     </header>
   );
 };
