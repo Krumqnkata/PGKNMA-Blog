@@ -1,4 +1,5 @@
 import Header from "@/components/Header";
+import UnderHeader from "@/components/UnderHeader";
 import Hero from "@/components/Hero";
 import NewsGrid from "@/components/NewsGrid";
 import Events from "@/components/Events";
@@ -9,6 +10,7 @@ const Index = () => {
   return (
     <div className="min-h-screen w-full">
       <Header />
+      <UnderHeader />
       <main>
         <Hero />
         <NewsGrid />
