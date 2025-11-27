@@ -7,12 +7,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { useNotification } from "@/contexts/NotificationContext";
 import { toast } from "@/components/ui/use-toast";
 
 type NewsItem = { id: number; title: string; summary: string };
 type EventItem = { id: number; title: string; date: string; place: string };
 type PollConfig = { title: string; subtitle: string; code: string; options: string[] };
-type ContactInfo = { email: string; phone: string; address: string };
+type ContactInfo = { email:string; phone: string; address: string };
 type Suggestion = { name: string; link: string; status: "pending" | "approved" | "rejected" };
 type PollResults = Record<"a" | "b" | "c" | "d", number>;
 
@@ -49,6 +51,16 @@ const Admin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+
+  const { 
+    notifications, 
+    notificationsEnabled,
+    addNotification, 
+    updateNotificationText, 
+    toggleNotification, 
+    deleteNotification,
+    setNotificationsEnabled 
+  } = useNotification();
 
   const [news, setNews] = useState<NewsItem[]>([
     { id: 1, title: "Ново оборудване за лабораторията", summary: "Закупихме 20 нови лаптопа за часовете по програмиране." },
@@ -172,6 +184,55 @@ const Admin = () => {
             Изход
           </Button>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Известия в хедъра</CardTitle>
+            <CardDescription>Управлявай глобалните известия в банера.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <label className="text-base font-medium">
+                  Покажи банера с известия
+                </label>
+                <p className="text-sm text-muted-foreground">
+                  Превключи, за да покажеш или скриеш всички известия.
+                </p>
+              </div>
+              <Switch
+                checked={notificationsEnabled}
+                onCheckedChange={setNotificationsEnabled}
+              />
+            </div>
+            {notifications.map((notification) => (
+              <div key={notification.id} className="rounded-lg border p-4 space-y-3">
+                <Textarea
+                  value={notification.text}
+                  onChange={(e) => updateNotificationText(notification.id, e.target.value)}
+                  placeholder="Въведи съобщение..."
+                  rows={2}
+                />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Switch
+                      checked={notification.enabled}
+                      onCheckedChange={() => toggleNotification(notification.id)}
+                      aria-label="Toggle notification"
+                    />
+                    <label className="text-sm font-medium">
+                      {notification.enabled ? "Активно" : "Неактивно"}
+                    </label>
+                  </div>
+                  <Button variant="destructive" size="sm" onClick={() => deleteNotification(notification.id)}>
+                    Изтрий
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <Button onClick={addNotification}>+ Добави известие</Button>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader className="flex items-start justify-between gap-4">
