@@ -14,6 +14,7 @@ type EventItem = { id: number; title: string; date: string; place: string };
 type PollConfig = { title: string; subtitle: string; code: string; options: string[] };
 type ContactInfo = { email: string; phone: string; address: string };
 type Suggestion = { name: string; link: string; status: "pending" | "approved" | "rejected" };
+type PollResults = Record<"a" | "b" | "c" | "d", number>;
 
 const getYoutubeEmbed = (link: string): string | null => {
   try {
@@ -63,6 +64,7 @@ const Admin = () => {
     code: "const nums = [1,2,3];\nconsole.log(nums.map(n=>n*2));",
     options: ["1,2,3", "2,4,6", "3,6,9", "Нищо не принтира"],
   });
+  const [pollResults, setPollResults] = useState<PollResults>({ a: 4, b: 9, c: 2, d: 1 });
   const [contact, setContact] = useState<ContactInfo>({
     email: "info@school.bg",
     phone: "+359 888 123 456",
@@ -329,6 +331,31 @@ const Admin = () => {
                   />
                 </div>
               ))}
+            </div>
+            <div className="rounded-lg border border-border/70 bg-muted/30 p-4">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-semibold">Резултати (демо)</p>
+                  <p className="text-xs text-muted-foreground">Сумирани гласове по отговор. Заменете с реални данни при бекенд.</p>
+                </div>
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <span className="rounded-full bg-secondary px-3 py-1">Общо: {Object.values(pollResults).reduce((sum, n) => sum + n, 0)}</span>
+                </div>
+              </div>
+              <div className="mt-3 grid gap-2 sm:grid-cols-4">
+                {(["a", "b", "c", "d"] as const).map((key, idx) => (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between rounded-md border border-border bg-background/70 px-3 py-2 text-sm"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="uppercase">{key}</Badge>
+                      <span className="font-semibold">{poll.options[idx] || `Отговор ${key.toUpperCase()}`}</span>
+                    </div>
+                    <span className="text-muted-foreground">{pollResults[key]}</span>
+                  </div>
+                ))}
+              </div>
             </div>
             <p className="text-xs text-muted-foreground">* Тези настройки са локални за демо. Свържете ги към реално съхранение при нужда.</p>
           </CardContent>
