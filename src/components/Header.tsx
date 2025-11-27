@@ -6,7 +6,7 @@ import SearchDialog from "@/components/SearchDialog";
 import LoginDialog from "@/components/LoginDialog";
 import RegisterDialog from "@/components/RegisterDialog";
 import { useTheme } from "next-themes";
-
+import NotificationBanner from "@/components/NotificationBanner";
 import logoLight from "/logo-light.png";
 import logoDark from "/logo-dark.png";
 
@@ -20,7 +20,7 @@ const Header = () => {
   const activeTheme = theme === "system" ? systemTheme : theme;
   const logo = activeTheme === "dark" ? logoDark : logoLight;
 
-const navLinks = [
+  const navLinks = [
     { name: "Начало", path: "/" },
     { name: "Новини", path: "/news" },
     { name: "Събития", path: "/events" },
@@ -33,10 +33,9 @@ const navLinks = [
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
-
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <img src={logo} className="w-14 h-auto" alt="Logo" />
+          <img src={logo} className="h-auto w-14" alt="Logo" />
           <span className="text-xl font-bold">ПГКНМА блог</span>
         </NavLink>
 
@@ -97,6 +96,8 @@ const navLinks = [
           </Button>
         </div>
       </nav>
+      
+      <NotificationBanner />
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
