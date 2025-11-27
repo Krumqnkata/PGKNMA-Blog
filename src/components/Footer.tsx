@@ -2,10 +2,9 @@ import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, GraduationC
 
 const Footer = () => {
   const quickLinks = [
-    { label: "About Us", href: "#" },
-    { label: "Admissions", href: "#" },
-    { label: "Academics", href: "#" },
-    { label: "Campus Life", href: "#" },
+    { label: "За нас", href: "/contact" },
+    { label: "Прием", href: "pgknma.com/priem" },
+    { label: "Новини", href: "/news" },
   ];
 
   const resources = [
@@ -16,7 +15,7 @@ const Footer = () => {
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "#", label: "Facebook" },
+    { icon: Facebook, href: "facebook.com/pgknma", label: "Facebook" },
     { icon: Twitter, href: "#", label: "Twitter" },
     { icon: Instagram, href: "#", label: "Instagram" },
     { icon: Youtube, href: "#", label: "YouTube" },
