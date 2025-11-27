@@ -1,24 +1,44 @@
-import { Facebook, Twitter, Instagram, Youtube, Mail, Phone, MapPin, GraduationCap } from "lucide-react";
+import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe } from "lucide-react";
+import type React from "react";
+
+const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        {...props}
+    >
+        <path d="M21 7.917v4.034a9.948 9.948 0 0 1 -5 -1.951v4.5a6.5 6.5 0 1 1 -8 -6.326v4.326a2.5 2.5 0 1 0 4 2v-11.5h4.083a6.005 6.005 0 0 0 4.917 4.917z"></path>
+    </svg>
+);
 
 const Footer = () => {
   const quickLinks = [
     { label: "За нас", href: "/contact" },
-    { label: "Прием", href: "pgknma.com/priem" },
+    { label: "Прием", href: "https://pgknma.com/priem" },
     { label: "Новини", href: "/news" },
   ];
 
   const resources = [
-    { label: "Student Portal", href: "#" },
-    { label: "Parent Portal", href: "#" },
-    { label: "Library", href: "#" },
-    { label: "Career Center", href: "#" },
+    { label: "Училищен уебсайт", href: "https://pgknma.com/" },
+    { label: "Политика за поверителност", href: "/privacy-policy" },
+    { label: "Условия за ползване", href: "/terms-of-service" },
+    
+
   ];
 
   const socialLinks = [
-    { icon: Facebook, href: "facebook.com/pgknma", label: "Facebook" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Instagram, href: "#", label: "Instagram" },
-    { icon: Youtube, href: "#", label: "YouTube" },
+    { icon: Facebook, href: "https://facebook.com/pgknma", label: "Facebook" },
+    { icon: TikTokIcon, href: "https://www.tiktok.com/@pgknma.proffbalkanski", label: "TikTok" },
+    { icon: Instagram, href: "https://www.instagram.com/pgknma.prof.minko.balkanski/", label: "Instagram" },
+    { icon: Youtube, href: "https://www.youtube.com/@pgknma", label: "YouTube" },
+    { icon: Globe, href: "https://pgknma.com/", label: "Website" },
   ];
 
   return (
@@ -28,17 +48,17 @@ const Footer = () => {
           {/* About Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <GraduationCap className="h-8 w-8 text-primary" />
-              <span className="text-xl font-bold">School Blog</span>
+              <img src="/logo-dark.png" alt="ПГКНМА блог лого" className="h-8 w-8 object-contain" />
+              <span className="text-xl font-bold">ПГКНМА блог</span>
             </div>
             <p className="text-sm text-[hsl(var(--footer-foreground))]/80 leading-relaxed">
-              Empowering students and engaging parents through education, innovation, and community.
+              Овластяване на учениците и ангажиране на родителите чрез образование, иновации и общност.
             </p>
           </div>
 
           {/* Quick Links Column */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Quick Links</h3>
+            <h3 className="text-lg font-semibold">Бързи връзки</h3>
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.label}>
@@ -55,7 +75,7 @@ const Footer = () => {
 
           {/* Resources Column */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Resources</h3>
+            <h3 className="text-lg font-semibold">Ресурси</h3>
             <ul className="space-y-2">
               {resources.map((link) => (
                 <li key={link.label}>
@@ -72,19 +92,19 @@ const Footer = () => {
 
           {/* Contact Column */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Contact Info</h3>
+            <h3 className="text-lg font-semibold">Контактна информация</h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-[hsl(var(--footer-foreground))]/80">
                 <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                <span>123 Education Street, Learning City, ST 12345</span>
+                <span>ул. Стефан Сливков №7, град Стара Загора</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80">
                 <Phone className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span>(555) 123-4567</span>
+                <span>+359 88 499 4500</span>
               </li>
               <li className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80">
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span>info@school.edu</span>
+                <span>info-2400020@edu.mon.bg</span>
               </li>
             </ul>
           </div>
@@ -93,7 +113,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <p className="text-sm text-[hsl(var(--footer-foreground))]/80">
-            © 2025 School Blog. All rights reserved.
+            © 2025 ПГКНМА блог. Всички права запазени.
           </p>
 
           {/* Social Links */}
