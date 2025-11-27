@@ -9,6 +9,7 @@ import News from "./pages/News";
 import SchoolCalendar from "./pages/SchoolCalendar";
 import BellSuggest from "./pages/BellSuggest";
 import WeeklyPoll from "./pages/WeeklyPoll";
+import MemeOfTheWeek from "./pages/MemeOfTheWeek";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/events" element={<SchoolCalendar />} />
             <Route path="/bell-suggest" element={<BellSuggest />} />
             <Route path="/weekly-poll" element={<WeeklyPoll />} />
+            <Route path="/meme-of-the-week" element={<MemeOfTheWeek />} />
             <Route path="/admin" element={<Admin/>}/>
             <Route path="/contact" element={<Contact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
