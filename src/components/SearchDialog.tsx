@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { FileText, Calendar, Music2, GraduationCap, Mail, Home, Vote } from "lucide-react";
+import { FileText, Calendar, Music2, Mail, Home, Vote, Laugh } from "lucide-react";
 
 interface SearchDialogProps {
   open: boolean;
@@ -20,13 +20,13 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
   const [search, setSearch] = useState("");
 
   const pages = [
-    { name: "Home", path: "/", icon: Home, keywords: "homepage main landing" },
-    { name: "News & Updates", path: "/news", icon: FileText, keywords: "articles blog posts announcements" },
-    { name: "School Calendar", path: "/events", icon: Calendar, keywords: "events schedule dates activities" },
-    { name: "Bell Suggest", path: "/bell-suggest#bell-song", icon: Music2, keywords: "song suggest bell bell-song form" },
-    { name: "Weekly Poll", path: "/weekly-poll", icon: Vote, keywords: "code of the week poll challenge question" },
-    { name: "For Students", path: "/students", icon: GraduationCap, keywords: "student portal grades schedule" },
-    { name: "Contact", path: "/contact", icon: Mail, keywords: "contact us reach out email" },
+    { name: "Начало", path: "/", icon: Home, keywords: "начална страница главно кацане" },
+    { name: "Новини и актуализации", path: "/news", icon: FileText, keywords: "статии блог публикации съобщения" },
+    { name: "Училищен календар", path: "/events", icon: Calendar, keywords: "събития график дати дейности" },
+    { name: "Предложете звънец", path: "/bell-suggest#bell-song", icon: Music2, keywords: "песен предложете звънец формуляр за песен на звънец" },
+    { name: "Седмична анкета", path: "/weekly-poll", icon: Vote, keywords: "код на седмицата анкета предизвикателство въпрос" },
+    { name: "Меме на седмицата", path: "/meme-of-the-week", icon: Laugh, keywords: "меме смях забавление училищен живот" },
+    { name: "Контакт", path: "/contact", icon: Mail, keywords: "свържете се с нас пишете ни имейл" },
   ];
 
   const filteredPages = pages.filter((page) => 
@@ -51,13 +51,13 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
   return (
     <CommandDialog open={open} onOpenChange={onOpenChange}>
       <CommandInput 
-        placeholder="Search pages and content..." 
+        placeholder="Търсене на страници и съдържание..." 
         value={search}
         onValueChange={setSearch}
       />
       <CommandList>
-        <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Pages">
+        <CommandEmpty>Няма намерени резултати.</CommandEmpty>
+        <CommandGroup heading="Страници">
           {filteredPages.map((page) => {
             const Icon = page.icon;
             return (
@@ -78,4 +78,3 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
 };
 
 export default SearchDialog;
-{/*yes*/}

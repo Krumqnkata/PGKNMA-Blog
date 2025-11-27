@@ -26,6 +26,7 @@ const navLinks = [
     { name: "Събития", path: "/events" },
     { name: "Предложения за звънец", path: "/bell-suggest" },
     { name: "Седмична анкета", path: "/weekly-poll" },
+    { name: "Меме на седмицата", path: "/meme-of-the-week" },
     { name: "Контакт", path: "/contact" },
   ];
 
