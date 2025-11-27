@@ -12,26 +12,26 @@ const Hero = () => {
           {/* Badge */}
           <div className="mb-6 inline-flex items-center rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-muted-foreground">
             <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Welcome to our community
+            Добре дошли в училищния портал!
           </div>
 
           {/* Headline */}
           <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Stay Connected with
-            <span className="block text-primary">Our School Community</span>
+            Бъдете в Крак с Всичко за
+            <span className="block text-primary">Нашата Училищна Общност</span>
           </h1>
 
           {/* Subheadline */}
           <p className="mb-10 text-lg text-muted-foreground sm:text-xl">
-            Access the latest news, upcoming events, and important updates all in one place.
-            Built for students, parents, and educators.
+           Достъп до най-новите новини, предстоящи събития и важни актуализации, всичко на едно място.
+           Създадено за ученици, родители и преподаватели.
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Button size="lg" className="gap-2 px-8 shadow-lg transition-transform hover:scale-105">
               <Newspaper className="h-5 w-5" />
-              Latest News
+              Последни Новини
             </Button>
             <Button
               size="lg"
@@ -39,7 +39,7 @@ const Hero = () => {
               className="gap-2 px-8 transition-transform hover:scale-105"
             >
               <Calendar className="h-5 w-5" />
-              School Calendar
+              Училищен Календар
             </Button>
           </div>
         </div>
