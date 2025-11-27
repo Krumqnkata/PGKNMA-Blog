@@ -20,7 +20,8 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [notifications, setNotifications] = useState<Notification[]>([
-    { id: 1, text: 'This is a default notification.', enabled: true },
+    { id: 1, text: 'Това е уведомление #1 по подразбиране.', enabled: true },
+    { id: 2, text: 'Това е уведомление #2 по подразбиране.', enabled: true },
   ]);
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
 
