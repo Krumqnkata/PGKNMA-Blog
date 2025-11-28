@@ -12,12 +12,12 @@ const Hero = () => {
           {/* Badge */}
           <div className="mb-6 inline-flex items-center rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-muted-foreground">
             <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Добре дошли в училищния портал!
+            Добре дошли в училищния блог!
           </div>
 
           {/* Headline */}
           <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Бъдете в Крак с Всичко за
+            Бъдете в крак с всичко за
             <span className="block text-primary">Нашата Училищна Общност</span>
           </h1>
 
