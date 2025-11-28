@@ -1,6 +1,7 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import { ContactForm } from "@/components/ContactForm";
 
 const Contact = () => {
   return (
@@ -25,8 +26,11 @@ const Contact = () => {
                   referrerPolicy="no-referrer-when-downgrade"
                   className="dark:invert-[90%]"
                 ></iframe>
-                <div className="absolute inset-0"></div>
               </div>
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-4">Формуляр за контакт</h2>
+              <ContactForm />
             </div>
           </div>
         </div>
