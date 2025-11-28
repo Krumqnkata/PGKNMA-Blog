@@ -1,0 +1,19 @@
+#<IfModule mod_headers.c>
+    # Разрешаваме само React/Vite dev server на localhost:8080
+    #SetEnvIf Origin "http://localhost:8080$" ORIGIN_ALLOWED
+
+    #Header set Access-Control-Allow-Origin "http://localhost:8080" env=ORIGIN_ALLOWED
+    #Header set Access-Control-Allow-Credentials "true" env=ORIGIN_ALLOWED
+    #Header set Access-Control-Allow-Headers "Content-Type, Authorization" env=ORIGIN_ALLOWED
+    #Header set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS" env=ORIGIN_ALLOWED
+#</IfModule>
+
+# Блокираме всички останали, освен OPTIONS (preflight)
+#RewriteEngine On
+#RewriteCond %{HTTP_ORIGIN} !^http://localhost:8080$
+#RewriteCond %{REQUEST_METHOD} !OPTIONS
+#RewriteRule ^.*$ - [F]
+
+#<Files "db.php">
+ #   Deny from all
+#</Files>
