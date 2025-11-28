@@ -8,7 +8,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
-import { FileText, Calendar, Music2, Mail, Home, Vote, Laugh } from "lucide-react";
+import { FileText, Calendar, Music2, Mail, Home, Vote, Laugh, FileLock, Gavel } from "lucide-react";
 
 interface SearchDialogProps {
   open: boolean;
@@ -27,6 +27,8 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
     { name: "Седмична анкета", path: "/weekly-poll", icon: Vote, keywords: "код на седмицата анкета предизвикателство въпрос" },
     { name: "Меме на седмицата", path: "/meme-of-the-week", icon: Laugh, keywords: "меме смях забавление училищен живот" },
     { name: "Контакт", path: "/contact", icon: Mail, keywords: "свържете се с нас пишете ни имейл" },
+    { name: "Политика за поверителност", path: "/privacy-policy", icon: FileLock, keywords: "поверителност лични данни gdpr права" },
+    { name: "Условия за ползване", path: "/terms-of-service", icon: Gavel, keywords: "условия правила услуги задължения" },
   ];
 
   const filteredPages = pages.filter((page) => 
