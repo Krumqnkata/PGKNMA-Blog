@@ -13,6 +13,8 @@ import MemeOfTheWeek from "./pages/MemeOfTheWeek";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +34,8 @@ const App = () => (
             <Route path="/meme-of-the-week" element={<MemeOfTheWeek />} />
             <Route path="/admin" element={<Admin/>}/>
             <Route path="/contact" element={<Contact />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
