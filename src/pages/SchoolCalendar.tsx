@@ -117,9 +117,9 @@ const SchoolCalendar = () => {
         {/* Hero Section */}
         <section className="w-full bg-gradient-to-br from-primary/20 via-background to-background py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl font-bold md:text-5xl lg:text-6xl">School Calendar</h1>
+            <h1 className="text-4xl font-bold md:text-5xl lg:text-6xl">Училищен Календар</h1>
             <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-              Stay informed about upcoming events, activities, and important dates
+              Останете информирани за предстоящи събития, дейности и важни дати
             </p>
           </div>
         </section>
