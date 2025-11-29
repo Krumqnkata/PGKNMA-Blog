@@ -69,7 +69,7 @@ const ParticlesComponent = (props: { id?: string, theme?: string }) => {
           color: props.theme === "dark" ? "#ffffff" : "#333333",
           distance: 150,
           enable: true,
-          opacity: props.theme === "dark" ? 0.2 : 0.3,
+          opacity: props.theme === "dark" ? 0.4 : 0.5,
           width: 1,
         },
         move: {
@@ -79,17 +79,17 @@ const ParticlesComponent = (props: { id?: string, theme?: string }) => {
             default: "bounce",
           },
           random: false,
-          speed: 1,
+          speed: 2,
           straight: false,
         },
         number: {
           density: {
             enable: true,
           },
-          value: 80,
+          value: 240,
         },
         opacity: {
-          value: props.theme === "dark" ? 0.3 : 0.5,
+          value: props.theme === "dark" ? 0.5 : 0.7,
         },
         shape: {
           type: "circle",
