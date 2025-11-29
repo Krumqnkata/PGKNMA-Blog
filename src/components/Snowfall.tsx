@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
-import './Snowfall.css';
 
 const SNOWFLAKE_COUNT = 100;
 
@@ -26,12 +25,16 @@ const Snowfall = () => {
       generatedSnowflakes.push({
         id: i,
         style: {
+          position: 'absolute',
+          top: '-5%',
           width: `${size}px`,
           height: `${size}px`,
           left: `${left}vw`,
-          animationDuration: `${animationDuration}s`,
-          animationDelay: `${animationDelay}s`,
+          animation: `fall ${animationDuration}s linear ${animationDelay}s infinite`,
           backgroundImage: `url(${logoUrl})`,
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          willChange: 'transform, opacity',
         },
       });
     }
@@ -39,9 +42,12 @@ const Snowfall = () => {
   }, [theme]);
 
   return (
-    <div className="snowfall-container" aria-hidden="true">
+    <div
+      className="fixed inset-0 w-screen h-screen pointer-events-none -z-10 overflow-hidden"
+      aria-hidden="true"
+    >
       {snowflakes.map(({ id, style }) => (
-        <div key={id} className="snowflake" style={style} />
+        <div key={id} style={style} />
       ))}
     </div>
   );
