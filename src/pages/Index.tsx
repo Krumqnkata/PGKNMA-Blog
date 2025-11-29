@@ -4,14 +4,17 @@ import NewsGrid from "@/components/NewsGrid";
 import Events from "@/components/Events";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
-import Snowfall from "@/components/Snowfall";
+import ParticlesComponent from "@/components/Particles";
+import { useTheme } from "next-themes";
 
 const Index = () => {
+  const { theme } = useTheme();
+
   return (
     <div className="min-h-screen w-full">
-      <Snowfall />
+      <ParticlesComponent id="tsparticles" key={theme} theme={theme} />
       <Header />
-      <main>
+      <main className="relative z-10">
         <Hero />
         <NewsGrid />
         <Events />
