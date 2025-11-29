@@ -79,14 +79,14 @@ const ParticlesComponent = (props: { id?: string, theme?: string }) => {
             default: "bounce",
           },
           random: false,
-          speed: 2,
+          speed: 1.5,
           straight: false,
         },
         number: {
           density: {
             enable: true,
           },
-          value: 240,
+          value: 130,
         },
         opacity: {
           value: props.theme === "dark" ? 0.5 : 0.7,
