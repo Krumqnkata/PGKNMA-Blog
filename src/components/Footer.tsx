@@ -29,6 +29,7 @@ const Footer = () => {
     { label: "Училищен уебсайт", href: "https://pgknma.com/" },
     { label: "Политика за поверителност", href: "/privacy-policy" },
     { label: "Условия за ползване", href: "/terms-of-service" },
+    { label: "Разработили", href: "/developers" },
     
 
   ];
