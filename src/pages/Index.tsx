@@ -4,10 +4,12 @@ import NewsGrid from "@/components/NewsGrid";
 import Events from "@/components/Events";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import Snowfall from "@/components/Snowfall";
 
 const Index = () => {
   return (
     <div className="min-h-screen w-full">
+      <Snowfall />
       <Header />
       <main>
         <Hero />
