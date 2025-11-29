@@ -4,8 +4,7 @@ import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-// ==== Placeholder Data ====
-// Please provide the actual student data.
+
 const developers = [
   {
     name: "Александър",
