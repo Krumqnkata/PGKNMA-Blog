@@ -118,3 +118,14 @@ All colors MUST be HSL.
     @apply font-bold;
   }
 }
+
+@keyframes fall {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(105vh) rotate(360deg);
+    opacity: 0;
+  }
+}
