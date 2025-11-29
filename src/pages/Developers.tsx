@@ -8,16 +8,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 // Please provide the actual student data.
 const developers = [
   {
-    name: "Крум",
-    role: "Front-end Разработчик",
-    avatar: "https://avatars.githubusercontent.com/u/213969107?v=4", // Using Krumqnkata's avatar
-    github: "https://github.com/Krumqnkata",
-  },
-  {
     name: "Александър",
     role: "Front-end и Back-end Разработчик",
     avatar: "https://avatars.githubusercontent.com/u/246351746?v=4", // Using AlexanderYthef0's avatar
     github: "https://github.com/ythef0",
+  },
+  {
+    name: "Крум",
+    role: "Front-end Разработчик",
+    avatar: "https://avatars.githubusercontent.com/u/213969107?v=4", // Using Krumqnkata's avatar
+    github: "https://github.com/Krumqnkata",
   },
   {
     name: "Никола",
