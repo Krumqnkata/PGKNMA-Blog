@@ -43,7 +43,7 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="border-t border-border bg-[hsl(var(--footer-background))] text-[hsl(var(--footer-foreground))]">
+    <footer className="relative z-10 border-t border-border bg-[hsl(var(--footer-background))] text-[hsl(var(--footer-foreground))]">
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* About Column */}
