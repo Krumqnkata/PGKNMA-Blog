@@ -1,17 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { login, LoginResponse } from "./api";
+import { login } from "@/components/api.jsx"; // api.js версия с fetch
 
-interface LoginDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onOpenRegister?: () => void;
-}
-
-const LoginDialog = ({ open, onOpenChange, onOpenRegister }: LoginDialogProps) => {
+const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -19,23 +19,39 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }: LoginDialogProps) =
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-  setError("");
-  setLoading(true);
-  try {
-    const result = await login(username, password);
-    if (result.success) {
-      navigate("/dashboard");
-      onOpenChange(false);
-    } else {
-      setError(result.error || "Невалиден вход");
-    }
-  } catch {
-    setError("Грешка при връзка със сървъра");
-  } finally {
-    setLoading(false);
-  }
-};
+    setError("");
+    setLoading(true);
 
+    try {
+      const result = await login(username, password);
+
+      // Ако login връща текст вместо JSON, опитай parse
+      let data;
+      if (typeof result === "string") {
+        try {
+          data = JSON.parse(result);
+        } catch {
+          console.error("Failed to parse server response:", result);
+          setError("Грешка при връзка със сървъра");
+          return;
+        }
+      } else {
+        data = result;
+      }
+
+      if (data.success) {
+        navigate("/");
+        onOpenChange(false);
+      } else {
+        setError(data.error || "Невалиден вход");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+      setError(err?.message || "Грешка при връзка със сървъра");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -50,19 +66,35 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }: LoginDialogProps) =
         <div className="flex flex-col gap-4 mt-2">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">Потребителско име</label>
-            <Input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Вашето име..." />
+            <Input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Вашето име..."
+            />
           </div>
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">Парола</label>
-            <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Вашата парола..." />
+            <Input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Вашата парола..."
+            />
           </div>
 
           {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
 
           <p className="text-sm text-muted-foreground">
             Нямаш профил?{" "}
-            <button type="button" className="text-primary font-semibold hover:underline" onClick={() => { onOpenChange(false); onOpenRegister?.(); }}>
+            <button
+              type="button"
+              className="text-primary font-semibold hover:underline"
+              onClick={() => {
+                onOpenChange(false);
+                onOpenRegister?.();
+              }}
+            >
               Регистрирай се!
             </button>
           </p>
