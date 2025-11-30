@@ -11,12 +11,42 @@ import { Switch } from "@/components/ui/switch";
 import { useNotification } from "@/contexts/NotificationContext";
 import { toast } from "@/components/ui/use-toast";
 
-type NewsItem = { id: number; title: string; summary: string };
-type EventItem = { id: number; title: string; date: string; place: string };
-type PollConfig = { title: string; subtitle: string; code: string; options: string[] };
-type ContactInfo = { email:string; phone: string; address: string };
-type Suggestion = { name: string; link: string; status: "pending" | "approved" | "rejected" };
-type PollResults = Record<"a" | "b" | "c" | "d", number>;
+type NewsItem = {
+  id: number;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  author: string;
+  image: string;
+};
+type EventItem = {
+  id: number;
+  title: string;
+  day: string;
+  month: string;
+  time: string;
+  location: string;
+};
+type Question = {
+  id: string;
+  title: string;
+  subtitle: string;
+  code: string;
+  options: { key: "a" | "b" | "c" | "d"; text: string; correct?: boolean }[];
+};
+type Suggestion = {
+  id: number;
+  name: string;
+  link: string;
+  slot: string;
+  note: string;
+  status: "pending" | "approved" | "rejected";
+};
+type FooterLink = { id: number; label: string; href: string; };
+type SocialLink = { id: number; icon: string; href: string; label: string; };
+
+type ContactInfo = { email: string; phone: string; address: string };
 
 const getYoutubeEmbed = (link: string): string | null => {
   try {
@@ -52,44 +82,69 @@ const Admin = () => {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
 
-  const { 
-    notifications, 
+  const {
+    notifications,
     notificationsEnabled,
-    addNotification, 
-    updateNotificationText, 
-    toggleNotification, 
+    addNotification,
+    updateNotificationText,
+    toggleNotification,
     deleteNotification,
-    setNotificationsEnabled 
+    setNotificationsEnabled,
   } = useNotification();
 
   const [news, setNews] = useState<NewsItem[]>([
-    { id: 1, title: "Ново оборудване за лабораторията", summary: "Закупихме 20 нови лаптопа за часовете по програмиране." },
-    { id: 2, title: "Седмичен хакатон", summary: "Учениците представиха 12 проекта за училищния хакатон." },
+    { id: 1, title: "Ново оборудване за лабораторията", excerpt: "Закупихме 20 нови лаптопа за часовете по програмиране.", category: "Facilities", date: "2025-03-20", author: "Директорът", image: "/placeholder.svg" },
+    { id: 2, title: "Седмичен хакатон", excerpt: "Учениците представиха 12 проекта за училищния хакатон.", category: "Academics", date: "2025-03-18", author: "Г-н Бонев", image: "/placeholder.svg" },
   ]);
   const [events, setEvents] = useState<EventItem[]>([
-    { id: 1, title: "Родителска среща", date: "2025-02-05", place: "Аула" },
-    { id: 2, title: "Състезание по ИТ", date: "2025-03-12", place: "София Тех Парк" },
+    { id: 1, title: "Родителска среща", day: "05", month: "FEB", time: "18:00", location: "Аула" },
+    { id: 2, title: "Състезание по ИТ", day: "12", month: "MAR", time: "09:00", location: "София Тех Парк" },
   ]);
-  const [poll, setPoll] = useState<PollConfig>({
-    title: "Какво принтира?",
-    subtitle: "Обход на масив",
-    code: "const nums = [1,2,3];\nconsole.log(nums.map(n=>n*2));",
-    options: ["1,2,3", "2,4,6", "3,6,9", "Нищо не принтира"],
-  });
-  const [pollResults, setPollResults] = useState<PollResults>({ a: 4, b: 9, c: 2, d: 1 });
+  const [questions, setQuestions] = useState<Question[]>([
+    {
+      id: "unique-values",
+      title: "Какво принтира?",
+      subtitle: "Работа с map и filter",
+      code: `const nums = [1, 2, 3];\nconst result = nums\n  .map((n) => n * 2)\n  .filter((n) => n > 3);\nconsole.log(result.join("-"));`,
+      options: [
+        { key: "a", text: "2-4-6" },
+        { key: "b", text: "4-6", correct: true },
+        { key: "c", text: "6" },
+        { key: "d", text: "4-6-8" },
+      ],
+    },
+  ]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([
+    { id: 1, name: "Мария, 10Б", link: "https://youtu.be/dQw4w9WgXcQ", slot: "morning", note: "Много е свежа!", status: "pending" },
+    { id: 2, name: "Иван, 9А", link: "https://youtu.be/abcd", slot: "afterLunch", note: "", status: "pending" },
+  ]);
   const [contact, setContact] = useState<ContactInfo>({
     email: "info@school.bg",
     phone: "+359 888 123 456",
     address: "ул. Школо 1, София",
   });
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([
-    { name: "Мария, 10Б", link: "https://youtu.be/dQw4w9WgXcQ", status: "pending" },
-    { name: "Иван, 9А", link: "https://youtu.be/abcd", status: "pending" },
+  
+  const [quickLinks, setQuickLinks] = useState<FooterLink[]>([
+      { id: 1, label: "За нас", href: "/contact" },
+      { id: 2, label: "Прием", href: "https://pgknma.com/priem" },
+      { id: 3, label: "Новини", href: "/news" },
   ]);
+  const [resources, setResources] = useState<FooterLink[]>([
+      { id: 1, label: "Училищен уебсайт", href: "https://pgknma.com/" },
+      { id: 2, label: "Политика за поверителност", href: "/privacy-policy" },
+      { id: 3, label: "Условия за ползване", href: "/terms-of-service" },
+      { id: 4, label: "Разработили сайта", href: "/developers" },
+  ]);
+  const [socialLinks, setSocialLinks] = useState<SocialLink[]>([
+      { id: 1, icon: "Facebook", href: "https://facebook.com/pgknma", label: "Facebook" },
+      { id: 2, icon: "TikTok", href: "https://www.tiktok.com/@pgknma.proffbalkanski", label: "TikTok" },
+      { id: 3, icon: "Instagram", href: "https://www.instagram.com/pgknma.prof.minko.balkanski/", label: "Instagram" },
+  ]);
+
   const [openEmbeds, setOpenEmbeds] = useState<Record<number, boolean>>({});
 
-  const updateSuggestionStatus = (idx: number, status: "approved" | "rejected") => {
-    setSuggestions((prev) => prev.map((s, i) => (i === idx ? { ...s, status } : s)));
+  const updateSuggestionStatus = (id: number, status: "approved" | "rejected") => {
+    setSuggestions((prev) => prev.map((s) => (s.id === id ? { ...s, status } : s)));
   };
 
   useEffect(() => {
@@ -114,12 +169,12 @@ const Admin = () => {
   };
 
   const addNews = () => {
-    const next: NewsItem = { id: Date.now(), title: "", summary: "" };
+    const next: NewsItem = { id: Date.now(), title: "", excerpt: "", category: "", date: "", author: "", image: "" };
     setNews((prev) => [next, ...prev]);
   };
 
   const addEvent = () => {
-    const next: EventItem = { id: Date.now(), title: "", date: "", place: "" };
+    const next: EventItem = { id: Date.now(), title: "", day: "", month: "", time: "", location: "" };
     setEvents((prev) => [next, ...prev]);
   };
 
@@ -134,14 +189,101 @@ const Admin = () => {
   const deleteNews = (id: number) => setNews((prev) => prev.filter((n) => n.id !== id));
   const deleteEvent = (id: number) => setEvents((prev) => prev.filter((e) => e.id !== id));
 
-  const pollOptions = useMemo(
-    () =>
-      poll.options.map((opt, idx) => ({
-        value: opt,
-        idx,
-      })),
-    [poll.options],
-  );
+  const addQuestion = () => {
+    const next: Question = {
+      id: `q_${Date.now()}`,
+      title: "Нов въпрос",
+      subtitle: "",
+      code: "",
+      options: [
+        { key: "a", text: "" },
+        { key: "b", text: "" },
+        { key: "c", text: "" },
+        { key: "d", text: "" },
+      ],
+    };
+    setQuestions((prev) => [next, ...prev]);
+  };
+
+  const deleteQuestion = (id: string) => {
+    setQuestions((prev) => prev.filter((q) => q.id !== id));
+  };
+
+  const updateQuestion = (id: string, key: keyof Question, value: any) => {
+    setQuestions((prev) => prev.map((q) => (q.id === id ? { ...q, [key]: value } : q)));
+  };
+
+  const updateOptionText = (questionId: string, optionKey: "a" | "b" | "c" | "d", text: string) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options.map((opt) =>
+                opt.key === optionKey ? { ...opt, text } : opt
+              ),
+            }
+          : q
+      )
+    );
+  };
+
+  const setCorrectOption = (questionId: string, optionKey: "a" | "b" | "c" | "d", isCorrect: boolean) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options.map((opt) => ({
+                ...opt,
+                correct: opt.key === optionKey ? isCorrect : false,
+              })),
+            }
+          : q
+      )
+    );
+  };
+
+  const addQuickLink = () => {
+    const next: FooterLink = { id: Date.now(), label: "", href: "" };
+    setQuickLinks((prev) => [...prev, next]);
+  };
+
+  const updateQuickLink = (id: number, key: keyof FooterLink, value: string) => {
+    setQuickLinks((prev) => prev.map((link) => (link.id === id ? { ...link, [key]: value } : link)));
+  };
+
+  const deleteQuickLink = (id: number) => {
+    setQuickLinks((prev) => prev.filter((link) => link.id !== id));
+  };
+
+  const addResource = () => {
+    const next: FooterLink = { id: Date.now(), label: "", href: "" };
+    setResources((prev) => [...prev, next]);
+  };
+
+  const updateResource = (id: number, key: keyof FooterLink, value: string) => {
+    setResources((prev) => prev.map((link) => (link.id === id ? { ...link, [key]: value } : link)));
+  };
+
+  const deleteResource = (id: number) => {
+    setResources((prev) => prev.filter((link) => link.id !== id));
+  };
+
+  const addSocialLink = () => {
+    const next: SocialLink = { id: Date.now(), icon: "", label: "", href: "" };
+    setSocialLinks((prev) => [...prev, next]);
+  };
+
+  const updateSocialLink = (id: number, key: keyof SocialLink, value: string) => {
+    setSocialLinks((prev) => prev.map((link) => (link.id === id ? { ...link, [key]: value } : link)));
+  };
+
+  const deleteSocialLink = (id: number) => {
+    setSocialLinks((prev) => prev.filter((link) => link.id !== id));
+  };
+
+
 
   if (!isAuthed) {
     return (
@@ -245,13 +387,31 @@ const Admin = () => {
           <CardContent className="space-y-4">
             {news.map((item) => (
               <div key={item.id} className="rounded-lg border border-border p-4 space-y-3">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold">Заглавие</label>
-                  <Input value={item.title} onChange={(e) => updateNews(item.id, "title", e.target.value)} placeholder="Заглавие" />
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Заглавие</label>
+                    <Input value={item.title} onChange={(e) => updateNews(item.id, "title", e.target.value)} placeholder="Заглавие" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Автор</label>
+                    <Input value={item.author} onChange={(e) => updateNews(item.id, "author", e.target.value)} placeholder="Автор" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Категория</label>
+                    <Input value={item.category} onChange={(e) => updateNews(item.id, "category", e.target.value)} placeholder="Категория" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Дата</label>
+                    <Input type="date" value={item.date} onChange={(e) => updateNews(item.id, "date", e.target.value)} />
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold">Резюме</label>
-                  <Textarea value={item.summary} onChange={(e) => updateNews(item.id, "summary", e.target.value)} rows={2} />
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Линк към снимка</label>
+                  <Input value={item.image} onChange={(e) => updateNews(item.id, "image", e.target.value)} placeholder="https://..." />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Кратко резюме (excerpt)</label>
+                  <Textarea value={item.excerpt} onChange={(e) => updateNews(item.id, "excerpt", e.target.value)} rows={3} />
                 </div>
                 <div className="flex items-center gap-3">
                   <Badge variant="outline">ID {item.id}</Badge>
@@ -275,18 +435,26 @@ const Admin = () => {
           <CardContent className="space-y-4">
             {events.map((item) => (
               <div key={item.id} className="rounded-lg border border-border p-4 space-y-3">
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div className="space-y-2">
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="space-y-2 sm:col-span-2">
                     <label className="text-sm font-semibold">Заглавие</label>
                     <Input value={item.title} onChange={(e) => updateEvent(item.id, "title", e.target.value)} placeholder="Заглавие" />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold">Дата</label>
-                    <Input type="date" value={item.date} onChange={(e) => updateEvent(item.id, "date", e.target.value)} />
+                    <label className="text-sm font-semibold">Ден</label>
+                    <Input value={item.day} onChange={(e) => updateEvent(item.id, "day", e.target.value)} placeholder="25" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Месец</label>
+                    <Input value={item.month} onChange={(e) => updateEvent(item.id, "month", e.target.value)} placeholder="NOV" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Час</label>
+                    <Input value={item.time} onChange={(e) => updateEvent(item.id, "time", e.target.value)} placeholder="18:00" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold">Място</label>
-                    <Input value={item.place} onChange={(e) => updateEvent(item.id, "place", e.target.value)} placeholder="Аула" />
+                    <Input value={item.location} onChange={(e) => updateEvent(item.id, "location", e.target.value)} placeholder="Аула" />
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -306,48 +474,52 @@ const Admin = () => {
             <CardDescription>Преглед на последни предложения.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            {suggestions.map((s, idx) => (
+            {suggestions.map((s) => (
               <div
-                key={idx}
+                key={s.id}
                 className="rounded-lg border border-border px-4 py-3"
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="space-y-2 w-full sm:max-w-2xl">
-                  <p className="font-semibold">{s.name}</p>
-                  <div className="flex flex-wrap items-center gap-2">
-                    <p className="text-sm text-muted-foreground break-all">{s.link}</p>
-                    {getYoutubeEmbed(s.link) && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => setOpenEmbeds((prev) => ({ ...prev, [idx]: !prev[idx] }))}
-                      >
-                        {openEmbeds[idx] ? "Скрий видео" : "Покажи видео"}
-                      </Button>
-                    )}
-                  </div>
-                  {getYoutubeEmbed(s.link) && openEmbeds[idx] && (
-                    <div className="w-full max-w-sm overflow-hidden rounded-lg border border-border/70 bg-muted/30">
-                      <div className="relative w-full overflow-hidden" style={{ paddingBottom: "56.25%", maxHeight: "170px" }}>
-                        <iframe
-                          title={`suggestion-${idx}`}
-                          src={`${getYoutubeEmbed(s.link)}?rel=0`}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="absolute left-0 top-0 h-full w-full"
-                        />
-                      </div>
+                  <div className="space-y-3 w-full sm:max-w-2xl">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                      <p className="font-semibold">{s.name}</p>
+                      <Badge variant="outline">Slot: {s.slot}</Badge>
                     </div>
-                  )}
+                    {s.note && <p className="text-sm text-muted-foreground bg-muted/50 p-2 rounded-md">Бележка: {s.note}</p>}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="text-sm text-muted-foreground break-all">{s.link}</p>
+                      {getYoutubeEmbed(s.link) && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setOpenEmbeds((prev) => ({ ...prev, [s.id]: !prev[s.id] }))}
+                        >
+                          {openEmbeds[s.id] ? "Скрий видео" : "Покажи видео"}
+                        </Button>
+                      )}
+                    </div>
+                    {getYoutubeEmbed(s.link) && openEmbeds[s.id] && (
+                      <div className="w-full max-w-sm overflow-hidden rounded-lg border border-border/70 bg-muted/30">
+                        <div className="relative w-full overflow-hidden" style={{ paddingBottom: "56.25%", maxHeight: "170px" }}>
+                          <iframe
+                            title={`suggestion-${s.id}`}
+                            src={`${getYoutubeEmbed(s.link)}?rel=0`}
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                            className="absolute left-0 top-0 h-full w-full"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="flex flex-wrap items-center gap-2 sm:flex-col sm:items-end sm:gap-2">
                     <Badge variant={s.status === "approved" ? "default" : s.status === "rejected" ? "destructive" : "secondary"}>
                       {s.status === "approved" ? "Одобрено" : s.status === "rejected" ? "Отхвърлено" : "В изчакване"}
                     </Badge>
-                    <Button size="sm" variant="outline" onClick={() => updateSuggestionStatus(idx, "approved")}>
+                    <Button size="sm" variant="outline" onClick={() => updateSuggestionStatus(s.id, "approved")}>
                       Одобри
                     </Button>
-                    <Button size="sm" variant="destructive" onClick={() => updateSuggestionStatus(idx, "rejected")}>
+                    <Button size="sm" variant="destructive" onClick={() => updateSuggestionStatus(s.id, "rejected")}>
                       Откажи
                     </Button>
                   </div>
@@ -359,66 +531,58 @@ const Admin = () => {
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>Weekly Poll</CardTitle>
-            <CardDescription>Конфигурирай заглавие, подзаглавие, код и отговори (a-d).</CardDescription>
+          <CardHeader className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle>Седмична анкета (въпросник)</CardTitle>
+              <CardDescription>Управлявай въпросите, които се показват в анкетата.</CardDescription>
+            </div>
+            <Button size="sm" onClick={addQuestion}>+ Нов въпрос</Button>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Заглавие</label>
-                <Input value={poll.title} onChange={(e) => setPoll({ ...poll, title: e.target.value })} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-semibold">Подзаглавие</label>
-                <Input value={poll.subtitle} onChange={(e) => setPoll({ ...poll, subtitle: e.target.value })} />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-semibold">Code snippet</label>
-              <Textarea rows={4} value={poll.code} onChange={(e) => setPoll({ ...poll, code: e.target.value })} />
-            </div>
-            <div className="grid gap-3 sm:grid-cols-2">
-              {pollOptions.map((opt) => (
-                <div key={opt.idx} className="space-y-1.5">
-                  <label className="text-sm font-semibold">Опция {String.fromCharCode(97 + opt.idx)}</label>
-                  <Input
-                    value={opt.value}
-                    onChange={(e) => {
-                      const next = [...poll.options];
-                      next[opt.idx] = e.target.value;
-                      setPoll({ ...poll, options: next });
-                    }}
-                  />
-                </div>
-              ))}
-            </div>
-            <div className="rounded-lg border border-border/70 bg-muted/30 p-4">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm font-semibold">Резултати (демо)</p>
-                  <p className="text-xs text-muted-foreground">Сумирани гласове по отговор. Заменете с реални данни при бекенд.</p>
-                </div>
-                <div className="flex items-center gap-2 text-sm font-semibold">
-                  <span className="rounded-full bg-secondary px-3 py-1">Общо: {Object.values(pollResults).reduce((sum, n) => sum + n, 0)}</span>
-                </div>
-              </div>
-              <div className="mt-3 grid gap-2 sm:grid-cols-4">
-                {(["a", "b", "c", "d"] as const).map((key, idx) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between rounded-md border border-border bg-background/70 px-3 py-2 text-sm"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Badge variant="secondary" className="uppercase">{key}</Badge>
-                      <span className="font-semibold">{poll.options[idx] || `Отговор ${key.toUpperCase()}`}</span>
-                    </div>
-                    <span className="text-muted-foreground">{pollResults[key]}</span>
+            {questions.map((q) => (
+              <div key={q.id} className="rounded-lg border border-border p-4 space-y-4">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Заглавие</label>
+                    <Input value={q.title} onChange={(e) => updateQuestion(q.id, "title", e.target.value)} />
                   </div>
-                ))}
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Подзаглавие</label>
+                    <Input value={q.subtitle} onChange={(e) => updateQuestion(q.id, "subtitle", e.target.value)} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold">Code snippet</label>
+                  <Textarea rows={4} value={q.code} onChange={(e) => updateQuestion(q.id, "code", e.target.value)} />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold">Отговори</label>
+                  {q.options.map((opt, optIndex) => (
+                    <div key={opt.key} className="flex items-center gap-3">
+                      <Badge variant="secondary" className="uppercase">{opt.key}</Badge>
+                      <Input
+                        className="flex-grow"
+                        value={opt.text}
+                        onChange={(e) => updateOptionText(q.id, opt.key, e.target.value)}
+                      />
+                      <div className="flex items-center gap-2">
+                        <Switch
+                          checked={opt.correct}
+                          onCheckedChange={(checked) => setCorrectOption(q.id, opt.key, checked)}
+                        />
+                        <label className="text-xs text-muted-foreground">Верен</label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                 <div className="flex items-center gap-3">
+                  <Badge variant="outline">ID {q.id}</Badge>
+                  <Button variant="destructive" size="sm" onClick={() => deleteQuestion(q.id)}>
+                    Изтрий
+                  </Button>
+                </div>
               </div>
-            </div>
-            <p className="text-xs text-muted-foreground">* Тези настройки са локални за демо. Свържете ги към реално съхранение при нужда.</p>
+            ))}
           </CardContent>
         </Card>
 
@@ -443,6 +607,106 @@ const Admin = () => {
               </div>
             </div>
             <p className="text-xs text-muted-foreground">Настройките са локални. Свържете API за постоянство.</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle>Бързи връзки (Footer)</CardTitle>
+              <CardDescription>Управлявай бързите връзки в долната част на сайта.</CardDescription>
+            </div>
+            <Button size="sm" onClick={addQuickLink}>+ Нова връзка</Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {quickLinks.map((link) => (
+              <div key={link.id} className="rounded-lg border border-border p-4 space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Текст</label>
+                    <Input value={link.label} onChange={(e) => updateQuickLink(link.id, "label", e.target.value)} placeholder="Текст на връзката" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">URL</label>
+                    <Input value={link.href} onChange={(e) => updateQuickLink(link.id, "href", e.target.value)} placeholder="/example-page" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline">ID {link.id}</Badge>
+                  <Button variant="destructive" size="sm" onClick={() => deleteQuickLink(link.id)}>
+                    Изтрий
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle>Ресурси (Footer)</CardTitle>
+              <CardDescription>Управлявай връзките към ресурси в долната част на сайта.</CardDescription>
+            </div>
+            <Button size="sm" onClick={addResource}>+ Нов ресурс</Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {resources.map((link) => (
+              <div key={link.id} className="rounded-lg border border-border p-4 space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Текст</label>
+                    <Input value={link.label} onChange={(e) => updateResource(link.id, "label", e.target.value)} placeholder="Текст на връзката" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">URL</label>
+                    <Input value={link.href} onChange={(e) => updateResource(link.id, "href", e.target.value)} placeholder="https://example.com" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline">ID {link.id}</Badge>
+                  <Button variant="destructive" size="sm" onClick={() => deleteResource(link.id)}>
+                    Изтрий
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex items-start justify-between gap-4">
+            <div>
+              <CardTitle>Социални мрежи (Footer)</CardTitle>
+              <CardDescription>Управлявай връзките към социални мрежи в долната част на сайта.</CardDescription>
+            </div>
+            <Button size="sm" onClick={addSocialLink}>+ Нова връзка</Button>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {socialLinks.map((link) => (
+              <div key={link.id} className="rounded-lg border border-border p-4 space-y-3">
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Име на икона</label>
+                    <Input value={link.icon} onChange={(e) => updateSocialLink(link.id, "icon", e.target.value)} placeholder="Facebook, TikTok, etc." />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">Aria Label</label>
+                    <Input value={link.label} onChange={(e) => updateSocialLink(link.id, "label", e.target.value)} placeholder="Етикет (за достъпност)" />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-semibold">URL</label>
+                    <Input value={link.href} onChange={(e) => updateSocialLink(link.id, "href", e.target.value)} placeholder="https://facebook.com/example" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Badge variant="outline">ID {link.id}</Badge>
+                  <Button variant="destructive" size="sm" onClick={() => deleteSocialLink(link.id)}>
+                    Изтрий
+                  </Button>
+                </div>
+              </div>
+            ))}
           </CardContent>
         </Card>
       </main>
