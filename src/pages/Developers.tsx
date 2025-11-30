@@ -26,6 +26,12 @@ const developers = [
     avatar: "https://avatars.githubusercontent.com/u/184959849?v=4", // Using N1ki2K's avatar
     github: "https://github.com/N1ki2K",
   },
+  {
+    name: "Г-н Людмил Бонев",
+    role: "Ментор и Съветник",
+    avatar: "https://static.vecteezy.com/system/resources/previews/053/547/120/non_2x/generic-user-profile-avatar-for-online-platforms-and-social-media-vector.jpg", 
+    github: "/developers",
+  },
 ];
 // ==========================
 
