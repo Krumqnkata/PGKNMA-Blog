@@ -1,4 +1,4 @@
-import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe } from "lucide-react";
+import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe, Code } from "lucide-react";
 import type React from "react";
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -29,9 +29,6 @@ const Footer = () => {
     { label: "Училищен уебсайт", href: "https://pgknma.com/" },
     { label: "Политика за поверителност", href: "/privacy-policy" },
     { label: "Условия за ползване", href: "/terms-of-service" },
-    { label: "Разработили сайта", href: "/developers" },
-    
-
   ];
 
   const socialLinks = [
@@ -113,9 +110,16 @@ const Footer = () => {
 
         {/* Bottom Section */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
-          <p className="text-sm text-[hsl(var(--footer-foreground))]/80">
-            © 2025 ПГКНМА блог. Всички права запазени.
-          </p>
+          <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left">
+            <p className="text-sm text-[hsl(var(--footer-foreground))]/80">
+              © 2025 ПГКНМА блог. Всички права запазени.
+            </p>
+            <span className="hidden sm:inline text-[hsl(var(--footer-foreground))]/80">|</span>
+            <a href="/developers" className="flex items-center gap-2 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">
+              <Code className="h-4 w-4" />
+              <span>Разработка от учениците на ПГКНМА "Проф. Минко Балкански"</span>
+            </a>
+          </div>
 
           {/* Social Links */}
           <div className="flex items-center gap-4">
