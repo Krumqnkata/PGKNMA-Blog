@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . "/private/db.php";
-session_start();
+
 
 // --- CORS headers ---
 header('Content-Type: application/json');
@@ -9,40 +9,50 @@ header('Access-Control-Allow-Methods: POST, GET, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Credentials: true');
 
-// --- Handle preflight OPTIONS ---
+ini_set('session.cookie_httponly', 1);  // забранява достъп на JS до cookie
+ini_set('session.cookie_secure', 1);    // само по HTTPS (за dev може да се махне)
+ini_set('session.use_strict_mode', 1);  // предотвратява session fixation
+
+session_start();
+       // името на сесията
+session_regenerate_id(true);    
+
+// --- Handle OPTIONS ---
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
     exit();
 }
 
-// --- Only allow POST ---
+// --- Only POST allowed ---
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Method not allowed']);
+    echo json_encode(['success'=>false, 'error'=>'Method not allowed']);
     exit();
 }
 
-// --- Read input ---
+// --- Read JSON ---
 $input = json_decode(file_get_contents('php://input'), true);
-$username = $input['username'] ?? '';
-$password = $input['password'] ?? '';
+$username = trim($input['username'] ?? '');
+$password = trim($input['password'] ?? '');
 
-if (empty($username) || empty($password)) {
+if (!$username || !$password) {
     http_response_code(400);
-    echo json_encode(['success' => false, 'error' => 'Попълнете всички полета']);
+    echo json_encode(['success'=>false, 'error'=>'Попълнете всички полета']);
     exit();
 }
 
-// --- mysqli login ---
-$stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username = ? LIMIT 1");
+// --- Fetch user ---
+$stmt = $conn->prepare("SELECT id, username, password FROM users WHERE username=? LIMIT 1");
 $stmt->bind_param("s", $username);
 $stmt->execute();
 $result = $stmt->get_result();
 $user = $result->fetch_assoc();
 
-// --- проверка на парола ---
-if ($user && $password === $user['password']) { // ако е plain text
+if ($user && password_verify($password, $user['password'])) {
+    session_regenerate_id(true); // ново session ID
     $_SESSION['user_id'] = $user['id'];
+    $_SESSION['username'] = $user['username'];
+    $_SESSION['login_time'] = time();
     echo json_encode([
         'success' => true,
         'user' => [

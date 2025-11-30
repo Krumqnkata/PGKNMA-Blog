@@ -40,7 +40,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
       }
 
       if (data.success) {
-        navigate("/dashboard");
+        navigate("/");
         onOpenChange(false);
       } else {
         setError(data.error || "Невалиден вход");

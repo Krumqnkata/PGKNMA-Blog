@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Moon, Sun, Menu, X, Search, LogIn } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Moon, Sun, Menu, X, Search, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
@@ -9,12 +9,14 @@ import { useTheme } from "next-themes";
 import NotificationBanner from "@/components/NotificationBanner";
 import logoLight from "/logo-light.png";
 import logoDark from "/logo-dark.png";
+import { session, logout } from "@/components/api";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [user, setUser] = useState(null);
 
   const { theme, setTheme, systemTheme } = useTheme();
   const activeTheme = theme === "system" ? systemTheme : theme;
@@ -29,6 +31,22 @@ const Header = () => {
     { name: "Меме на седмицата", path: "/meme-of-the-week" },
     { name: "Контакт", path: "/contact" },
   ];
+
+  // --- Check session on mount ---
+  useEffect(() => {
+    const checkSession = async () => {
+      const data = await session();
+      if (data.session) setUser(data.user);
+      else setUser(null);
+    };
+    checkSession();
+  }, []);
+
+  // --- Logout handler ---
+  const handleLogout = async () => {
+    const res = await logout();
+    if (res.success) setUser(null);
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm">
@@ -55,37 +73,39 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          {/* Search */}
           <Button
             variant="ghost"
             size="icon"
-            className="hidden sm:inline-flex text-[hsl(var(--header-foreground))]"
+            className="hidden sm:inline-flex"
             onClick={() => setSearchOpen(true)}
           >
             <Search className="h-5 w-5" />
           </Button>
 
-          {/* Theme Toggle */}
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-            className="transition-transform hover:scale-105 text-[hsl(var(--header-foreground))]"
+            className="transition-transform hover:scale-105"
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
 
-          {/* Login (Desktop) */}
-          <Button
-            className="hidden gap-2 sm:inline-flex"
-            onClick={() => setLoginOpen(true)}
-          >
-            <LogIn className="h-4 w-4" />
-            Вход
-          </Button>
+          {/* Login / Logout Button */}
+          {user ? (
+            <Button className="hidden gap-2 sm:inline-flex" onClick={handleLogout}>
+              <LogOut className="h-4 w-4" />
+              Изход
+            </Button>
+          ) : (
+            <Button className="hidden gap-2 sm:inline-flex" onClick={() => setLoginOpen(true)}>
+              <LogIn className="h-4 w-4" />
+              Вход
+            </Button>
+          )}
 
-          {/* Mobile Menu Button */}
+          {/* Mobile menu toggle */}
           <Button
             variant="ghost"
             size="icon"
@@ -96,7 +116,7 @@ const Header = () => {
           </Button>
         </div>
       </nav>
-      
+
       <NotificationBanner />
 
       {/* Mobile Menu */}
@@ -115,25 +135,22 @@ const Header = () => {
               </NavLink>
             ))}
 
-            {/* Login (Mobile) */}
-            <Button
-              className="mt-4 w-full gap-2"
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setLoginOpen(true);
-              }}
-            >
-              <LogIn className="h-4 w-4" />
-              Вход
-            </Button>
+            {user ? (
+              <Button className="mt-4 w-full gap-2" onClick={handleLogout}>
+                <LogOut className="h-4 w-4" />
+                Изход
+              </Button>
+            ) : (
+              <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); setLoginOpen(true); }}>
+                <LogIn className="h-4 w-4" />
+                Вход
+              </Button>
+            )}
           </div>
         </div>
       )}
 
-      {/* Search Dialog */}
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-
-      {/* Login Dialog */}
       <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} onOpenRegister={() => setRegisterOpen(true)} />
       <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
     </header>
