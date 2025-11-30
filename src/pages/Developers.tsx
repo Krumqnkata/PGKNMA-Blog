@@ -1,6 +1,8 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import ParticlesComponent from "@/components/Particles";
+import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
@@ -29,10 +31,12 @@ const developers = [
 // ==========================
 
 const Developers = () => {
+  const { theme } = useTheme();
   return (
-    <div className="min-h-screen w-full flex flex-col">
+    <div className="min-h-screen w-full flex flex-col relative">
+      <ParticlesComponent id="tsparticles" theme={theme} />
       <Header />
-      <main className="flex-grow container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8 relative z-10">
         <h1 className="text-4xl font-bold text-center mb-12">
           Екипът зад проекта
         </h1>
