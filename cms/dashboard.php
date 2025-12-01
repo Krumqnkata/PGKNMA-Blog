@@ -51,7 +51,7 @@ if ($_SESSION['ip'] !== $_SERVER['REMOTE_ADDR']) {
             Администрация </a>
                             <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                                 <li>
-                                    <a class="dropdown-item" href="#">Потребители</a>
+                                    <a class="dropdown-item" href="users.php">Потребители</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" href="#">Настройки</a>
