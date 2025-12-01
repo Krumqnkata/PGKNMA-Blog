@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { login } from "@/components/api.jsx"; // api.js версия с fetch
+import { login } from "@/components/api.js"; // api.js версия с fetch
 
 const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const navigate = useNavigate();
