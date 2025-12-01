@@ -1,0 +1,105 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'], $_SESSION['session_key'])) {
+    header("Location: index.php");
+    exit();
+}
+
+// Проверка на IP
+if ($_SESSION['ip'] !== $_SERVER['REMOTE_ADDR']) {
+    session_unset();
+    session_destroy();
+    header("Location: index.php");
+    exit();
+}
+
+// (По-късно може да се добави проверка за валидност на ключа от база или кеш)
+
+?>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <title>Top navbar example · Bootstrap v5.0</title>
+        <!-- Bootstrap core CSS -->
+        <link href="templates/bootstrap_theme/bootstrap.css" rel="stylesheet" type="text/css">
+        <!-- Custom styles for this template -->
+        <link href="templates/navbar-top.css" rel="stylesheet">
+    </head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark mb-4">
+            <div class="container-fluid"><a class="navbar-brand" href="#"><img class="logo" src="templates/logo-dark.png"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarCollapse">
+                    <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item active"><a class="nav-link" aria-current="page" href="#">Начало</a>
+                        </li>
+                        <li class="nav-item"><a class="nav-link" href="#">Меме на седмицата</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Звънец</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Програма</a>
+                        </li>                         
+                        <!-- Dropdown за Администрация -->
+                        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Администрация </a>
+                            <ul class="dropdown-menu" aria-labelledby="adminDropdown">
+                                <li>
+                                    <a class="dropdown-item" href="users.php">Потребители</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">Настройки</a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="#">Роли и позволение</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <a class="nav-link" href="logout.php"><button class="btn btn-outline-danger" >изход</button></a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <main class="container">
+</main>
+        <script src="templates/assets/js/popper.min.js"></script>
+        <script src="templates/bootstrap/js/bootstrap.min.js"></script>
+        <h1>Здравей, <?php echo $_SESSION['username']; ?></h1><br>
+        <p>История на действията</p>
+        <div class="history">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Дата и час</th>
+                        <th>Действие</th>
+                        <th>Точен линк на промяната</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Data 1</td>
+                        <td>Data 2</td>
+                        <td>Data 3</td>
+                    </tr>
+                    <tr>
+                        <td>Data 4</td>
+                        <td>Data 5</td>
+                        <td>Data 6</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>
+
