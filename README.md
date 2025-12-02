@@ -1,15 +1,11 @@
-Hello куче
-
-Ето ти dummy data for dummies! ;)
-
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Dec 01, 2025 at 10:11 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Хост: 127.0.0.1
+-- Време на генериране:  2 дек 2025 в 07:13
+-- Версия на сървъра: 10.4.32-MariaDB
+-- Версия на PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -22,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `pgknma_blog`
+-- База данни: `pgknma_blog`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `permissions`
+-- Структура на таблица `permissions`
 --
 
 CREATE TABLE `permissions` (
@@ -39,7 +35,7 @@ CREATE TABLE `permissions` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Структура на таблица `users`
 --
 
 CREATE TABLE `users` (
@@ -49,28 +45,19 @@ CREATE TABLE `users` (
   `email` varchar(255) NOT NULL,
   `name` varchar(50) NOT NULL,
   `last_name` varchar(50) NOT NULL,
-  `class` enum('TEACHER','8','9','10','11','12') DEFAULT NULL,
+  `class` enum('TEACHER','STUDENT') DEFAULT NULL,
   `profile_picture` varchar(255) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `users`
+-- Схема на данните от таблица `users`
 --
 
 INSERT INTO `users` (`id`, `username`, `password`, `email`, `name`, `last_name`, `class`, `profile_picture`, `created_at`) VALUES
-(1, 'admin', '$2y$10$UtTK3I6F4HVQSGiFm6bv5OyLhA7oIUfjgJiOuwL.CkphOiH4hvkIC', 'admin@blog.pgknma.com', 'Admin', 'Admin', 'TEACHER', NULL, '2025-12-01 20:21:01'),
-(5, 'user1', '$2y$10$7VZcOPXbyYQyi/45nJmIjeAQNID/jVelWbsOYoWm2B9.y/pqNyC0O', 'user1@example.com', 'Ivan', 'Ivanov', '', NULL, '2025-12-01 20:57:57'),
-(6, 'user2', '$2y$10$hnrg1MZj.kktLXBGivUBle3V1CJ7WPbt/7szop/o9VqGFMYy8oyom', 'user2@example.com', 'Maria', 'Stoyanov', '', NULL, '2025-12-01 20:57:57'),
-(7, 'user3', '$2y$10$BwfuR..6KtB8AAYvToevluVGxTxIxCo8V45o3VHHdT48dyBQV3NWy', 'user3@example.com', 'Viktoria', 'Nikolov', '', NULL, '2025-12-01 20:57:58'),
-(8, 'user4', '$2y$10$XHe1jUvkkRzxWuc097Q6wehb4FePc7XVvZXh1yFZ/TWK3IFNasHja', 'user4@example.com', 'Dimitar', 'Ivanov', NULL, NULL, '2025-12-01 20:57:58'),
-(9, 'user5', '$2y$10$gZYU7nSg/OdS8Gx2SGyKNODpyNdHP8pRPEG7zka6Ql9SyDHCgez7q', 'user5@example.com', 'Maria', 'Stoyanov', '', NULL, '2025-12-01 20:57:58'),
-(10, 'user6', '$2y$10$QiH3YkA59eQ3xB9z2wvX9O5VygwK1HOVzAhsnIFq1WoP1WeodT3sW', 'user6@example.com', 'Dimitar', 'Ivanov', NULL, NULL, '2025-12-01 20:57:58'),
-(11, 'user7', '$2y$10$PYDNgKLCuyRKhSMsNWZTfusFgdnDgD3ognZBbW7gH5Ji0/viQVgoK', 'user7@example.com', 'Viktoria', 'Ivanov', '', NULL, '2025-12-01 20:57:58'),
-(12, 'user8', '$2y$10$oKsQgTjb2BdvrTfJ37/nX.DSikMDMgYi6jQlgex0rI46NELjBs/ha', 'user8@example.com', 'Nikola', 'Stoyanov', '', NULL, '2025-12-01 20:57:58'),
-(13, 'user9', '$2y$10$y6VXvx4DuKD8f5qeNmG2CuXbBqsD7E7Pj0w1ibazgqCEw9uESyeKy', 'user9@example.com', 'Elena', 'Dimitrov', '', NULL, '2025-12-01 20:57:58'),
-(14, 'user10', '$2y$10$7/LGm5aSiTr1BofqA17TLuYTKcgUAv4/QholJJnn7nyuWU1UI966W', 'user10@example.com', 'Viktoria', 'Ivanov', '', NULL, '2025-12-01 20:57:58'),
-(15, 'user11', '$2y$10$VuYkHob5zXDoeyc8vJ9wPeGLnTG6G21VLle9MXuDfsGzlLluTFlG6', 'user11@example.com', 'Dimitar', 'Popova', NULL, NULL, '2025-12-01 20:57:58'),
+(4, 'admin', '$2y$10$UtTK3I6F4HVQSGiFm6bv5OyLhA7oIUfjgJiOuwL.CkphOiH4hvkIC', 'admin@blog.pgknma.com', 'Admin', 'Admin', 'TEACHER', NULL, '2025-12-01 20:21:01'),
+(14, 'user10', '$2y$10$7/LGm5aSiTr1BofqA17TLuYTKcgUAv4/QholJJnn7nyuWU1UI966W', 'user10@example.com', 'Viktoria', 'Ivanov', 'STUDENT', NULL, '2025-12-01 20:57:58'),
+(15, 'user11', '$2y$10$VuYkHob5zXDoeyc8vJ9wPeGLnTG6G21VLle9MXuDfsGzlLluTFlG6', 'user11@example.com', 'Dimitar', 'Popova', 'STUDENT', NULL, '2025-12-01 20:57:58'),
 (16, 'user12', '$2y$10$vgOB9jp7axYWfPxjZfBtEOQRijhKFoBsKh/sErBaAq46/G24UdezO', 'user12@example.com', 'Sofia', 'Georgieva', '', NULL, '2025-12-01 20:57:58'),
 (17, 'user13', '$2y$10$eGT4xIL21ziOzZhhQKC1u.3lS2HsDGUPLixxupX3re39Niys8rqYe', 'user13@example.com', 'Petar', 'Georgieva', '', NULL, '2025-12-01 20:57:58'),
 (18, 'user14', '$2y$10$kFhXJqWqwd1LyphFmTeOAeH3YcUSbuA5XfFEAWweth1E9.gWAHnvq', 'user14@example.com', 'Maria', 'Popova', '', NULL, '2025-12-01 20:57:58'),
@@ -165,13 +152,13 @@ INSERT INTO `users` (`id`, `username`, `password`, `email`, `name`, `last_name`,
 --
 
 --
--- Indexes for table `permissions`
+-- Индекси за таблица `permissions`
 --
 ALTER TABLE `permissions`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `users`
+-- Индекси за таблица `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
@@ -197,4 +184,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
