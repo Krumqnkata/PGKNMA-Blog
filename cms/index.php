@@ -1,51 +1,61 @@
 <?php
-
-require_once __DIR__ . "\private\db.php";
-
 session_start();
+require_once __DIR__ . "/private/db.php";
 
 $errors = "";
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-
     $username = $_POST['username'] ?? '';
     $password = $_POST['password'] ?? '';
 
-    $stmt = $conn->prepare("SELECT id, password FROM users WHERE username = ?");
-    if(!$stmt){
-        die("Грешка с датабазата" . $conn->error);
-    }
-
-    $stmt->bind_param("s", $username);
-
-    $stmt->execute();
-
-    $result = $stmt->get_result();
-
-     if ($result->num_rows === 1) {
-        $row = $result->fetch_assoc();
-
-        // 4. Проверяваме паролата
-        if (password_verify($password, $row['password'])) {
-
-            // 5. Създаваме сесия
-            $_SESSION['user_id'] = $row['id'];
-            $_SESSION['username'] = $username;
-            $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
-            $_SESSION['session_key'] = bin2hex(random_bytes(32)); // уникален 64-символен ключ
-
-            header("Location: dashboard.php");
-            exit;
-
-        } else {
-            $errors = "Грешна парола!";
-        }
+    if (empty($username) || empty($password)) {
+        $errors = "Моля, попълнете потребителско име и парола.";
     } else {
-        $errors = "Няма такъв потребител!";
-    }
+        $stmt = $conn->prepare("SELECT id, password, class, is_active FROM users WHERE username = ?");
+        if (!$stmt) {
+            die("Грешка с базата данни: " . $conn->error);
+        }
+        
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    $stmt->close();
+        if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
+
+            if (password_verify($password, $row['password'])) {
+                
+                if ($row['is_active'] != 1) {
+                    $errors = "Вашият акаунт е деактивиран.";
+                } elseif ($row['class'] !== 'TEACHER' && $row['class'] !== 'ADMIN') {
+                    $errors = "Нямате достъп до административния панел.";
+                } else {
+                    // Update last_login timestamp
+                    $updateStmt = $conn->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
+                    $updateStmt->bind_param("i", $row['id']);
+                    $updateStmt->execute();
+                    $updateStmt->close();
+
+                    // Create session
+                    $_SESSION['user_id'] = $row['id'];
+                    $_SESSION['username'] = $username;
+                    $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
+                    $_SESSION['session_key'] = bin2hex(random_bytes(32));
+                    
+                    header("Location: dashboard.php");
+                    exit;
+                }
+
+            } else {
+                $errors = "Грешна парола!";
+            }
+        } else {
+            $errors = "Няма такъв потребител!";
+        }
+        $stmt->close();
     }
+    $conn->close();
+}
 ?>
 <!doctype html>
 <html lang="en">
@@ -65,12 +75,10 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         <input type="text" name="username" class="form-control" placeholder="Потребителско име" required autofocus>
         <input type="password" name="password" class="form-control" placeholder="Парола" required>
         <?php
-if (!empty($errors)){
-    echo "<div class='alert alert-danger'>
-        $errors
-    </div>";
-}
-?>
+        if (!empty($errors)){
+            echo "<div class='alert alert-danger'>$errors</div>";
+        }
+        ?>
 
         <button class="w-100 btn btn-lg btn-primary" type="submit">Вход</button>
         <p class="mt-5 mb-3 text-muted">© 2024-2025</p>
