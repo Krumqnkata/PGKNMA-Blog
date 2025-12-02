@@ -11,7 +11,6 @@ import BellSuggest from "./pages/BellSuggest";
 import WeeklyPoll from "./pages/WeeklyPoll";
 import MemeOfTheWeek from "./pages/MemeOfTheWeek";
 import NotFound from "./pages/NotFound";
-import Admin from "./pages/Admin";
 import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
@@ -35,7 +34,6 @@ const App = () => (
             <Route path="/bell-suggest" element={<BellSuggest />} />
             <Route path="/weekly-poll" element={<WeeklyPoll />} />
             <Route path="/meme-of-the-week" element={<MemeOfTheWeek />} />
-            <Route path="/admin" element={<Admin/>}/>
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />

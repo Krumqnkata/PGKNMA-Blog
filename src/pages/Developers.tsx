@@ -21,12 +21,6 @@ const developers = [
     github: "https://github.com/Krumqnkata",
   },
   {
-    name: "Никола",
-    role: "Front-end и Back-end Разработчик",
-    avatar: "https://avatars.githubusercontent.com/u/184959849?v=4", // Using N1ki2K's avatar
-    github: "https://github.com/N1ki2K",
-  },
-  {
     name: "Г-н Людмил Бонев",
     role: "Ментор и Съветник",
     avatar: "https://static.vecteezy.com/system/resources/previews/053/547/120/non_2x/generic-user-profile-avatar-for-online-platforms-and-social-media-vector.jpg", 
@@ -34,7 +28,7 @@ const developers = [
   },
     {
     name: "Г-н Ивайло Граматиков",
-    role: "Ментор и Съветник",
+    role: "Съветник",
     avatar: "https://avatars.githubusercontent.com/u/47442563?v=4", 
     github: "https://github.com/gramatikov88",
   },
