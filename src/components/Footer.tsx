@@ -108,6 +108,14 @@ const Footer = () => {
           </div>
         </div>
 
+        <div className="mt-8 lg:col-span-4">
+          <div className="flex items-center justify-center gap-6">
+            <img src="/global_school.png" alt="Глобално училище" className="max-h-16 w-auto object-contain" />
+            <img src="/innovative_school.png" alt="Иновативно училище" className="max-h-16 w-auto object-contain" />
+            <img src="/ZaednoVChas.png" alt="Заедно в час" className="max-h-16 w-auto object-contain" />
+          </div>
+        </div>
+
         {/* Bottom Section */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left">
