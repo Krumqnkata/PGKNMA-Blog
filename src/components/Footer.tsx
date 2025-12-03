@@ -109,7 +109,7 @@ const Footer = () => {
         </div>
 
         <div className="mt-8 lg:col-span-4">
-          <div className="flex items-center justify-center gap-6">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
             <img src="/global_school.png" alt="Глобално училище" className="max-h-16 w-auto object-contain" />
             <img src="/innovative_school.png" alt="Иновативно училище" className="max-h-16 w-auto object-contain" />
             <img src="/ZaednoVChas.png" alt="Заедно в час" className="max-h-16 w-auto object-contain" />
