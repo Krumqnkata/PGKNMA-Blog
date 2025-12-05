@@ -1,5 +1,6 @@
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe, Code } from "lucide-react";
 import type React from "react";
+import PageLoadStats from "./PageLoadStats";
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -142,6 +143,10 @@ const Footer = () => {
             </a>
             ))}
           </div>
+          </div>
+        
+        <div className="mt-6 border-t pt-4 ">
+          <PageLoadStats />
         </div>
       </div>
     </footer>

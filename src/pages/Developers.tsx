@@ -5,7 +5,7 @@ import ParticlesComponent from "@/components/Particles";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
+import CookieConsent from "@/components/CookieConsent";
 
 const developers = [
   {
@@ -79,6 +79,7 @@ const Developers = () => {
       </main>
       <Footer />
       <BackToTop />
+      <CookieConsent/>
     </div>
   );
 };

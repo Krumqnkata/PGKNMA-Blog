@@ -2,7 +2,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { ContactForm } from "@/components/ContactForm";
-
+import CookieConsent from "@/components/CookieConsent";
 const Contact = () => {
   return (
     <div className="min-h-screen w-full">
@@ -37,6 +37,7 @@ const Contact = () => {
       </main>
       <Footer />
       <BackToTop />
+      <CookieConsent/>
     </div>
   );
 };

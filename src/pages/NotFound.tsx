@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import CookieConsent from "@/components/CookieConsent";
 
 const NotFound = () => {
   const location = useLocation();
@@ -18,6 +19,7 @@ const NotFound = () => {
           Върнете се на началната страница
         </a>
       </div>
+      <CookieConsent/>
     </div>
   );
 };

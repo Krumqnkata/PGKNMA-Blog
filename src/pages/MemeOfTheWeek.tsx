@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import CookieConsent from "@/components/CookieConsent";
 
 // Mock data for memes. In a real application, this would come from a backend.
 const initialMemes = [
@@ -104,6 +105,7 @@ const MemeOfTheWeek: React.FC = () => {
       </main>
       <Footer />
       <BackToTop />
+      <CookieConsent/>
     </div>
   );
 };
