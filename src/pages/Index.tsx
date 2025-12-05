@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import ParticlesComponent from "@/components/Particles";
 import { useTheme } from "next-themes";
+import CookieConsent from "@/components/CookieConsent";
 
 const Index = () => {
   const { theme } = useTheme();
@@ -21,6 +22,7 @@ const Index = () => {
       </main>
       <Footer />
       <BackToTop />
+      <CookieConsent/>
     </div>
   );
 };
