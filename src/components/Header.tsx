@@ -33,21 +33,7 @@ const Header = () => {
   ];
 
   // --- Check session on mount ---
-  useEffect(() => {
-    const checkSession = async () => {
-      const data = await session();
-      if (data.session) setUser(data.user);
-      else setUser(null);
-    };
-    checkSession();
-  }, []);
-
-  // --- Logout handler ---
-  const handleLogout = async () => {
-    const res = await logout();
-    if (res.success) setUser(null);
-  };
-
+  
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm ">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -91,19 +77,10 @@ const Header = () => {
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
-
-          {/* Login / Logout Button */}
-          {user ? (
-            <Button className="hidden gap-2 sm:inline-flex" onClick={handleLogout}>
-              <LogOut className="h-4 w-4" />
-              Изход
-            </Button>
-          ) : (
             <Button className="hidden gap-2 sm:inline-flex" onClick={() => setLoginOpen(true)}>
               <LogIn className="h-4 w-4" />
               Вход
             </Button>
-          )}
 
           {/* Mobile menu toggle */}
           <Button
@@ -135,17 +112,10 @@ const Header = () => {
               </NavLink>
             ))}
 
-            {user ? (
-              <Button className="mt-4 w-full gap-2" onClick={handleLogout}>
-                <LogOut className="h-4 w-4" />
-                Изход
-              </Button>
-            ) : (
               <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); setLoginOpen(true); }}>
                 <LogIn className="h-4 w-4" />
                 Вход
               </Button>
-            )}
           </div>
         </div>
       )}
