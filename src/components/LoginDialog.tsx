@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -9,10 +8,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { login } from "@/components/api.js"; // api.js версия с fetch
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
-  const navigate = useNavigate();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -23,28 +22,8 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
     setLoading(true);
 
     try {
-      const result = await login(username, password);
-
-      // Ако login връща текст вместо JSON, опитай parse
-      let data;
-      if (typeof result === "string") {
-        try {
-          data = JSON.parse(result);
-        } catch {
-          console.error("Failed to parse server response:", result);
-          setError("Грешка при връзка със сървъра");
-          return;
-        }
-      } else {
-        data = result;
-      }
-
-      if (data.success) {
-        navigate("/");
-        onOpenChange(false);
-      } else {
-        setError(data.error || "Невалиден вход");
-      }
+      await login({ username, password });
+      onOpenChange(false); // Close dialog on success
     } catch (err) {
       console.error("Login failed:", err);
       setError(err?.message || "Грешка при връзка със сървъра");

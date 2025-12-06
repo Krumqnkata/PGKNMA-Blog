@@ -9,14 +9,20 @@ import { useTheme } from "next-themes";
 import NotificationBanner from "@/components/NotificationBanner";
 import logoLight from "/logo-light.png";
 import logoDark from "/logo-dark.png";
-import { session, logout } from "@/components/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
-  const [user, setUser] = useState(null);
+  const { 
+    isAuthenticated, 
+    user, 
+    logout,
+    loginDialogOpen,
+    openLoginDialog,
+    closeLoginDialog
+  } = useAuth();
 
   const { theme, setTheme, systemTheme } = useTheme();
   const activeTheme = theme === "system" ? systemTheme : theme;
@@ -77,10 +83,21 @@ const Header = () => {
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
-            <Button className="hidden gap-2 sm:inline-flex" onClick={() => setLoginOpen(true)}>
+          
+          {isAuthenticated ? (
+            <>
+              <span className="hidden sm:inline-block text-sm font-medium">Здравей, {user?.username}</span>
+              <Button className="hidden gap-2 sm:inline-flex" onClick={logout}>
+                <LogOut className="h-4 w-4" />
+                Изход
+              </Button>
+            </>
+          ) : (
+            <Button className="hidden gap-2 sm:inline-flex" onClick={openLoginDialog}>
               <LogIn className="h-4 w-4" />
               Вход
             </Button>
+          )}
 
           {/* Mobile menu toggle */}
           <Button
@@ -112,16 +129,23 @@ const Header = () => {
               </NavLink>
             ))}
 
-              <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); setLoginOpen(true); }}>
+            {isAuthenticated ? (
+              <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); logout(); }}>
+                <LogOut className="h-4 w-4" />
+                Изход
+              </Button>
+            ) : (
+              <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); openLoginDialog(); }}>
                 <LogIn className="h-4 w-4" />
                 Вход
               </Button>
+            )}
           </div>
         </div>
       )}
 
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
-      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} onOpenRegister={() => setRegisterOpen(true)} />
+      <LoginDialog open={loginDialogOpen} onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />
       <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
     </header>
   );
