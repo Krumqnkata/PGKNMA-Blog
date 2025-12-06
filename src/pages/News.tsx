@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, User, Loader2, Tag } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
+import { Link } from "react-router-dom";
 import { getPosts, Post } from '@/lib/api';
 
 const News = () => {
@@ -95,44 +96,42 @@ const News = () => {
                         ) : (
                             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                                 {filteredPosts.map((article) => (
-                                    <Card
-                                        key={article.id}
-                                        className="group overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
-                                    >
-                                        <div className="aspect-video w-full overflow-hidden bg-muted">
-                                            <img
-                                                src={article.banner || "/placeholder.svg"} 
-                                                alt={article.title}
-                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                            />
-                                        </div>
+                                    <Link to={`/post/${article.id}`} key={article.id} className="group block">
+                                        <Card
+                                            className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full"
+                                        >
+                                            <div className="aspect-video w-full overflow-hidden bg-muted">
+                                                <img
+                                                    src={article.banner || "/placeholder.svg"} 
+                                                    alt={article.title}
+                                                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                />
+                                            </div>
 
-                                        <div className="p-6">
-                                            <Badge variant="secondary" className="mb-3 text-sm font-medium">
-                                                <Tag className="h-3 w-3 mr-1.5" />
-                                                {article.category_name || "Uncategorized"}
-                                            </Badge>
-                                            <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary">
-                                                {article.title}
-                                            </h3>
-                                            <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
-                                                {article.hook}
-                                            </p>
-                                            <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                                <div className="flex items-center gap-1">
-                                                    <User className="h-3 w-3" />
-                                                    <span>{article.author_username || `User ID: ${article.author}`}</span>
-                                                </div>
-                                                <div className="flex items-center gap-1">
-                                                    <Calendar className="h-3 w-3" />
-                                                    <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
+                                            <div className="p-6">
+                                                <Badge variant="secondary" className="mb-3 text-sm font-medium">
+                                                    <Tag className="h-3 w-3 mr-1.5" />
+                                                    {article.category_name || "Uncategorized"}
+                                                </Badge>
+                                                <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary">
+                                                    {article.title}
+                                                </h3>
+                                                <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
+                                                    {article.hook}
+                                                </p>
+                                                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                                    <div className="flex items-center gap-1">
+                                                        <User className="h-3 w-3" />
+                                                        <span>{article.author_username || `User ID: ${article.author}`}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-1">
+                                                        <Calendar className="h-3 w-3" />
+                                                        <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
+                                                    </div>
                                                 </div>
                                             </div>
-                                             <Button variant="link" className="mt-4 h-auto p-0 text-primary">
-                                                 Прочети още →
-                                             </Button>
-                                        </div>
-                                    </Card>
+                                        </Card>
+                                    </Link>
                                 ))}
                             </div>
                         )}
