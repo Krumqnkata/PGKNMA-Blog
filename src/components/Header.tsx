@@ -7,7 +7,6 @@ import LoginDialog from "@/components/LoginDialog";
 import RegisterDialog from "@/components/RegisterDialog";
 import { useTheme } from "next-themes";
 import NotificationBanner from "@/components/NotificationBanner";
-import logoLight from "/logo-light.png";
 import logoDark from "/logo-dark.png";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -25,8 +24,7 @@ const Header = () => {
   } = useAuth();
 
   const { theme, setTheme, systemTheme } = useTheme();
-  const activeTheme = theme === "system" ? systemTheme : theme;
-  const logo = activeTheme === "dark" ? logoDark : logoLight;
+  const logo = logoDark;
 
   const navLinks = [
     { name: "Начало", path: "/" },

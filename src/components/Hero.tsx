@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Calendar, Newspaper } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative overflow-hidden border-b border-border">
       {/* Background Gradient */}
@@ -29,7 +31,7 @@ const Hero = () => {
 
           {/* CTAs */}
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" className="gap-2 px-8 shadow-lg transition-transform hover:scale-105">
+            <Button size="lg" className="gap-2 px-8 shadow-lg transition-transform hover:scale-105" onClick={() => navigate("/news")}>
               <Newspaper className="h-5 w-5" />
               Последни Новини
             </Button>
@@ -37,6 +39,7 @@ const Hero = () => {
               size="lg"
               variant="outline"
               className="gap-2 px-8 transition-transform hover:scale-105"
+              onClick={() => navigate("/events")}
             >
               <Calendar className="h-5 w-5" />
               Училищен Календар

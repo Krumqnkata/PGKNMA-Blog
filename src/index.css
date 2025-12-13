@@ -9,16 +9,16 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Light Mode Colors */
-    --background: 12 50% 92%;
+    --background: 20 30% 92%;         /* По-малко жълтеникаво бежово */
     --foreground: 183 49% 18%;
 
-    --card: 12 40% 96%;
+    --card: 0 0% 98%;               /* Светло сиво */
     --card-foreground: 183 49% 18%;
 
     --popover: 12 40% 96%;
     --popover-foreground: 183 49% 18%;
 
-    --primary: 24 90% 75%;
+    --primary: 176 50% 45%;         /* Тюркоаз */
     --primary-foreground: 183 49% 18%;
 
     --secondary: 12 35% 88%;
@@ -55,7 +55,7 @@ All colors MUST be HSL.
 
     --sidebar-ring: 24 90% 75%;
 
-    --header-background: 24 90% 75%;
+    --header-background: 176 50% 40%; /* Тюркоазен header */
     --header-foreground: 183 49% 18%;
     --footer-background: 176 30% 37%;
     --footer-foreground: 12 50% 92%;

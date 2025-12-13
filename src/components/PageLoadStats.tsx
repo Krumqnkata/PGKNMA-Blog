@@ -23,9 +23,9 @@ const PageLoadStats = () => {
   if (loadTime === null) return null;
 
   return (
-    <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+    <div className="flex items-center justify-center gap-2 text-xs text-foreground">
       <Zap className="h-3 w-3" />
-      <span>Page loaded in {loadTime}ms</span>
+      <span>Страницата зареди за {loadTime}ms</span>
     </div>
   );
 };
