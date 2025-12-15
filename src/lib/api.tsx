@@ -138,7 +138,7 @@ export async function getComments(postId: string): Promise<Comment[] | null> {
 
 export async function addComment(postId: string, content: string): Promise<Comment | null> {
     try {
-        const response = await apiRequest(`/api/posts/${postId}/comments/add`, {
+        const response = await apiRequest(`/api/posts/${postId}/comments/add/`, {
             method: 'POST',
             body: JSON.stringify({ content }),
         });
