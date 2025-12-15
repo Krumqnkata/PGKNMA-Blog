@@ -68,7 +68,7 @@ const Post = () => {
                                 </div>
                             </div>
 
-                            <div className="prose prose-lg max-w-none">
+                            <div className="prose prose-lg max-w-none break-words">
                                 <ReactMarkdown 
                                     remarkPlugins={[remarkGfm]}
                                 >
