@@ -64,11 +64,11 @@ const BellSongForm = () => {
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Име и клас</Label>
+                  <Label htmlFor="name">Име</Label>
                   <Input
                     id="name"
-                    placeholder="Мария Петрова, 10Б"
-                    {...register("name", { required: "Моля, въведете име или клас." })}
+                    placeholder="Мария Петрова"
+                    {...register("name", { required: "Моля, въведете име." })}
                   />
                   {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
                 </div>
