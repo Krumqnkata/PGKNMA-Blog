@@ -6,26 +6,10 @@ const Events = () => {
     {
       id: 1,
       day: "25",
-      month: "NOV",
-      title: "Parent-Teacher Conference",
-      time: "3:00 PM - 6:00 PM",
-      location: "Main Auditorium",
-    },
-    {
-      id: 2,
-      day: "02",
-      month: "DEC",
-      title: "Winter Concert",
-      time: "7:00 PM - 9:00 PM",
-      location: "School Theater",
-    },
-    {
-      id: 3,
-      day: "10",
-      month: "DEC",
-      title: "Holiday Break Begins",
-      time: "Last Day of Classes",
-      location: "School Campus",
+      month: "ДЕКЕМВРИ",
+      title: "Родителска среща",
+      time: "14:30",
+      location: "ПГКНМА 'Проф. Минко Балкански'",
     },
   ];
 
@@ -33,9 +17,9 @@ const Events = () => {
     <section className="border-b border-border py-16 sm:py-20">
       <div className="container mx-auto px-4">
         <div className="mb-12 text-center">
-          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Upcoming Events</h2>
+          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Календар на училището</h2>
           <p className="text-lg text-muted-foreground">
-            Mark your calendars for these important dates
+            Календари на събития, ваканции и важни дати за училището.
           </p>
         </div>
 
@@ -77,10 +61,10 @@ const Events = () => {
         {/* View All Events Link */}
         <div className="mt-10 text-center">
           <a
-            href="#"
+            href="/events"
             className="inline-flex items-center gap-2 text-lg font-medium text-primary transition-all hover:gap-3"
           >
-            View Full Calendar
+            Вижте целия календар
             <Calendar className="h-5 w-5" />
           </a>
         </div>
