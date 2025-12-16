@@ -31,7 +31,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 }
             } catch (err) {
                 // Тази грешка е логната, но CORS вече не би трябвало да я предизвиква
-                setError('Failed to load comments.');
+                setError('Грешка при зареждане на коментарите.');
                 console.error(err);
             } finally {
                 setLoading(false);
@@ -59,7 +59,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 setNewComment('');
             }
         } catch (err) {
-            setError('Failed to submit comment. Please try again.');
+            setError('Грешква при добавяне на коментара.');
             console.error(err);
         } finally {
             setSubmitting(false);
@@ -70,7 +70,7 @@ const Comments = ({ postId }: CommentsProps) => {
         <div className="mt-12 pt-8 border-t">
             <h2 className="text-2xl font-bold mb-6 flex items-center">
                 <MessageSquare className="h-6 w-6 mr-3" />
-                Comments
+                Коментари
             </h2>
 
             {isAuthenticated ? (
@@ -91,7 +91,7 @@ const Comments = ({ postId }: CommentsProps) => {
                             <div className="flex justify-end">
                                 <Button onClick={handleSubmit} disabled={submitting || !newComment.trim()}>
                                     {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Submit
+                                    Изпрати коментар
                                 </Button>
                             </div>
                         </div>
@@ -100,17 +100,17 @@ const Comments = ({ postId }: CommentsProps) => {
                 </div>
             ) : (
                 <p className="text-muted-foreground mb-8">
-                    You must be <a href="#" onClick={(e) => { e.preventDefault(); openLoginDialog(); }} className="text-primary hover:underline">logged in</a> to post a comment.
+                    Трябва <a href="#" onClick={(e) => { e.preventDefault(); openLoginDialog(); }} className="text-primary hover:underline">да сте логнат</a> за да публикувате коментар.
                 </p>
             )}
 
             {loading ? (
                 <div className="text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                    <p className="mt-2 text-muted-foreground">Loading comments...</p>
+                    <p className="mt-2 text-muted-foreground">Зареждане на коментари...</p>
                 </div>
             ) : comments.length === 0 ? (
-                <p className="text-muted-foreground">No comments yet.</p>
+                <p className="text-muted-foreground">Все още няма коментари.</p>
             ) : (
                 <div className="space-y-6">
                     {comments.map((comment) => (
