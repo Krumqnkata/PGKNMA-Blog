@@ -53,20 +53,30 @@ const originalFetch = window.fetch;
  */
 export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise<Response> => {
     
-    // Първи опит за заявка с текущия Access Token
+    // Подготвяме хедърите
+    const headers: HeadersInit = {
+        ...init?.headers,
+    };
+    const token = getAccessToken();
+
+    // Добавяме Authorization хедър само ако има токен
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    // Добавяме Content-Type само ако има тяло на заявката
+    if (init?.body) {
+        headers['Content-Type'] = 'application/json';
+    }
+
+    // Първи опит за заявка
     let response = await originalFetch(input, {
         ...init,
-        headers: {
-            ...init?.headers,
-            // ❗ Важно: Взема токена при всяка заявка
-            'Authorization': `Bearer ${getAccessToken()}`,
-            // ❗ Важно: Указва, че изпращаме JSON
-            'Content-Type': 'application/json' 
-        }
+        headers,
     });
 
     // --- Обработка на 401 Unauthorized ---
-    if (response.status === 401) {
+    if (response.status === 401 && token) { // Само ако сме изпратили токен и е бил невалиден
         
         // 1. Ако вече се опреснява, добавя заявката към опашката
         if (isRefreshing) {
@@ -74,14 +84,15 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
                 failedQueue.push({
                     resolve: () => {
                         // Повтаря оригиналната заявка с новия токен
-                        const newInit = {
-                            ...init,
-                            headers: {
-                                ...init?.headers,
-                                'Authorization': `Bearer ${getAccessToken()}`,
-                                'Content-Type': 'application/json'
-                            }
-                        };
+                        const newHeaders: HeadersInit = { ...init?.headers };
+                        const newToken = getAccessToken();
+                        if (newToken) {
+                            newHeaders['Authorization'] = `Bearer ${newToken}`;
+                        }
+                        if (init?.body) {
+                            newHeaders['Content-Type'] = 'application/json';
+                        }
+                        const newInit = { ...init, headers: newHeaders };
                         resolve(originalFetch(input, newInit));
                     },
                     reject
@@ -97,14 +108,14 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
             if (!refreshToken) throw new Error("No refresh token available");
 
             // Изпращане на заявка за опресняване
-            const refreshResponse = await originalFetch('http://localhost:8000/api/token/refresh/', {
+            const refreshResponse = await originalFetch('http://localhost:8000/api/auth/token/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refreshToken }),
             });
 
             if (!refreshResponse.ok) {
-                // Ако опресняването е неуспешно (напр. refresh токенът е изтекъл), изчистваме всичко
+                // Ако опресняването е неуспешно, изчистваме всичко
                 clearAuth();
                 throw new Error('Failed to refresh token');
             }
@@ -115,13 +126,16 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
             processQueue(null, access); // Изпълнява опашката с новия токен
 
             // Повторно изпълнение на оригиналната заявка с новия Access Token
+            const finalHeaders: HeadersInit = { ...init?.headers };
+            if (access) {
+                finalHeaders['Authorization'] = `Bearer ${access}`;
+            }
+            if (init?.body) {
+                finalHeaders['Content-Type'] = 'application/json';
+            }
             response = await originalFetch(input, {
                 ...init,
-                headers: {
-                    ...init?.headers,
-                    'Authorization': `Bearer ${access}`,
-                    'Content-Type': 'application/json'
-                }
+                headers: finalHeaders,
             });
 
         } catch (error) {
