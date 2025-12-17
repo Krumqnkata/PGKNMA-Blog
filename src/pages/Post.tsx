@@ -8,8 +8,6 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, User, Loader2, Tag } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import Comments from '@/components/Comments';
 
 const Post = () => {
