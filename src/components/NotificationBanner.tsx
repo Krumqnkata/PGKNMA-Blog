@@ -2,11 +2,24 @@ import React from 'react';
 import { useNotification } from '@/contexts/NotificationContext';
 
 const NotificationBanner: React.FC = () => {
-  const { notifications, notificationsEnabled } = useNotification();
+  const { notifications, notificationsEnabled, isLoading, isError, error } = useNotification();
 
-  const enabledNotifications = notifications.filter(n => n.enabled);
+  if (!notificationsEnabled || isLoading) { 
+    return null;
+  }
 
-  if (!notificationsEnabled || enabledNotifications.length === 0) {
+  if (isError) { 
+    console.error("Error fetching notifications:", error);
+    return (
+        <div className="bg-destructive text-destructive-foreground text-center py-2">
+            <p className="text-sm font-medium">Грешка при зареждане на известия.</p>
+        </div>
+    );
+  }
+
+  const enabledNotifications = notifications ? notifications.filter(n => n.enabled) : [];
+
+  if (enabledNotifications.length === 0) {
     return null;
   }
 

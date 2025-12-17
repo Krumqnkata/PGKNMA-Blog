@@ -1,64 +1,38 @@
 import React, { createContext, useState, useContext, ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { getNotifications, Notification } from '@/lib/api'; // Import getNotifications and Notification interface
 
-export interface Notification {
-  id: number;
-  text: string;
-  enabled: boolean;
-}
 
 interface NotificationContextType {
-  notifications: Notification[];
-  notificationsEnabled: boolean;
-  addNotification: () => void;
-  updateNotificationText: (id: number, text: string) => void;
-  toggleNotification: (id: number) => void;
-  deleteNotification: (id: number) => void;
+  notifications: Notification[] | undefined; // Can be undefined while loading
+  notificationsEnabled: boolean; // Local flag to enable/disable banner display
+  isLoading: boolean;
+  isError: boolean;
+  error: Error | null;
   setNotificationsEnabled: (enabled: boolean) => void;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export const NotificationProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    { id: 1, text: 'Това е уведомление #1 по подразбиране.', enabled: true },
-    { id: 2, text: 'Това е уведомление #2 по подразбиране.', enabled: true },
-  ]);
+  // Use useQuery to fetch notifications from the API
+  const { data: notifications, isLoading, isError, error } = useQuery<Notification[]>({
+    queryKey: ['notifications'],
+    queryFn: getNotifications,
+    refetchInterval: 60 * 1000, // Refetch every minute to keep fresh
+  });
+
+  // Keep notificationsEnabled as a local flag for the banner if desired
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(true);
-
-  const addNotification = () => {
-    const newNotification: Notification = {
-      id: Date.now(),
-      text: '',
-      enabled: true,
-    };
-    setNotifications(prev => [...prev, newNotification]);
-  };
-
-  const updateNotificationText = (id: number, text: string) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, text } : n)
-    );
-  };
-
-  const toggleNotification = (id: number) => {
-    setNotifications(prev => 
-      prev.map(n => n.id === id ? { ...n, enabled: !n.enabled } : n)
-    );
-  };
-
-  const deleteNotification = (id: number) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-  };
 
   return (
     <NotificationContext.Provider 
       value={{ 
         notifications, 
         notificationsEnabled,
-        addNotification, 
-        updateNotificationText, 
-        toggleNotification, 
-        deleteNotification,
+        isLoading,
+        isError,
+        error,
         setNotificationsEnabled
       }}
     >

@@ -157,3 +157,128 @@ export async function addComment(postId: string, content: string): Promise<Comme
         throw error;
     }
 }
+
+
+export interface PollOption {
+    id: number;
+    key: "a" | "b" | "c" | "d";
+    text: string;
+}
+
+export interface PollQuestion {
+    id: number;
+    title: string;
+    subtitle: string;
+    code: string;
+    options: PollOption[];
+}
+
+export interface UserPollStatus {
+    is_locked: boolean;
+    unlocks_at: string | null;
+    question: PollQuestion | null;
+    last_result: {
+        questionId: number;
+        selected: string; // 'a', 'b', etc.
+        correct: string;
+    } | null;
+}
+
+export async function getWeeklyPollStatus(): Promise<UserPollStatus> {
+    const response = await apiRequest(`/api/poll/status/`, { method: 'GET' });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch poll status' }));
+        console.error(`HTTP error fetching poll status: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not load weekly poll.');
+    }
+
+    return response.json();
+}
+
+export async function submitWeeklyPollAnswer(questionId: number, selectedOptionId: number): Promise<UserPollStatus> {
+    const response = await apiRequest(`/api/poll/submit/`, {
+        method: 'POST',
+        body: JSON.stringify({ question: questionId, selected_option: selectedOptionId }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to submit answer' }));
+        console.error(`HTTP error submitting poll answer: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not submit your answer.');
+    }
+
+    return response.json();
+}
+
+
+export interface LeaderboardEntry {
+    id: number;
+    username: string;
+    correct_answers: number;
+}
+
+export interface RecentParticipant {
+    id: number;
+    username: string;
+    last_answered: string;
+}
+
+export interface PollStatistics {
+    leaderboard: LeaderboardEntry[];
+    recent_participants: RecentParticipant[];
+}
+
+export async function getPollStatistics(): Promise<PollStatistics> {
+    const response = await apiRequest(`/api/poll/statistics/`, { method: 'GET' });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch poll statistics' }));
+        console.error(`HTTP error fetching poll statistics: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not load poll statistics.');
+    }
+
+    return response.json();
+}
+
+
+export interface ContactFormData {
+    name: string;
+    email: string;
+    message: string;
+}
+
+export async function submitContactForm(data: ContactFormData): Promise<{ detail: string }> {
+    const response = await apiRequest(`/api/contact/`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to submit contact form' }));
+        console.error(`HTTP error submitting contact form: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not submit your message.');
+    }
+
+    return response.json();
+}
+
+
+export interface Notification {
+  id: number;
+  text: string;
+  enabled: boolean;
+  created_at: string;
+}
+
+export async function getNotifications(): Promise<Notification[]> {
+    const response = await apiRequest(`/api/notifications/`, { method: 'GET' });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch notifications' }));
+        console.error(`HTTP error fetching notifications: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not load notifications.');
+    }
+
+    return response.json();
+}

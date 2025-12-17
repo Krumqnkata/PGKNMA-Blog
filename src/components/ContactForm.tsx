@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useMutation } from "@tanstack/react-query";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +17,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
+import { submitContactForm, ContactFormData } from "@/lib/api";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -39,15 +41,27 @@ export function ContactForm() {
     },
   });
 
+  const { mutate, isPending } = useMutation({
+    mutationFn: (data: ContactFormData) => submitContactForm(data),
+    onSuccess: (response) => {
+      toast({
+        title: "Успех!",
+        description: response.detail,
+        variant: "default",
+      });
+      form.reset(); // Clear form on success
+    },
+    onError: (error) => {
+      toast({
+        title: "Грешка при изпращане",
+        description: error.message || "Възникна грешка при изпращане на съобщението.",
+        variant: "destructive",
+      });
+    },
+  });
+
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    toast({
-      title: "Получихме вашето съобщение:",
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+    mutate(data); // Call the mutation function
   }
 
   return (
@@ -96,7 +110,9 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit">Изпращане</Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Изпращане..." : "Изпращане"}
+        </Button>
       </form>
     </Form>
   );
