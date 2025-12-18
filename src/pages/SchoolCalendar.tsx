@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
@@ -7,108 +7,71 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Users } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
-const upcomingEvents = [
-  {
-    id: 1,
-    title: "Parent-Teacher Conferences",
-    date: "2024-03-20",
-    time: "3:00 PM - 8:00 PM",
-    location: "All Classrooms",
-    category: "Academic",
-    description: "Meet with your child's teachers to discuss their progress and academic goals for the semester.",
-    attendees: "Parents & Teachers",
-  },
-  {
-    id: 2,
-    title: "Spring Sports Tryouts",
-    date: "2024-03-22",
-    time: "3:30 PM - 5:30 PM",
-    location: "Athletic Fields & Gymnasium",
-    category: "Sports",
-    description: "Tryouts for baseball, softball, track & field, and tennis teams. All interested students welcome!",
-    attendees: "Students",
-  },
-  {
-    id: 3,
-    title: "Book Fair Week",
-    date: "2024-03-25",
-    time: "All Day",
-    location: "School Library",
-    category: "Academic",
-    description: "Annual book fair featuring hundreds of titles for all ages. Special author visit on Wednesday!",
-    attendees: "All Students & Families",
-  },
-  {
-    id: 4,
-    title: "School Musical Performance",
-    date: "2024-03-28",
-    time: "7:00 PM",
-    location: "Main Auditorium",
-    category: "Arts",
-    description: "Opening night of our spring musical 'The Sound of Music'. Tickets available at the door.",
-    attendees: "Community",
-  },
-  {
-    id: 5,
-    title: "STEM Fair",
-    date: "2024-04-05",
-    time: "9:00 AM - 3:00 PM",
-    location: "Gymnasium & Cafeteria",
-    category: "Academic",
-    description: "Students showcase their science, technology, engineering, and math projects. Open to the public.",
-    attendees: "All Students & Community",
-  },
-  {
-    id: 6,
-    title: "Spring Break",
-    date: "2024-04-08",
-    time: "All Week",
-    location: "No School",
-    category: "Holiday",
-    description: "School closed for spring break. Classes resume April 15th. Enjoy your time off!",
-    attendees: "All Students & Staff",
-  },
-  {
-    id: 7,
-    title: "College Prep Workshop",
-    date: "2024-04-12",
-    time: "6:00 PM - 8:00 PM",
-    location: "Auditorium",
-    category: "Academic",
-    description: "For juniors and seniors: Learn about the college application process, financial aid, and scholarships.",
-    attendees: "Students & Parents",
-  },
-  {
-    id: 8,
-    title: "Earth Day Celebration",
-    date: "2024-04-22",
-    time: "10:00 AM - 2:00 PM",
-    location: "School Grounds",
-    category: "Community",
-    description: "Tree planting, recycling drive, and environmental education activities for all grade levels.",
-    attendees: "All Students",
-  },
-];
-
-const categories = ["All", "Academic", "Sports", "Arts", "Community", "Holiday"];
+import { useQuery } from "@tanstack/react-query"; // New import
+import { getEvents, Event } from "@/lib/api"; // New import
+import { format, parseISO } from 'date-fns'; // For date formatting
 
 const SchoolCalendar = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const filteredEvents = upcomingEvents.filter(
-    (event) => selectedCategory === "All" || event.category === selectedCategory
-  );
+  const { data: events, isLoading, isError, error } = useQuery<Event[]>({
+    queryKey: ["events"],
+    queryFn: getEvents,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  // Derive categories dynamically from fetched events
+  const categories = useMemo(() => {
+    if (!events) return ["All"];
+    const uniqueCategories = Array.from(new Set(events.map((event) => event.category)));
+    return ["All", ...uniqueCategories];
+  }, [events]);
+
+  const filteredEvents = useMemo(() => {
+    if (!events) return [];
+    return events.filter(
+      (event) => selectedCategory === "All" || event.category === selectedCategory
+    );
+  }, [events, selectedCategory]);
 
   const getCategoryColor = (category: string) => {
-    const colors = {
+    const colors: { [key: string]: string } = {
       Academic: "bg-blue-500/10 text-blue-500 border-blue-500/20",
       Sports: "bg-green-500/10 text-green-500 border-green-500/20",
       Arts: "bg-purple-500/10 text-purple-500 border-purple-500/20",
       Community: "bg-orange-500/10 text-orange-500 border-orange-500/20",
       Holiday: "bg-red-500/10 text-red-500 border-red-500/20",
     };
-    return colors[category as keyof typeof colors] || "bg-muted text-muted-foreground";
+    return colors[category] || "bg-muted text-muted-foreground";
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen w-full">
+        <Header />
+        <main className="py-16 text-center">
+          <p className="text-lg text-muted-foreground">Зареждане на събития...</p>
+        </main>
+        <Footer />
+        <BackToTop />
+        <CookieConsent />
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen w-full">
+        <Header />
+        <main className="py-16 text-center">
+          <p className="text-lg text-destructive">Грешка при зареждане на събития: {error?.message}</p>
+        </main>
+        <Footer />
+        <BackToTop />
+        <CookieConsent />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen w-full">
@@ -147,7 +110,7 @@ const SchoolCalendar = () => {
           <div className="container mx-auto px-4">
             {filteredEvents.length === 0 ? (
               <div className="py-12 text-center">
-                <p className="text-lg text-muted-foreground">No events found in this category.</p>
+                <p className="text-lg text-muted-foreground">Няма намерени събития в тази категория.</p>
               </div>
             ) : (
               <div className="space-y-6">
@@ -161,10 +124,10 @@ const SchoolCalendar = () => {
                       <div className="flex-shrink-0">
                         <div className="flex h-24 w-24 flex-col items-center justify-center rounded-lg border-2 border-primary bg-primary/5">
                           <span className="text-3xl font-bold text-primary">
-                            {new Date(event.date).getDate()}
+                            {format(parseISO(event.start_datetime), 'dd')}
                           </span>
                           <span className="text-sm font-medium text-muted-foreground">
-                            {new Date(event.date).toLocaleDateString("en-US", { month: "short" })}
+                            {format(parseISO(event.start_datetime), 'MMM')}
                           </span>
                         </div>
                       </div>
@@ -187,7 +150,10 @@ const SchoolCalendar = () => {
                         <div className="grid gap-3 text-sm md:grid-cols-3">
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <Clock className="h-4 w-4 text-primary" />
-                            <span>{event.time}</span>
+                            <span>
+                              {format(parseISO(event.start_datetime), 'HH:mm')}
+                              {event.end_datetime && ` - ${format(parseISO(event.end_datetime), 'HH:mm')}`}
+                            </span>
                           </div>
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <MapPin className="h-4 w-4 text-primary" />
@@ -195,7 +161,7 @@ const SchoolCalendar = () => {
                           </div>
                           <div className="flex items-center gap-2 text-muted-foreground">
                             <Users className="h-4 w-4 text-primary" />
-                            <span>{event.attendees}</span>
+                            <span>{event.attendees_text}</span>
                           </div>
                         </div>
 

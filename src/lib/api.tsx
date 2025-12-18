@@ -282,3 +282,29 @@ export async function getNotifications(): Promise<Notification[]> {
 
     return response.json();
 }
+
+
+export interface Event {
+    id: number;
+    title: string;
+    start_datetime: string; // ISO string
+    end_datetime: string | null; // ISO string
+    location: string;
+    category: string;
+    description: string;
+    attendees_text: string;
+    published: boolean;
+    created_at: string;
+}
+
+export async function getEvents(): Promise<Event[]> {
+    const response = await apiRequest(`/api/events/`, { method: 'GET' });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch events' }));
+        console.error(`HTTP error fetching events: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not load events.');
+    }
+
+    return response.json();
+}
