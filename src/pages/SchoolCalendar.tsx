@@ -10,6 +10,8 @@ import CookieConsent from "@/components/CookieConsent";
 import { useQuery } from "@tanstack/react-query"; // New import
 import { getEvents, Event } from "@/lib/api"; // New import
 import { format, parseISO } from 'date-fns'; // For date formatting
+import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
+import remarkGfm from 'remark-gfm'; // Import remarkGfm
 
 const SchoolCalendar = () => {
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -145,7 +147,9 @@ const SchoolCalendar = () => {
                           </div>
                         </div>
 
-                        <p className="text-muted-foreground">{event.description}</p>
+                        <div className="prose text-muted-foreground">
+                            <ReactMarkdown children={event.description} remarkPlugins={[remarkGfm]} />
+                        </div>
 
                         <div className="grid gap-3 text-sm md:grid-cols-3">
                           <div className="flex items-center gap-2 text-muted-foreground">

@@ -308,3 +308,31 @@ export async function getEvents(): Promise<Event[]> {
 
     return response.json();
 }
+
+export interface TermsOfServiceContent {
+    content: string;
+    date: string; // ISO format date string
+}
+
+export async function getTermsOfService(): Promise<TermsOfServiceContent | null> {
+    try {
+        const response = await apiRequest('/api/terms-of-service/', { method: 'GET' });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.warn('No Terms of Service found.');
+                return null;
+            }
+            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+            console.error(`HTTP error fetching Terms of Service: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Could not load Terms of Service.');
+        }
+
+        const data: TermsOfServiceContent = await response.json();
+        return data;
+
+    } catch (error) {
+        console.error('Error communicating with API for Terms of Service:', error);
+        return null;
+    }
+}
