@@ -1,17 +1,55 @@
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock, MapPin, Loader2 } from "lucide-react"; // Add Loader2 for loading state
+import { useQuery } from "@tanstack/react-query"; // Import useQuery
+import { getEvents, Event as EventType } from "@/lib/api"; // Import getEvents and EventType
+import { format, parseISO } from 'date-fns'; // For date formatting
 
 const Events = () => {
-  const upcomingEvents = [
-    {
-      id: 1,
-      day: "25",
-      month: "ДЕКЕМВРИ",
-      title: "Родителска среща",
-      time: "14:30",
-      location: "ПГКНМА 'Проф. Минко Балкански'",
-    },
-  ];
+  const { data: events, isLoading, isError, error } = useQuery<EventType[]>({
+    queryKey: ["homepageEvents"], // Unique query key
+    queryFn: getEvents,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
+
+  if (isLoading) {
+    return (
+      <section className="border-b border-border py-16 sm:py-20">
+        <div className="container mx-auto px-4 text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="mt-4 text-lg text-muted-foreground">Зареждане на събития...</p>
+        </div>
+      </section>
+    );
+  }
+
+  if (isError) {
+    return (
+      <section className="border-b border-border py-16 sm:py-20">
+        <div className="container mx-auto px-4 text-center text-red-500">
+          <p className="text-lg">Грешка при зареждане на събития: {error?.message}</p>
+        </div>
+      </section>
+    );
+  }
+
+  const upcomingEvents = events
+    ?.filter(event => parseISO(event.start_datetime) >= new Date()) // Revert this line
+    .sort((a, b) => parseISO(a.start_datetime).getTime() - parseISO(b.start_datetime).getTime()) // Sort by date
+    .slice(0, 3); // Show top 3 upcoming events
+
+  if (!upcomingEvents || upcomingEvents.length === 0) {
+    return (
+      <section className="border-b border-border py-16 sm:py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Календар на училището</h2>
+          <p className="text-lg text-muted-foreground">
+            Няма предстоящи събития.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="border-b border-border py-16 sm:py-20">
@@ -33,8 +71,8 @@ const Events = () => {
                 <div className="flex gap-4">
                   {/* Date Box */}
                   <div className="flex h-20 w-20 flex-shrink-0 flex-col items-center justify-center rounded-xl bg-primary text-primary-foreground transition-transform group-hover:scale-110">
-                    <span className="text-2xl font-bold leading-none">{event.day}</span>
-                    <span className="text-sm font-medium uppercase">{event.month}</span>
+                    <span className="text-2xl font-bold leading-none">{format(parseISO(event.start_datetime), 'dd')}</span>
+                    <span className="text-sm font-medium uppercase">{format(parseISO(event.start_datetime), 'MMM')}</span>
                   </div>
 
                   {/* Event Details */}
@@ -44,7 +82,8 @@ const Events = () => {
                     <div className="space-y-1.5 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-primary" />
-                        <span>{event.time}</span>
+                        <span>{format(parseISO(event.start_datetime), 'HH:mm')}</span>
+                        {event.end_datetime && ` - ${format(parseISO(event.end_datetime), 'HH:mm')}`}
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-primary" />
