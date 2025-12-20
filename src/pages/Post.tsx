@@ -11,11 +11,22 @@ import { Calendar, User, Loader2, Tag } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import Zoom from "yet-another-react-lightbox/plugins/zoom";
+import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Counter from "yet-another-react-lightbox/plugins/counter";
+import "yet-another-react-lightbox/plugins/thumbnails.css";
+import "yet-another-react-lightbox/plugins/counter.css";
 
 const Post = () => {
     const { id } = useParams<{ id: string }>();
     const [post, setPost] = useState<PostType | null>(null);
     const [loading, setLoading] = useState(true);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxIndex, setLightboxIndex] = useState(0);
+
     useEffect(() => {
         const fetchPost = async () => {
             if (id) {
@@ -75,6 +86,31 @@ const Post = () => {
                                     {post.content}
                                 </ReactMarkdown>
                             </div>
+
+                            {/* Image Gallery Section */}
+                            {post.images && post.images.length > 0 && (
+                                <div className="mt-12">
+                                    <h2 className="text-2xl font-bold mb-4">Галерия</h2>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        {post.images.map((image, index) => (
+                                            <div
+                                                key={index}
+                                                className="cursor-pointer"
+                                                onClick={() => {
+                                                    setLightboxIndex(index);
+                                                    setLightboxOpen(true);
+                                                }}
+                                            >
+                                                <img
+                                                    src={image}
+                                                    alt={`Image ${index + 1} for post ${post.title}`}
+                                                    className="w-full h-auto rounded-lg object-cover aspect-square transition-transform hover:scale-105"
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                             
                             <Comments postId={id} />
 
@@ -89,6 +125,22 @@ const Post = () => {
             <Footer />
             <BackToTop />
             <CookieConsent />
+
+            {post && post.images && (
+                <Lightbox
+                    open={lightboxOpen}
+                    close={() => setLightboxOpen(false)}
+                    slides={post.images.map(src => ({ src }))}
+                    index={lightboxIndex}
+                    plugins={[Zoom, Fullscreen, Thumbnails, Counter]}
+                    styles={{ container: { padding: "env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0)" } }}
+                    thumbnails={{
+                        height: 60,
+                        gap: 8,
+                    }}
+                    className="z-50"
+                />
+            )}
         </div>
     );
 };
