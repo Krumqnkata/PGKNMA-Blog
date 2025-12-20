@@ -22,6 +22,7 @@ export interface Post {
     created_at: string;
     published: boolean;
     allowed: boolean;
+    images: string[];
 }
 /**
  * Взима списък с всички постове от Django API.
