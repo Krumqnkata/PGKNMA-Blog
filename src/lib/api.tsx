@@ -310,11 +310,6 @@ export async function getEvents(): Promise<Event[]> {
     return response.json();
 }
 
-export interface TermsOfServiceContent {
-    content: string;
-    date: string; // ISO format date string
-}
-
 export async function getTermsOfService(): Promise<TermsOfServiceContent | null> {
     try {
         const response = await apiRequest('/api/terms-of-service/', { method: 'GET' });
@@ -337,3 +332,135 @@ export async function getTermsOfService(): Promise<TermsOfServiceContent | null>
         return null;
     }
 }
+
+export interface RegisterCredentials {
+    username: string;
+    password: string;
+    password2: string;
+    email: string;
+    first_name: string; // Added first_name
+    last_name: string;  // Added last_name
+}
+
+export async function register(credentials: RegisterCredentials): Promise<User> {
+    const API_URL = 'http://localhost:8000/api/auth/register/';
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+            console.error(`Registration failed: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Registration failed');
+        }
+
+        const data: User = await response.json();
+        return data;
+
+    } catch (error) {
+        console.error('Error during registration API call:', error);
+        throw error;
+    }
+}
+
+export interface PrivacyPolicyContent {
+    content: string;
+    date: string;
+}
+
+export async function getPrivacyPolicy(): Promise<PrivacyPolicyContent | null> {
+    try {
+        const response = await apiRequest('/api/privacy-policy/', { method: 'GET' });
+
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.warn('No Privacy Policy found.');
+                return null;
+            }
+            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
+            console.error(`HTTP error fetching Privacy Policy: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Could not load Privacy Policy.');
+        }
+
+        const data: PrivacyPolicyContent = await response.json();
+        return data;
+
+    } catch (error) {
+        console.error('Error communicating with API for Privacy Policy:', error);
+        return null;
+    }
+}
+
+export interface BellSongSuggestionData {
+    link: string;
+    slot: string;
+    note: string;
+    title: string;
+}
+
+export async function submitBellSongSuggestion(data: BellSongSuggestionData): Promise<{ detail: string }> {
+    try {
+        const response = await apiRequest(`/api/bell-song-suggestions/submit/`, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ detail: 'Failed to submit bell song suggestion' }));
+            console.error(`HTTP error submitting bell song suggestion: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Could not submit your suggestion.');
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error during bell song suggestion API call:', error);
+        throw error;
+    }
+}
+
+export interface ApprovedSong {
+    id: number;
+    link: string;
+    slot: string;
+    note: string;
+    title: string;
+    status: string;
+    submitted_at: string;
+    user_username: string;
+    votes: number;
+    has_voted: boolean;
+}
+
+export async function getApprovedSongs(): Promise<ApprovedSong[]> {
+    const response = await apiRequest(`/api/approved-songs/`, { method: 'GET' });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch approved songs' }));
+        console.error(`HTTP error fetching approved songs: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not load songs for voting.');
+    }
+
+    return response.json();
+}
+
+export async function voteForSong(songId: number): Promise<ApprovedSong> {
+    const response = await apiRequest(`/api/songs/${songId}/vote/`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to vote for song' }));
+        console.error(`HTTP error voting for song ${songId}: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not submit your vote.');
+    }
+
+    return response.json();
+}
+
+

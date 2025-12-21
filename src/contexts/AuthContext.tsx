@@ -1,10 +1,11 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { login as apiLogin, LoginCredentials, User } from '@/lib/api';
+import { login as apiLogin, register as apiRegister, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (credentials: LoginCredentials) => Promise<void>;
+    register: (credentials: RegisterCredentials) => Promise<void>; // Add register function
     logout: () => void;
     loading: boolean;
     loginDialogOpen: boolean;
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const data = await apiLogin(credentials);
             if (data && data.access && data.refresh) {
                 setAccessToken(data.access);
-                const loggedInUser: User = { id: 0, username: credentials.username || '' };
+                const loggedInUser: User = { id: 0, username: credentials.username || '' }; // User details might be incomplete here, consider fetching full user profile after login
                 setUser(loggedInUser);
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
@@ -45,6 +46,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             } else {
                 throw new Error('Login failed: No tokens returned');
             }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const register = async (credentials: RegisterCredentials) => {
+        setLoading(true);
+        try {
+            const registeredUser = await apiRegister(credentials);
+            // After successful registration, you might want to automatically log them in
+            // For now, just indicate success, and the user can then use the login dialog
+            // Or you could immediately call login here with credentials.username and credentials.password
+            // For simplicity, we'll just return and let RegisterDialog handle further actions (e.g., closing itself)
+            // If auto-login is desired, implement it here:
+            // await login({ username: credentials.username, password: credentials.password });
         } finally {
             setLoading(false);
         }
@@ -66,6 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             user, 
             isAuthenticated: !!accessToken, 
             login, 
+            register, // Add register to context value
             logout, 
             loading,
             loginDialogOpen,
