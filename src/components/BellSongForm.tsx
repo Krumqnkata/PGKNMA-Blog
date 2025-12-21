@@ -7,15 +7,20 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
+import { submitBellSongSuggestion, BellSongSuggestionData } from '@/lib/api';
+
 
 type BellSongFormValues = {
-  name: string;
+  title: string;
   link: string;
   slot: string;
   note: string;
 };
 
 const BellSongForm = () => {
+  const { isAuthenticated, openLoginDialog } = useAuth(); // Use AuthContext
+
   const {
     register,
     handleSubmit,
@@ -25,22 +30,40 @@ const BellSongForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<BellSongFormValues>({
     defaultValues: {
-      name: "",
+      title: "",
       link: "",
       slot: "morning",
       note: "",
     },
   });
 
-  const onSubmit = (values: BellSongFormValues) => {
-    toast({
-      title: "Благодарим за предложението!",
-      description: values.link || "Без линк",
-    });
-    reset();
-  };
+  const onSubmit = async (values: BellSongFormValues) => {
+    if (!isAuthenticated) {
+      toast({
+        title: "Не сте влезли!",
+        description: "Моля, влезте, за да направите предложение.",
+        variant: "destructive",
+      });
+      openLoginDialog();
+      return;
+    }
 
-  const linkValue = watch("link");
+    try {
+      await submitBellSongSuggestion(values);
+      toast({
+        title: "Успех!",
+        description: `Вашето предложение за песен "${values.title}" беше изпратено за одобрение.`,
+      });
+      reset();
+    } catch (error) {
+      console.error("Submission error:", error);
+      toast({
+        title: "Грешка при изпращане!",
+        description: "Неуспешно изпращане на предложението. Моля, опитайте отново.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <section id="bell-song" className="border-b border-border bg-secondary/40 py-16 sm:py-20">
@@ -55,78 +78,92 @@ const BellSongForm = () => {
           </p>
         </div>
 
-        <Card className="mx-auto max-w-4xl border-border bg-card/90 shadow-lg">
-          <CardHeader>
-            <CardTitle>Детайли</CardTitle>
-            <CardDescription>Попълнете полетата по-долу и натиснете „Изпрати“.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Име</Label>
-                  <Input
-                    id="name"
-                    placeholder="Мария Петрова"
-                    {...register("name", { required: "Моля, въведете име." })}
-                  />
-                  {errors.name && <p className="text-sm text-destructive">{errors.name.message}</p>}
-                </div>
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2">
+        {!isAuthenticated ? (
+          <Card className="mx-auto max-w-4xl border-border bg-card/90 shadow-lg p-8 text-center">
+            <CardTitle className="mb-4">Влезте, за да предложите песен</CardTitle>
+            <CardDescription className="mb-6">
+              Само регистрирани и влезли потребители могат да предлагат песни за звънеца.
+            </CardDescription>
+            <Button onClick={openLoginDialog}>Вход</Button>
+          </Card>
+        ) : (
+          <Card className="mx-auto max-w-4xl border-border bg-card/90 shadow-lg">
+            <CardHeader>
+              <CardTitle>Детайли</CardTitle>
+              <CardDescription>Попълнете полетата по-долу и натиснете „Изпрати“.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-2">
                   <Label htmlFor="link">Линк към песента (YouTube/Spotify)</Label>
-                  <Input id="link" placeholder="https://…" {...register("link")} />
-                  <p className="text-xs text-muted-foreground">Добавете YouTube линк за автоматично заглавие.</p>
+                  <Input
+                    id="link"
+                    placeholder="https://www.youtube.com/watch?v=..."
+                    {...register("link", { required: "Моля, поставете линк." })}
+                  />
+                  {errors.link && <p className="text-sm text-destructive">{errors.link.message}</p>}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Кога да звучи звънецът</Label>
-                  <Controller
-                    name="slot"
-                    control={control}
-                    rules={{ required: "Изберете предпочитан момент." }}
-                    render={({ field }) => (
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Изберете момент" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="startClass">Начало на час</SelectItem>
-                          <SelectItem value="endClass">Край на час</SelectItem>
-                          <SelectItem value="beforeLunch">Преди голямо</SelectItem>
-                          <SelectItem value="afterLunch">След голямо</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
+                  <Label htmlFor="title">Заглавие на песента</Label>
+                  <Input
+                    id="title"
+                    placeholder="Въведете заглавие на песента"
+                    {...register("title", { required: "Заглавието е задължително." })}
                   />
-                  {errors.slot && <p className="text-sm text-destructive">{errors.slot.message}</p>}
+                  {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
                 </div>
-              </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="note">Кратка причина (по желание)</Label>
-                <Textarea
-                  id="note"
-                  placeholder="Защо тази песен е подходяща за нашия звънец?"
-                  rows={4}
-                  {...register("note")}
-                />
-              </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Кога да звучи звънецът</Label>
+                    <Controller
+                      name="slot"
+                      control={control}
+                      rules={{ required: "Изберете предпочитан момент." }}
+                      render={({ field }) => (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Изберете момент" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="startClass">Начало на час</SelectItem>
+                            <SelectItem value="endClass">Край на час</SelectItem>
+                            <SelectItem value="beforeLunch">Преди голямо</SelectItem>
+                            <SelectItem value="afterLunch">След голямо</SelectItem>
+                            <SelectItem value="morning">Сутрешен звънец</SelectItem>
+                            <SelectItem value="special">Специален повод</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.slot && <p className="text-sm text-destructive">{errors.slot.message}</p>}
+                  </div>
+                </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <p className="text-sm text-muted-foreground">
-                  С изпращане потвърждавате, че песента е подходяща за училищна среда.
-                </p>
-                <Button type="submit" className="gap-2" disabled={isSubmitting}>
-                  <Send className="h-4 w-4" />
-                  Изпрати
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+                <div className="space-y-2">
+                  <Label htmlFor="note">Кратка причина (по желание)</Label>
+                  <Textarea
+                    id="note"
+                    placeholder="Защо тази песен е подходяща за нашия звънец?"
+                    rows={4}
+                    {...register("note")}
+                  />
+                </div>
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm text-muted-foreground">
+                    С изпращане потвърждавате, че песента е подходяща за училищна среда.
+                  </p>
+                  <Button type="submit" className="gap-2" disabled={isSubmitting}>
+                    {isSubmitting ? "Изчакайте..." : "Изпрати"}
+                    <Send className="h-4 w-4" />
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </section>
   );

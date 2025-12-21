@@ -26,12 +26,6 @@ const developers = [
     avatar: "https://static.vecteezy.com/system/resources/previews/053/547/120/non_2x/generic-user-profile-avatar-for-online-platforms-and-social-media-vector.jpg", 
     github: "/developers",
   },
-    {
-    name: "Г-н Ивайло Граматиков",
-    role: "Технически гид",
-    avatar: "https://avatars.githubusercontent.com/u/47442563?v=4", 
-    github: "https://github.com/gramatikov88",
-  },
 ];
 // ==========================
 

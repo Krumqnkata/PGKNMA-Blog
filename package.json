@@ -64,6 +64,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tsparticles": "^3.9.1",
+    "use-debounce": "^10.0.6",
     "vaul": "^0.9.9",
     "yet-another-react-lightbox": "^3.27.0",
     "zod": "^3.25.76"

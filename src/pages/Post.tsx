@@ -56,13 +56,6 @@ const Post = () => {
                         </div>
                     ) : post && id ? (
                         <article className="max-w-4xl mx-auto">
-                            {post.banner && (
-                                <img 
-                                    src={post.banner} 
-                                    alt={post.title} 
-                                    className="w-full h-auto rounded-lg mb-8"
-                                />
-                            )}
                             <h1 className="text-3xl md:text-5xl font-bold mb-4">{post.title}</h1>
                             <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
                                 <div className="flex items-center gap-1.5">
