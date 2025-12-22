@@ -449,6 +449,67 @@ export async function getApprovedSongs(): Promise<ApprovedSong[]> {
     return response.json();
 }
 
+export interface Meme {
+    id: number;
+    title: string;
+    image_url: string;
+    user_username: string;
+    created_at: string;
+    is_approved: boolean;
+    votes: number;
+    has_voted: boolean;
+}
+
+export interface MemeSubmission {
+    title: string;
+    image: File;
+}
+
+export async function getMemes(): Promise<Meme[]> {
+    const response = await apiRequest(`/api/memes/`, { method: 'GET' });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch memes' }));
+        console.error(`HTTP error fetching memes: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not load memes.');
+    }
+
+    return response.json();
+}
+
+export async function submitMeme(data: MemeSubmission): Promise<Meme> {
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('image', data.image);
+
+    const response = await apiRequest(`/api/memes/`, {
+        method: 'POST',
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to submit meme' }));
+        console.error(`HTTP error submitting meme: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not submit your meme.');
+    }
+
+    return response.json();
+}
+
+export async function voteForMeme(memeId: number): Promise<Meme> {
+    const response = await apiRequest(`/api/memes/${memeId}/vote/`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to vote for meme' }));
+        console.error(`HTTP error voting for meme ${memeId}: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not submit your vote.');
+    }
+
+    return response.json();
+}
+
 export async function voteForSong(songId: number): Promise<ApprovedSong> {
     const response = await apiRequest(`/api/songs/${songId}/vote/`, {
         method: 'POST',
