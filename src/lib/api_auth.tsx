@@ -64,8 +64,8 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
         headers['Authorization'] = `Bearer ${token}`;
     }
 
-    // Добавяме Content-Type само ако има тяло на заявката
-    if (init?.body) {
+    // Add Content-Type only if there is a request body AND it is not FormData
+    if (init?.body && !(init.body instanceof FormData)) {
         headers['Content-Type'] = 'application/json';
     }
 
