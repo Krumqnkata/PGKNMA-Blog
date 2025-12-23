@@ -1,7 +1,6 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "./contexts/AuthContext";
@@ -20,10 +19,36 @@ import Developers from "./pages/Developers";
 import Test from "./pages/Test";
 import Post from "./pages/Post";
 
-const queryClient = new QueryClient();  
+// New imports
+import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getSiteStatus } from "./lib/api";
+import MaintenancePage from "./pages/MaintenancePage";
+import { Construction } from "lucide-react";
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+const App = () => {
+  const { data: siteStatus, isLoading } = useQuery({
+    queryKey: ['siteStatus'],
+    queryFn: getSiteStatus,
+    refetchInterval: 60000, // Refetch every 60 seconds
+  });
+
+  const maintenanceMode = siteStatus?.maintenance_mode ?? false;
+
+  if (isLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <Construction className="h-12 w-12 animate-spin text-primary" />
+        <p className="mt-4 text-muted-foreground">Зареждане...</p>
+      </div>
+    );
+  }
+
+  if (maintenanceMode) {
+    return <MaintenancePage />;
+  }
+  
+  return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
       <AuthProvider>
         <NotificationProvider>
@@ -52,7 +77,7 @@ const App = () => (
         </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
-  </QueryClientProvider>
-);
+  );
+};
 
 export default App;
