@@ -556,6 +556,26 @@ export async function getLatestPrivacyPolicyVersion(): Promise<string | null> {
     }
 }
 
+export interface SiteStatus {
+    maintenance_mode: boolean;
+}
+
+export async function getSiteStatus(): Promise<SiteStatus> {
+    try {
+        const response = await apiRequest(`/api/site-status/`, { method: 'GET' });
+
+        if (!response.ok) {
+            console.error(`HTTP error fetching site status: ${response.status}`);
+            return { maintenance_mode: false }; // Fallback to ensure site is accessible
+        }
+
+        return response.json();
+    } catch (error) {
+        console.error('Error fetching site status:', error);
+        return { maintenance_mode: false }; // Fallback to ensure site is accessible
+    }
+}
+
 
 
 
