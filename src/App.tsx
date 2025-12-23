@@ -25,9 +25,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getSiteStatus } from "./lib/api";
 import MaintenancePage from "./pages/MaintenancePage";
 import { Construction } from "lucide-react";
+import { SettingsProvider, useSettings } from "./contexts/SettingsContext"; // Import SettingsProvider and useSettings
+import FeatureDisabledPage from "./pages/FeatureDisabledPage"; // Import FeatureDisabledPage
 
-const App = () => {
-  const { data: siteStatus, isLoading } = useQuery({
+
+const AppContent = () => { // Renamed App to AppContent
+  const { data: siteStatus, isLoading: isSiteStatusLoading } = useQuery({
     queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
     refetchInterval: 60000, // Refetch every 60 seconds
@@ -35,7 +38,10 @@ const App = () => {
 
   const maintenanceMode = siteStatus?.maintenance_mode ?? false;
 
-  if (isLoading) {
+  // Use useSettings here to access feature flags
+  const { settings, isLoading: isSettingsLoading } = useSettings(); // Get settings from context
+
+  if (isSiteStatusLoading || isSettingsLoading) { // Check both loading states
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <Construction className="h-12 w-12 animate-spin text-primary" />
@@ -61,9 +67,12 @@ const App = () => {
                 <Route path="/news" element={<News />} />
                 <Route path="/post/:id" element={<Post />} />
                 <Route path="/events" element={<SchoolCalendar />} />
-                <Route path="/bell-suggest" element={<BellSuggest />} />
-                <Route path="/weekly-poll" element={<WeeklyPoll />} />
-                <Route path="/meme-of-the-week" element={<MemeOfTheWeek />} />
+                
+                {/* Conditional Routes */}
+                <Route path="/bell-suggest" element={settings?.enable_bell_suggestions ? <BellSuggest /> : <FeatureDisabledPage />} />
+                <Route path="/weekly-poll" element={settings?.enable_weekly_poll ? <WeeklyPoll /> : <FeatureDisabledPage />} />
+                <Route path="/meme-of-the-week" element={settings?.enable_meme_of_the_week ? <MemeOfTheWeek /> : <FeatureDisabledPage />} />
+
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
@@ -79,5 +88,12 @@ const App = () => {
     </ThemeProvider>
   );
 };
+
+// Main App component for providers
+const App = () => (
+  <SettingsProvider> {/* Wrap with SettingsProvider */}
+    <AppContent />
+  </SettingsProvider>
+);
 
 export default App;
