@@ -82,9 +82,9 @@ const SchoolCalendar = () => {
         {/* Hero Section */}
         <section className="w-full bg-gradient-to-br from-primary/20 via-background to-background py-16 md:py-24">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl font-bold md:text-5xl lg:text-6xl">Училищен Календар</h1>
+            <h1 className="text-4xl font-bold md:text-5xl lg:text-6xl">Училищен календар</h1>
             <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-              Останете информирани за предстоящи събития, дейности и важни дати
+              Останете информирани за предстоящи събития, дейности и важни дати.
             </p>
           </div>
         </section>
@@ -169,10 +169,7 @@ const SchoolCalendar = () => {
                           </div>
                         </div>
 
-                        <Button variant="outline" size="sm" className="mt-2">
-                          <Calendar className="mr-2 h-4 w-4" />
-                          Add to Calendar
-                        </Button>
+
                       </div>
                     </div>
                   </Card>

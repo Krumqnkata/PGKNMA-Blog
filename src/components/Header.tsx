@@ -44,7 +44,7 @@ const Header = () => {
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <img src={logo} className="h-auto w-14" alt="Logo" />
-          <span className="text-xl font-bold">ПГКНМА блог</span>
+          <span className="text-xl font-bold">ПГКНМА Блог</span>
         </NavLink>
 
         {/* Desktop Navigation */}

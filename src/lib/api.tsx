@@ -524,4 +524,38 @@ export async function voteForSong(songId: number): Promise<ApprovedSong> {
     return response.json();
 }
 
+export interface ConsentRecordData {
+    consent_status: 'INFORMED' | 'ACCEPTED' | 'REJECTED';
+    policy_version: string; // e.g., 'v1.0'
+    analytical_accepted?: boolean;
+    marketing_accepted?: boolean;
+}
+
+export async function recordConsent(data: ConsentRecordData): Promise<{ detail?: string }> {
+    const response = await apiRequest(`/api/consent/`, {
+        method: 'POST',
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Failed to record consent' }));
+        console.error(`HTTP error recording consent: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Could not record consent.');
+    }
+
+    return response.json();
+}
+
+export async function getLatestPrivacyPolicyVersion(): Promise<string | null> {
+    try {
+        const policy = await getPrivacyPolicy();
+        return policy ? policy.date : null;
+    } catch (error) {
+        console.error('Error fetching latest privacy policy version:', error);
+        return null;
+    }
+}
+
+
+
 

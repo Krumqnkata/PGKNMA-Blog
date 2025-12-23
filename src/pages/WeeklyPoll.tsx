@@ -64,9 +64,10 @@ const WeeklyPollContent = () => {
 
   const codeLines = useMemo(() => currentQuestion?.code?.split("\n") ?? [], [currentQuestion]);
   const unlockLabel = useMemo(() => {
-    if (!pollStatus?.unlocks_at) return "неделя, 23:59";
+    if (!pollStatus?.unlocks_at) return null;
     return new Date(pollStatus.unlocks_at).toLocaleString("bg-BG", {
-      weekday: "long",
+      day: "numeric",
+      month: "long",
       hour: "2-digit",
       minute: "2-digit",
     });
@@ -122,13 +123,13 @@ const WeeklyPollContent = () => {
           <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             <Badge variant="secondary" className="bg-amber-200 text-amber-900">Заключено</Badge>
             <div className="space-y-1">
-              <p className="font-semibold">Вече сте участвали тази седмица.</p>
-              <p className="text-xs text-amber-800">Следващ опит: {unlockLabel}.</p>
+              <p className="font-semibold">Вече сте отговорили на тази анкета.</p>
+              {unlockLabel && <p className="text-xs text-amber-800">Периодът на анкетата приключва на {unlockLabel}.</p>}
             </div>
           </div>
         ) : (
           <div className="rounded-lg border border-border/60 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
-            Един опит на седмица. След отговор заключваме до неделя 23:59.
+            Можете да отговорите само веднъж на всяка активна анкета. Успех!
           </div>
         )}
         <div className="rounded-lg border border-border bg-muted/40 p-4 font-mono text-sm leading-relaxed">

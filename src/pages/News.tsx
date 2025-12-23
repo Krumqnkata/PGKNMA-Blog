@@ -57,7 +57,7 @@ const News = () => {
                     <div className="container mx-auto px-4 text-center">
                         <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">Последни новини</h1>
                         <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-                            Останете информирани за всичко, което се случва в нашето училище
+                            Останете информирани за всичко, което се случва в нашето училище.
                         </p>
                     </div>
                 </section>

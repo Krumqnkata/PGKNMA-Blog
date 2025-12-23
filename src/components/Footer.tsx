@@ -47,8 +47,8 @@ const Footer = () => {
           {/* About Column */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <img src="/logo-dark.png" alt="ПГКНМА блог лого" className="h-8 w-8 object-contain" />
-              <span className="text-xl font-bold">ПГКНМА блог</span>
+              <img src="/logo-dark.png" alt="ПГКНМА Блог лого" className="h-8 w-8 object-contain" />
+              <span className="text-xl font-bold">ПГКНМА Блог</span>
             </div>
             <p className="text-sm text-[hsl(var(--footer-foreground))]/80 leading-relaxed">
               Овластяване на учениците и ангажиране на родителите чрез образование, иновации и общност.
