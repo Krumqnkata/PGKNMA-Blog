@@ -84,7 +84,7 @@ const Header = () => {
           
           {isAuthenticated ? (
             <>
-              <span className="hidden sm:inline-block text-sm font-medium">Здравей, {user?.username}</span>
+              
               <Button className="hidden gap-2 sm:inline-flex" onClick={logout}>
                 <LogOut className="h-4 w-4" />
                 Изход
