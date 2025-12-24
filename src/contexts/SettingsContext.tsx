@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getSiteStatus, SiteStatus } from '@/lib/api'; // Assuming SiteStatus is exported from api.ts
+import { createContext, useContext, ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query'; // New import
+import { getSiteStatus, SiteStatus } from '@/lib/api';
 
 interface SettingsContextType {
   settings: SiteStatus | null;
@@ -10,36 +11,20 @@ interface SettingsContextType {
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
-  const [settings, setSettings] = useState<SiteStatus | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchSettings = async () => {
-      try {
-        setIsLoading(true);
-        const fetchedSettings = await getSiteStatus();
-        setSettings(fetchedSettings);
-        setError(null);
-      } catch (err: any) {
-        console.error("Failed to fetch site settings:", err);
-        setError(err.message || "Failed to load site settings.");
-        setSettings({ // Fallback to ensure UI can render even if API fails
-            maintenance_mode: false,
-            enable_bell_suggestions: true,
-            enable_weekly_poll: true,
-            enable_meme_of_the_week: true,
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchSettings();
-  }, []);
+  const { data: settings, isLoading, error } = useQuery<SiteStatus, Error>({
+    queryKey: ['siteSettings'],
+    queryFn: getSiteStatus,
+    refetchInterval: 60000, // Refetch every 60 seconds
+    initialData: { // Provide initial data for immediate rendering, then update
+        maintenance_mode: false,
+        enable_bell_suggestions: true,
+        enable_weekly_poll: true,
+        enable_meme_of_the_week: true,
+    },
+  });
 
   return (
-    <SettingsContext.Provider value={{ settings, isLoading, error }}>
+    <SettingsContext.Provider value={{ settings: settings || null, isLoading, error: error?.message || null }}>
       {children}
     </SettingsContext.Provider>
   );
