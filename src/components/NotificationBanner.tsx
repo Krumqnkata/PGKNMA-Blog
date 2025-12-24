@@ -26,9 +26,11 @@ const NotificationBanner: React.FC = () => {
   return (
     <div className="bg-accent text-accent-foreground text-center py-2">
       {enabledNotifications.map(notification => (
-        <p key={notification.id} className="text-sm font-medium">
-          {notification.text}
-        </p>
+        <p 
+          key={notification.id} 
+          className="text-sm font-medium"
+          dangerouslySetInnerHTML={{ __html: notification.html_text }}
+        />
       ))}
     </div>
   );

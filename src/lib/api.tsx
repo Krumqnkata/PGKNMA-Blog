@@ -268,6 +268,7 @@ export async function submitContactForm(data: ContactFormData): Promise<{ detail
 export interface Notification {
   id: number;
   text: string;
+  html_text: string;
   enabled: boolean;
   created_at: string;
 }
@@ -558,6 +559,9 @@ export async function getLatestPrivacyPolicyVersion(): Promise<string | null> {
 
 export interface SiteStatus {
     maintenance_mode: boolean;
+    enable_bell_suggestions: boolean;
+    enable_weekly_poll: boolean;
+    enable_meme_of_the_week: boolean;
 }
 
 export async function getSiteStatus(): Promise<SiteStatus> {
