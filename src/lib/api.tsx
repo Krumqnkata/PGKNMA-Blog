@@ -562,6 +562,7 @@ export interface SiteStatus {
     enable_bell_suggestions: boolean;
     enable_weekly_poll: boolean;
     enable_meme_of_the_week: boolean;
+    enable_user_registration: boolean;
 }
 
 export async function getSiteStatus(): Promise<SiteStatus> {
