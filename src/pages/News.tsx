@@ -102,8 +102,8 @@ const News = () => {
                                         >
                                             <div className="aspect-video w-full overflow-hidden bg-muted">
                                                 <img
-                                                    src={article.banner || "/placeholder.svg"} 
-                                                    alt={article.title}
+                                                    src={article.banner || "/logo-light.png"} 
+                                                    //alt={article.title}
                                                     className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                 />
                                             </div>
