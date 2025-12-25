@@ -59,7 +59,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 setNewComment('');
             }
         } catch (err) {
-            setError('Грешква при добавяне на коментара.');
+            setError('Грешка при добавяне на коментара.');
             console.error(err);
         } finally {
             setSubmitting(false);

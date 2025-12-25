@@ -20,7 +20,7 @@ const CookieConsent = () => {
         const latestVersion = await getLatestPrivacyPolicyVersion();
         setPolicyVersion(latestVersion);
       } catch (error) {
-        console.error("Failed to fetch latest privacy policy version:", error);
+        console.error("Неуспешно извличане на последната версия на политиката за поверителност:", error);
         setPolicyVersion('error_fetching_version'); // Fallback in case of error
       }
     };
@@ -31,7 +31,7 @@ const CookieConsent = () => {
     localStorage.setItem("cookieConsent", "accepted");
     setIsVisible(false);
     if (!policyVersion || policyVersion === 'error_fetching_version') { 
-        console.warn("Policy version not loaded or error occurred, consent not recorded to backend.");
+        console.warn("Версията на политиката не е заредена или е възникнала грешка, съгласието не е записано в бекенда.");
         return;
     }
     try {
@@ -40,7 +40,7 @@ const CookieConsent = () => {
             policy_version: policyVersion,
         });
     } catch (error) {
-        console.error("Failed to record cookie consent (ACCEPT) to backend:", error);
+        console.error("Неуспешно записване на съгласие за бисквитки (ПРИЕТИ) в бекенда:", error);
     }
   };
 

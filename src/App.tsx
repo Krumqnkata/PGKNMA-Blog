@@ -24,7 +24,7 @@ import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getSiteStatus } from "./lib/api";
 import MaintenancePage from "./pages/MaintenancePage";
-import { Construction } from "lucide-react";
+import { Loader2, LoaderPinwheel } from "lucide-react";
 import { SettingsProvider, useSettings } from "./contexts/SettingsContext"; // Import SettingsProvider and useSettings
 import FeatureDisabledPage from "./pages/FeatureDisabledPage"; // Import FeatureDisabledPage
 
@@ -41,11 +41,25 @@ const AppContent = () => { // Renamed App to AppContent
   // Use useSettings here to access feature flags
   const { settings, isLoading: isSettingsLoading } = useSettings(); // Get settings from context
 
+  // Set initial dark theme for loading screen
+  useEffect(() => {
+    // Always set dark theme during loading
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+  }, []);
+
   if (isSiteStatusLoading || isSettingsLoading) { // Check both loading states
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <Construction className="h-12 w-12 animate-spin text-primary" />
-        <p className="mt-4 text-muted-foreground">Зареждане...</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+        <div className="relative">
+          <LoaderPinwheel className="h-16 w-16 text-blue-400 animate-pulse animate-spin" />
+          {/* Orbiting elements around the sun */}
+          <div className="absolute inset-0 rounded-full border border-blue-400/30 animate-ping-slow"></div>
+        </div>
+        <div className="mt-8 flex items-center gap-2">
+          <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
+          <span className="text-lg">Зареждане...</span>
+        </div>
       </div>
     );
   }
@@ -54,8 +68,9 @@ const AppContent = () => { // Renamed App to AppContent
     return <MaintenancePage />;
   }
   
+  // After loading, let the ThemeProvider handle the saved theme
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <AuthProvider>
         <NotificationProvider>
           <TooltipProvider>
@@ -67,7 +82,7 @@ const AppContent = () => { // Renamed App to AppContent
                 <Route path="/news" element={<News />} />
                 <Route path="/post/:id" element={<Post />} />
                 <Route path="/events" element={<SchoolCalendar />} />
-                
+
                 {/* Conditional Routes */}
                 <Route path="/bell-suggest" element={settings?.enable_bell_suggestions ? <BellSuggest /> : <FeatureDisabledPage />} />
                 <Route path="/weekly-poll" element={settings?.enable_weekly_poll ? <WeeklyPoll /> : <FeatureDisabledPage />} />

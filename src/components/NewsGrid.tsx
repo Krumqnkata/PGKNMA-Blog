@@ -21,7 +21,7 @@ const NewsGrid = () => {
         }
         setError(null);
       } catch (err) {
-        setError("Failed to fetch news. Please try again later.");
+        setError("Неуспешно извличане на новини. Моля, опитайте отново по-късно.");
         console.error(err);
       } finally {
         setLoading(false);

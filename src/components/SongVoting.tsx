@@ -33,7 +33,7 @@ export function SongVoting() {
             });
         },
         onError: (error: any) => {
-            console.error("Error voting for song:", error);
+            console.error("Грешка при гласуване за песен:", error);
             toast({
                 title: "Грешка при гласуване",
                 description: error.message || "Възникна грешка. Моля, опитайте отново.",
