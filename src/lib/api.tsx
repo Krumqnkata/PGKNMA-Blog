@@ -56,7 +56,7 @@ export async function getPost(id: string): Promise<Post | null> {
         const response = await apiRequest(`/api/posts/${id}/`, { method: 'GET' });
 
         if (!response.ok) {
-            console.error(`HTTP error fetching post with ID ${id}: ${response.status}`);
+            console.error(`HTTP грешка при извличане на пост с ID ${id}: ${response.status}`);
             return null;
         }
 
@@ -64,7 +64,7 @@ export async function getPost(id: string): Promise<Post | null> {
         return data;
 
     } catch (error) {
-        console.error(`Error communicating with API for post ID ${id}:`, error);
+        console.error(`Грешка при комуникация с API за пост ID ${id}:`, error);
         return null;
     }
 }
@@ -105,16 +105,16 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
 
         if (!response.ok) {
             // Log the error response body for more context
-            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            console.error(`Login failed: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Authentication failed');
+            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
+            console.error(`Неуспешно влизане: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Неуспешна идентификация');
         }
 
         const data: TokenResponse = await response.json();
         return data;
 
     } catch (error) {
-        console.error('Error during login API call:', error);
+        console.error('Грешка при извикване на API за влизане:', error);
         throw error; // Re-throw the error to be caught by the calling component
     }
 }
@@ -124,7 +124,7 @@ export async function getComments(postId: string): Promise<Comment[] | null> {
         const response = await apiRequest(`/api/posts/${postId}/comments`, { method: 'GET' });
 
         if (!response.ok) {
-            console.error(`HTTP error fetching comments for post ${postId}: ${response.status}`);
+            console.error(`HTTP грешка при извличане на коментари за пост ${postId}: ${response.status}`);
             return null;
         }
 
@@ -132,7 +132,7 @@ export async function getComments(postId: string): Promise<Comment[] | null> {
         return data;
 
     } catch (error) {
-        console.error(`Error communicating with API for comments on post ${postId}:`, error);
+        console.error(`Грешка при комуникация с API за коментари на пост ${postId}:`, error);
         return null;
     }
 }
@@ -145,16 +145,16 @@ export async function addComment(postId: string, content: string): Promise<Comme
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Failed to add comment' }));
-            console.error(`HTTP error adding comment to post ${postId}: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Failed to submit comment');
+            const errorData = await response.json().catch(() => ({ detail: 'Неуспешно добавяне на коментар' }));
+            console.error(`HTTP грешка при добавяне на коментар към пост ${postId}: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Неуспешно изпращане на коментар');
         }
 
         const data: Comment = await response.json();
         return data;
 
     } catch (error) {
-        console.error(`Error communicating with API to add comment on post ${postId}:`, error);
+        console.error(`Грешка при комуникация с API за добавяне на коментар към пост ${postId}:`, error);
         throw error;
     }
 }
@@ -189,9 +189,9 @@ export async function getWeeklyPollStatus(): Promise<UserPollStatus> {
     const response = await apiRequest(`/api/poll/status/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch poll status' }));
-        console.error(`HTTP error fetching poll status: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not load weekly poll.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на статус на анкетата' }));
+        console.error(`HTTP грешка при извличане на статус на анкетата: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се зареди седмичната анкета.');
     }
 
     return response.json();
@@ -204,9 +204,9 @@ export async function submitWeeklyPollAnswer(questionId: number, selectedOptionI
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to submit answer' }));
-        console.error(`HTTP error submitting poll answer: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not submit your answer.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на отговор' }));
+        console.error(`HTTP грешка при изпращане на отговор за анкетата: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се изпрати вашият отговор.');
     }
 
     return response.json();
@@ -234,9 +234,9 @@ export async function getPollStatistics(): Promise<PollStatistics> {
     const response = await apiRequest(`/api/poll/statistics/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch poll statistics' }));
-        console.error(`HTTP error fetching poll statistics: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not load poll statistics.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на статистики за анкетата' }));
+        console.error(`HTTP грешка при извличане на статистики за анкетата: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се заредят статистиките на анкетата.');
     }
 
     return response.json();
@@ -256,9 +256,9 @@ export async function submitContactForm(data: ContactFormData): Promise<{ detail
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to submit contact form' }));
-        console.error(`HTTP error submitting contact form: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not submit your message.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на контактна форма' }));
+        console.error(`HTTP грешка при изпращане на контактна форма: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се изпрати вашето съобщение.');
     }
 
     return response.json();
@@ -277,9 +277,9 @@ export async function getNotifications(): Promise<Notification[]> {
     const response = await apiRequest(`/api/notifications/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch notifications' }));
-        console.error(`HTTP error fetching notifications: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not load notifications.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на известия' }));
+        console.error(`HTTP грешка при извличане на известия: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се заредят известията.');
     }
 
     return response.json();
@@ -303,9 +303,9 @@ export async function getEvents(): Promise<Event[]> {
     const response = await apiRequest(`/api/events/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch events' }));
-        console.error(`HTTP error fetching events: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not load events.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на събития' }));
+        console.error(`HTTP грешка при извличане на събития: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се заредят събитията.');
     }
 
     return response.json();
@@ -317,19 +317,20 @@ export async function getTermsOfService(): Promise<TermsOfServiceContent | null>
 
         if (!response.ok) {
             if (response.status === 404) {
-                console.warn('No Terms of Service found.');
+                console.warn('Не са намерени Условия за ползване.');
                 return null;
             }
-            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            console.error(`HTTP error fetching Terms of Service: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Could not load Terms of Service.');
+            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
+            console.error(`HTTP грешка при извличане на Условия за ползване: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Не може да се заредят Условията за ползване.');
         }
+        
 
         const data: TermsOfServiceContent = await response.json();
         return data;
 
     } catch (error) {
-        console.error('Error communicating with API for Terms of Service:', error);
+        console.error('Грешка при комуникация с API за Условия за ползване:', error);
         return null;
     }
 }
@@ -356,16 +357,16 @@ export async function register(credentials: RegisterCredentials): Promise<User> 
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            console.error(`Registration failed: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Registration failed');
+            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
+            console.error(`Регистрацията не бе успешна: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Регистрацията не бе успешна');
         }
 
         const data: User = await response.json();
         return data;
 
     } catch (error) {
-        console.error('Error during registration API call:', error);
+        console.error('Грешка при извикване на API за регистрация:', error);
         throw error;
     }
 }
@@ -381,19 +382,19 @@ export async function getPrivacyPolicy(): Promise<PrivacyPolicyContent | null> {
 
         if (!response.ok) {
             if (response.status === 404) {
-                console.warn('No Privacy Policy found.');
+                console.warn('Не е намерена Политика за поверителност.');
                 return null;
             }
-            const errorData = await response.json().catch(() => ({ detail: 'Unknown error' }));
-            console.error(`HTTP error fetching Privacy Policy: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Could not load Privacy Policy.');
+            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
+            console.error(`HTTP грешка при извличане на Политика за поверителност: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Не може да се зареди Политиката за поверителност.');
         }
 
         const data: PrivacyPolicyContent = await response.json();
         return data;
 
     } catch (error) {
-        console.error('Error communicating with API for Privacy Policy:', error);
+        console.error('Грешка при комуникация с API за Политика за поверителност:', error);
         return null;
     }
 }
@@ -413,14 +414,14 @@ export async function submitBellSongSuggestion(data: BellSongSuggestionData): Pr
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Failed to submit bell song suggestion' }));
-            console.error(`HTTP error submitting bell song suggestion: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Could not submit your suggestion.');
+            const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на предложение за звънец песен' }));
+            console.error(`HTTP грешка при изпращане на предложение за звънец песен: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Не може да се изпрати вашето предложение.');
         }
 
         return response.json();
     } catch (error) {
-        console.error('Error during bell song suggestion API call:', error);
+        console.error('Грешка при извикване на API за предложение на звънец песен:', error);
         throw error;
     }
 }
@@ -442,9 +443,9 @@ export async function getApprovedSongs(): Promise<ApprovedSong[]> {
     const response = await apiRequest(`/api/approved-songs/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch approved songs' }));
-        console.error(`HTTP error fetching approved songs: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not load songs for voting.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на одобрени песни' }));
+        console.error(`HTTP грешка при извличане на одобрени песни: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се заредят песни за гласуване.');
     }
 
     return response.json();
@@ -470,9 +471,9 @@ export async function getMemes(): Promise<Meme[]> {
     const response = await apiRequest(`/api/memes/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to fetch memes' }));
-        console.error(`HTTP error fetching memes: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not load memes.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на мемове' }));
+        console.error(`HTTP грешка при извличане на мемове: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се заредят мемовете.');
     }
 
     return response.json();
@@ -489,9 +490,9 @@ export async function submitMeme(data: MemeSubmission): Promise<Meme> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to submit meme' }));
-        console.error(`HTTP error submitting meme: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not submit your meme.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на мемове' }));
+        console.error(`HTTP грешка при изпращане на мемове: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се изпрати вашият мемове.');
     }
 
     return response.json();
@@ -503,9 +504,9 @@ export async function voteForMeme(memeId: number): Promise<Meme> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to vote for meme' }));
-        console.error(`HTTP error voting for meme ${memeId}: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not submit your vote.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно гласуване за мемове' }));
+        console.error(`HTTP грешка при гласуване за мемове: ${memeId}: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се изпрати вашето гласуване.');
     }
 
     return response.json();
@@ -517,16 +518,16 @@ export async function voteForSong(songId: number): Promise<ApprovedSong> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to vote for song' }));
-        console.error(`HTTP error voting for song ${songId}: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not submit your vote.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно гласуване за песен' }));
+        console.error(`HTTP грешка при гласуване за песен ${songId}: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се изпрати вашето гласуване.');
     }
 
     return response.json();
 }
 
 export interface ConsentRecordData {
-    consent_status: 'INFORMED' | 'ACCEPTED' | 'REJECTED';
+    consent_status: 'INFORMED' | 'ACCEPTED';
     policy_version: string; // e.g., 'v1.0'
     analytical_accepted?: boolean;
     marketing_accepted?: boolean;
@@ -539,9 +540,9 @@ export async function recordConsent(data: ConsentRecordData): Promise<{ detail?:
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Failed to record consent' }));
-        console.error(`HTTP error recording consent: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Could not record consent.');
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно записване на съгласие' }));
+        console.error(`HTTP грешка при записване на съгласие: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Не може да се запише съгласието.');
     }
 
     return response.json();
@@ -552,7 +553,7 @@ export async function getLatestPrivacyPolicyVersion(): Promise<string | null> {
         const policy = await getPrivacyPolicy();
         return policy ? policy.date : null;
     } catch (error) {
-        console.error('Error fetching latest privacy policy version:', error);
+        console.error('Грешка при извличане на последната версия на политиката за поверителност:', error);
         return null;
     }
 }
@@ -570,13 +571,13 @@ export async function getSiteStatus(): Promise<SiteStatus> {
         const response = await apiRequest(`/api/site-status/`, { method: 'GET' });
 
         if (!response.ok) {
-            console.error(`HTTP error fetching site status: ${response.status}`);
+            console.error(`HTTP грешка при извличане на статуса на сайта: ${response.status}`);
             return { maintenance_mode: false }; // Fallback to ensure site is accessible
         }
 
         return response.json();
     } catch (error) {
-        console.error('Error fetching site status:', error);
+        console.error('Грешка при извличане на статуса на сайта:', error);
         return { maintenance_mode: false }; // Fallback to ensure site is accessible
     }
 }

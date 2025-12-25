@@ -105,7 +105,7 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
 
         try {
             const refreshToken = getRefreshToken();
-            if (!refreshToken) throw new Error("No refresh token available");
+            if (!refreshToken) throw new Error("Няма наличен токен за опресняване");
 
             // Изпращане на заявка за опресняване
             const refreshResponse = await originalFetch('http://localhost:8000/api/auth/token/refresh/', {
@@ -117,7 +117,7 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
             if (!refreshResponse.ok) {
                 // Ако опресняването е неуспешно, изчистваме всичко
                 clearAuth();
-                throw new Error('Failed to refresh token');
+                throw new Error('Неуспешно опресняване на токен');
             }
 
             // Успешно опресняване: Запазваме новите токени

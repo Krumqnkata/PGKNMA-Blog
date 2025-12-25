@@ -9,7 +9,7 @@ const NotificationBanner: React.FC = () => {
   }
 
   if (isError) { 
-    console.error("Error fetching notifications:", error);
+    console.error("Грешка при извличане на известия:", error);
     return (
         <div className="bg-destructive text-destructive-foreground text-center py-2">
             <p className="text-sm font-medium">Грешка при зареждане на известия.</p>

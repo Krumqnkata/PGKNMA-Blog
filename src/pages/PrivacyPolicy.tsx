@@ -22,7 +22,7 @@ const PrivacyPolicy = () => {
           setError("Политиката за поверителност не беше намерена.");
         }
       } catch (err) {
-        console.error("Failed to fetch privacy policy:", err);
+        console.error("Неуспешно извличане на политиката за поверителност:", err);
         setError("Възникна грешка при зареждане на Политиката за поверителност.");
       } finally {
         setLoading(false);

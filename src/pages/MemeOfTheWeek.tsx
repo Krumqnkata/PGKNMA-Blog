@@ -35,7 +35,7 @@ const MemeOfTheWeek: React.FC = () => {
         setMemes(fetchedMemes);
         setError(null);
       } catch (err: any) {
-        setError(err.message || 'Failed to load memes.');
+        setError(err.message || 'Неуспешно зареждане на меметата.');
         console.error(err);
         toast({
           title: "Грешка при зареждане",

@@ -22,7 +22,7 @@ const TermsOfService = () => {
           setError("Условията за ползване не бяха намерени.");
         }
       } catch (err) {
-        console.error("Failed to fetch terms of service:", err);
+        console.error("Неуспешно извличане на условията за ползване:", err);
         setError("Възникна грешка при зареждане на Условията за ползване.");
       } finally {
         setLoading(false);

@@ -30,7 +30,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
       await login({ username, password });
       onOpenChange(false); // Close dialog on success
     } catch (err: any) {
-      console.error("Login failed:", err);
+      console.error("Неуспешно влизане:", err);
       setError(err?.message || "Грешка при връзка със сървъра");
     } finally {
       setLoading(false);
