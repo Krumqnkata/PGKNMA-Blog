@@ -20,6 +20,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         enable_bell_suggestions: true,
         enable_weekly_poll: true,
         enable_meme_of_the_week: true,
+        enable_user_registration: true,
     },
   });
 

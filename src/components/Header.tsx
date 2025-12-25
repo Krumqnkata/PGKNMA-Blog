@@ -144,7 +144,7 @@ const Header = () => {
 
       <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       <LoginDialog open={loginDialogOpen} onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />
-      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
+      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onOpenLogin={openLoginDialog} />
     </header>
   );
 };

@@ -9,9 +9,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSettings } from "@/contexts/SettingsContext"; // New import
+import { useToast } from "@/components/ui/use-toast"; // New import
 
 const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const { login } = useAuth();
+  const { settings } = useSettings(); // Use settings
+  const { toast } = useToast(); // Use toast
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,12 +29,17 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
     try {
       await login({ username, password });
       onOpenChange(false); // Close dialog on success
-    } catch (err) {
+    } catch (err: any) {
       console.error("Login failed:", err);
       setError(err?.message || "Грешка при връзка със сървъра");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRegisterClick = () => {
+    onOpenChange(false); // Close login dialog
+    onOpenRegister?.();   // Open register dialog
   };
 
   return (
@@ -69,10 +79,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
             <button
               type="button"
               className="text-primary font-semibold hover:underline"
-              onClick={() => {
-                onOpenChange(false);
-                onOpenRegister?.();
-              }}
+              onClick={handleRegisterClick} // Use new handler
             >
               Регистрирай се!
             </button>

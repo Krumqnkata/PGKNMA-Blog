@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -13,18 +13,20 @@ import { getWeeklyPollStatus, submitWeeklyPollAnswer, PollQuestion, PollOption }
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { PollStatistics } from "@/components/PollStatistics";
+import hljs from 'highlight.js';
 
 type AnswerKey = "a" | "b" | "c" | "d";
 
 const WeeklyPollContent = () => {
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
   const queryClient = useQueryClient();
+  const codeBlockRef = useRef<HTMLElement>(null); // Ref for the <code> element
 
   const { data: pollStatus, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["weeklyPollStatus"],
     queryKeyHash: 'weeklyPollStatus',
     queryFn: getWeeklyPollStatus,
-    staleTime: Infinity, // The poll status is stable for the week
+    staleTime: Infinity,
   });
 
   const { mutate: submitAnswer, isPending: isSubmitting } = useMutation({
@@ -62,7 +64,12 @@ const WeeklyPollContent = () => {
   const isLocked = pollStatus?.is_locked ?? false;
   const lastResult = pollStatus?.last_result;
 
-  const codeLines = useMemo(() => currentQuestion?.code?.split("\n") ?? [], [currentQuestion]);
+  useEffect(() => {
+    if (codeBlockRef.current) {
+      hljs.highlightElement(codeBlockRef.current);
+    }
+  }, [currentQuestion?.code]);
+
   const unlockLabel = useMemo(() => {
     if (!pollStatus?.unlocks_at) return null;
     return new Date(pollStatus.unlocks_at).toLocaleString("bg-BG", {
@@ -132,13 +139,12 @@ const WeeklyPollContent = () => {
             Можете да отговорите само веднъж на всяка активна анкета. Успех!
           </div>
         )}
-        <div className="rounded-lg border border-border bg-muted/40 p-4 font-mono text-sm leading-relaxed">
-          {codeLines.map((line, idx) => (
-            <div key={idx} className="flex gap-3">
-              <span className="w-8 text-right text-muted-foreground">{idx + 1}</span>
-              <pre className="whitespace-pre-wrap">{line}</pre>
-            </div>
-          ))}
+        <div className="rounded-lg border bg-muted/40 p-4 text-sm">
+          <pre className="whitespace-pre-wrap break-words">
+            <code ref={codeBlockRef} className="language-python">
+              {currentQuestion.code}
+            </code>
+          </pre>
         </div>
 
         <RadioGroup
@@ -177,7 +183,6 @@ const WeeklyPollContent = () => {
     </Card>
   );
 };
-
 
 const WeeklyPoll = () => {
     const { isAuthenticated, isLoading, openLoginDialog } = useAuth();
