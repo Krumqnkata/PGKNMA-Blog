@@ -58,8 +58,8 @@ const Comments = ({ postId }: CommentsProps) => {
                 setComments(prevComments => [added, ...prevComments]); // Add new comment to the top
                 setNewComment('');
             }
-        } catch (err) {
-            setError('Грешка при добавяне на коментара.');
+        } catch (err: any) {
+            setError(err.message || 'Грешка при добавяне на коментара.');
             console.error(err);
         } finally {
             setSubmitting(false);
