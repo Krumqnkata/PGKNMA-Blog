@@ -558,6 +558,38 @@ export async function getLatestPrivacyPolicyVersion(): Promise<string | null> {
     }
 }
 
+export async function checkUsername(username: string): Promise<{ is_available: boolean }> {
+  try {
+    const response = await apiRequest(`/api/auth/check-username/?username=${encodeURIComponent(username)}`, { method: 'GET' });
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Грешка при проверка на потребителско име:', error);
+    // In case of error, default to "not available" to be safe
+    return { is_available: false }; 
+  }
+}
+
+export async function validatePassword(password: string): Promise<{ is_valid: boolean; errors?: string[] }> {
+  try {
+    const response = await apiRequest('/api/auth/validate-password/', {
+      method: 'POST',
+      body: JSON.stringify({ password: password }),
+    });
+    // For password validation, a 400 status is expected for failure, not a network error
+    if (response.ok) {
+        return { is_valid: true };
+    }
+    const errorData = await response.json();
+    return { is_valid: false, errors: errorData.errors || ['Невалидна парола.'] };
+  } catch (error) {
+    console.error('Грешка при валидация на парола:', error);
+    return { is_valid: false, errors: ['Не може да се валидира паролата в момента.'] };
+  }
+}
+
 export interface SiteStatus {
     maintenance_mode: boolean;
     enable_bell_suggestions: boolean;
