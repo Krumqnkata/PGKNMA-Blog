@@ -17,7 +17,7 @@ import {
   Notification
 } from '@/lib/api';
 
-const REFETCH_INTERVAL_MS = 90 * 1000; // 1,5 minute
+const REFETCH_INTERVAL_MS = 60 * 1000; // 1 minute
 
 interface GlobalState {
   siteStatus: { data?: SiteStatus; isLoading: boolean; error: Error | null; };
@@ -40,42 +40,49 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({ childre
     queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
 
   const eventsQuery = useQuery<Event[], Error>({
     queryKey: ['events'],
     queryFn: getEvents,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
 
   const postsQuery = useQuery<Post[] | null, Error>({
     queryKey: ['posts'],
     queryFn: getPosts,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
 
   const pollStatusQuery = useQuery<UserPollStatus, Error>({
     queryKey: ['weeklyPollStatus'],
     queryFn: getWeeklyPollStatus,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
 
   const approvedSongsQuery = useQuery<ApprovedSong[], Error>({
     queryKey: ['approvedSongs'],
     queryFn: getApprovedSongs,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
 
   const memesQuery = useQuery<Meme[], Error>({
     queryKey: ['memes'],
     queryFn: getMemes,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
   
   const notificationsQuery = useQuery<Notification[], Error>({
     queryKey: ['notifications'],
     queryFn: getNotifications,
     refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
   });
 
   const value: GlobalState = {
