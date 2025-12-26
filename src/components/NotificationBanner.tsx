@@ -1,8 +1,8 @@
 import React from 'react';
-import { useNotification } from '@/contexts/NotificationContext';
+import { useGlobalState } from '@/contexts/GlobalStateContext';
 
 const NotificationBanner: React.FC = () => {
-  const { notifications, notificationsEnabled, isLoading, isError, error } = useNotification();
+  const { notifications: { data: notifications, isLoading, isError, error }, notificationsEnabled } = useGlobalState();
 
   if (!notificationsEnabled || isLoading) { 
     return null;
