@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AuthProvider } from "./contexts/AuthContext";
-import { NotificationProvider } from "./contexts/NotificationContext";
 import Index from "./pages/Index";
 import News from "./pages/News";
 import SchoolCalendar from "./pages/SchoolCalendar";
@@ -72,7 +71,6 @@ const AppContent = () => { // Renamed App to AppContent
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <AuthProvider>
-        <NotificationProvider>
           <TooltipProvider>
             <Toaster />
             <Sonner />
@@ -98,7 +96,6 @@ const AppContent = () => { // Renamed App to AppContent
               </Routes>
             </BrowserRouter>
           </TooltipProvider>
-        </NotificationProvider>
       </AuthProvider>
     </ThemeProvider>
   );
