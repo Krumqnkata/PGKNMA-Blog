@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -11,15 +11,15 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
-import { RegisterCredentials } from '@/lib/api';
-import { Loader2, Settings } from "lucide-react"; // Import Settings icon
+import { RegisterCredentials, checkUsername, validatePassword } from '@/lib/api';
+import { Loader2, Settings, CheckCircle2, XCircle } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSettings } from "@/contexts/SettingsContext"; // New import
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface RegisterDialogProps {
   open: boolean;
@@ -27,9 +27,9 @@ interface RegisterDialogProps {
   onOpenLogin: () => void;
 }
 
-const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps) => { // Updated signature
-  const { register, loading: authLoading } = useAuth(); // Removed openLoginDialog
-  const { settings } = useSettings(); // Use settings
+const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps) => {
+  const { register, loading: authLoading } = useAuth();
+  const { settings } = useSettings();
   
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
@@ -40,23 +40,117 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState("");
 
+  // State for username validation
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
+  const [usernameError, setUsernameError] = useState('');
+
+  // State for password validation
+  const [isCheckingPassword, setIsCheckingPassword] = useState(false);
+  const [isPasswordValid, setIsPasswordValid] = useState<boolean | null>(null);
+  const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
+  const [passwordsMatch, setPasswordsMatch] = useState<boolean | null>(null);
+
+
   const isLoading = authLoading || localLoading;
+
+  // Debounced Username Check
+  useEffect(() => {
+    const checkUsernameAvailability = async () => {
+      if (username.trim().length < 3) {
+        setIsUsernameAvailable(null);
+        setUsernameError('');
+        return;
+      }
+
+      setIsCheckingUsername(true);
+      setIsUsernameAvailable(null);
+      setUsernameError('');
+
+      try {
+        const response = await checkUsername(username);
+        if (response.is_available) {
+          setIsUsernameAvailable(true);
+          setUsernameError('');
+        } else {
+          setIsUsernameAvailable(false);
+          setUsernameError('Потребителското име е заето.');
+        }
+      } catch (err) {
+        setIsUsernameAvailable(false);
+        setUsernameError('Грешка при проверката на името.');
+      } finally {
+        setIsCheckingUsername(false);
+      }
+    };
+
+    const timerId = setTimeout(() => {
+      checkUsernameAvailability();
+    }, 500);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [username]);
+
+  // Debounced Password Check
+  useEffect(() => {
+    const validate = async () => {
+        if (password.trim() === '') {
+            setIsPasswordValid(null);
+            setPasswordErrors([]);
+            return;
+        }
+
+        setIsCheckingPassword(true);
+        try {
+            const response = await validatePassword(password);
+            if (response.is_valid) {
+                setIsPasswordValid(true);
+                setPasswordErrors([]);
+            } else {
+                setIsPasswordValid(false);
+                setPasswordErrors(response.errors || []);
+            }
+        } catch (err) {
+            setIsPasswordValid(false);
+            setPasswordErrors(['Грешка при валидация на паролата.']);
+        } finally {
+            setIsCheckingPassword(false);
+        }
+    };
+    const timerId = setTimeout(validate, 500);
+
+    return () => clearTimeout(timerId);
+  }, [password]);
+
+  // Check if passwords match
+  useEffect(() => {
+    if (password && password2) {
+      setPasswordsMatch(password === password2);
+    } else {
+      setPasswordsMatch(null);
+    }
+  }, [password, password2]);
+
 
   const handleRegister = async () => {
     setError("");
-    // Basic client-side validation
-    if (!email || !username || !password || !password2 || !firstName || !lastName) {
-      setError("Моля, попълнете всички задължителни полета.");
+    if (isUsernameAvailable === false) {
+      setError("Моля, изберете друго потребителско име.");
       return;
     }
-    if (password !== password2) {
+     if (isPasswordValid === false) {
+      setError("Паролата не отговаря на изискванията.");
+      return;
+    }
+    if (passwordsMatch === false) {
       setError("Паролите не съвпадат.");
       return;
     }
-    // Minimal client-side password length check, backend handles full policy
-    if (password.length < 8) { 
-        setError("Паролата трябва да е поне 8 символа.");
-        return;
+    if (!email || !username || !password || !password2 || !firstName || !lastName) {
+      setError("Моля, попълнете всички задължителни полета.");
+      return;
     }
 
     setLocalLoading(true);
@@ -70,7 +164,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         last_name: lastName,
       };
       await register(credentials);
-      toast({ title: "Успешна регистрация", description: `Потребител ${username} беше регистриран.` });
+      toast({ title: "Успешна регистрация", description: `Потребител ${username} беше регистриран. Сега можете да влезете в профила си.`, variant: "default" });
       onOpenChange(false);
       setEmail('');
       setUsername('');
@@ -90,6 +184,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       setLocalLoading(false);
     }
   };
+
+  const canSubmit = !isLoading && isUsernameAvailable === true && isPasswordValid === true && passwordsMatch === true;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -119,13 +215,22 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
 
             <div className="space-y-1">
               <Label htmlFor="reg-username">Потребителско име</Label>
-              <Input
-                id="reg-username"
-                placeholder="Вашето име..."
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <Input
+                  id="reg-username"
+                  placeholder="Вашето име..."
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+                  className={usernameError ? "border-red-500" : (isUsernameAvailable === true ? "border-green-500" : "")}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  {isCheckingUsername && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  {isUsernameAvailable === true && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                  {isUsernameAvailable === false && username.length > 2 && <XCircle className="h-4 w-4 text-red-500" />}
+                </div>
+              </div>
+              {usernameError && <p className="text-xs text-red-500 mt-1">{usernameError}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -152,32 +257,31 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               </div>
             </div>
 
-            <TooltipProvider>
-              <Tooltip delayDuration={300}>
-                <TooltipTrigger asChild>
-                  <div className="space-y-1">
-                    <Label htmlFor="reg-password">Парола</Label>
-                    <Input
-                      id="reg-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
-                    />
-                  </div>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs text-wrap">
-                  <p><strong>Изисквания за парола:</strong></p>
-                  <ul className="list-disc list-inside">
-                    <li>Вашата парола не може да прилича на останалата Ви лична информация.</li>
-                    <li>Вашата парола трябва да съдържа поне 8 символа.</li>
-                    <li>Вашата парола не може да бъде често срещана.</li>
-                    <li>Вашата парола не може да бъде само от цифри.</li>
-                  </ul>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+            
+            <div className="space-y-1">
+              <Label htmlFor="reg-password">Парола</Label>
+              <div className="relative">
+                <Input
+                  id="reg-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+                  className={isPasswordValid === false ? "border-red-500" : (isPasswordValid === true ? "border-green-500" : "")}
+                />
+                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+                  {isCheckingPassword && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  {isPasswordValid === true && <CheckCircle2 className="h-4 w-4 text-green-500" />}
+                  {isPasswordValid === false && password.length > 0 && <XCircle className="h-4 w-4 text-red-500" />}
+                </div>
+              </div>
+               {passwordErrors.length > 0 && (
+                <ul className="text-xs text-red-500 mt-1 list-disc list-inside">
+                  {passwordErrors.map((err, index) => <li key={index}>{err}</li>)}
+                </ul>
+              )}
+            </div>
 
             <div className="space-y-1">
               <Label htmlFor="reg-password2">Потвърди паролата</Label>
@@ -188,12 +292,14 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
                 value={password2}
                 onChange={(e) => setPassword2(e.target.value)}
                 disabled={isLoading}
+                className={passwordsMatch === false ? "border-red-500" : (passwordsMatch === true ? "border-green-500" : "")}
               />
+              {passwordsMatch === false && <p className="text-xs text-red-500 mt-1">Паролите не съвпадат.</p>}
             </div>
 
             {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
 
-            <Button className="w-full mt-1" onClick={handleRegister} disabled={isLoading}>
+            <Button className="w-full mt-1" onClick={handleRegister} disabled={!canSubmit}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {isLoading ? "Регистрация..." : "Регистрация"}
             </Button>
@@ -202,9 +308,9 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               <button
                 type="button"
                 className="text-primary font-semibold hover:underline"
-                onClick={() => { // Corrected syntax
-                  onOpenChange(false); // Close register dialog
-                  onOpenLogin?.();   // Open login dialog
+                onClick={() => {
+                  onOpenChange(false);
+                  onOpenLogin?.();
                 }}
               >
                 Вход
@@ -222,9 +328,9 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               <button
                 type="button"
                 className="text-primary font-semibold hover:underline"
-                onClick={() => { // Corrected syntax
-                  onOpenChange(false); // Close register dialog
-                  onOpenLogin?.();   // Open login dialog
+                onClick={() => {
+                  onOpenChange(false);
+                  onOpenLogin?.();
                 }}
               >
                 Вход
