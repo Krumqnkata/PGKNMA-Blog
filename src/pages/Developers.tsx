@@ -10,20 +10,20 @@ import CookieConsent from "@/components/CookieConsent";
 const developers = [
   {
     name: "Александър",
-    role: "Проектен лидер и Full-Stack гуру",
+    role: "Full-Stack гуру и главен архитект на системата",
     avatar: "https://avatars.githubusercontent.com/u/246351746?v=4", // Using AlexanderYthef0's avatar
     github: "https://github.com/ythef0",
   },
   {
     name: "Крум",
-    role: "UI/UX нинджа",
+    role: "UI/UX нинджа и фронтенд магьосник",
     avatar: "https://avatars.githubusercontent.com/u/213969107?v=4", // Using Krumqnkata's avatar
     github: "https://github.com/Krumqnkata",
   },
   {
     name: "Г-н Людмил Бонев",
-    role: "Ментор и двигател на проекта",
-    avatar: "https://static.vecteezy.com/system/resources/previews/053/547/120/non_2x/generic-user-profile-avatar-for-online-platforms-and-social-media-vector.jpg", 
+    role: "Ментор, двигател на проекта и вдъхновител",
+    avatar: "/logo-light.png", 
     github: "/developers",
   },
 ];
