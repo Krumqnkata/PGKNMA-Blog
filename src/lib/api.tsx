@@ -1,13 +1,5 @@
 import { apiRequest } from './api_auth';
 
-
-
-
-
-
-
-// src/lib/api.ts (или src/services/posts.ts)
-
 export interface PostDocument {
     id: number;
     file_name: string | null;
@@ -612,13 +604,13 @@ export async function getSiteStatus(): Promise<SiteStatus> {
 
         if (!response.ok) {
             console.error(`HTTP грешка при извличане на статуса на сайта: ${response.status}`);
-            return { maintenance_mode: false }; // Fallback to ensure site is accessible
+            return { maintenance_mode: true }; // Fallback to ensure site is accessible
         }
 
         return response.json();
     } catch (error) {
         console.error('Грешка при извличане на статуса на сайта:', error);
-        return { maintenance_mode: false }; // Fallback to ensure site is accessible
+        return { maintenance_mode: true }; // Fallback to ensure site is accessible
     }
 }
 
