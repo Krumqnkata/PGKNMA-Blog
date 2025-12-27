@@ -134,11 +134,11 @@ const Post = () => {
                                                 href={doc.file_url} 
                                                 target="_blank" 
                                                 rel="noopener noreferrer" 
-                                                className="flex items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors"
+                                                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors flex-wrap"
                                             >
-                                                {getFileIcon(doc.file_name || doc.file_url)}
-                                                <span className="font-medium text-card-foreground hover:underline break-words">
-                                                    {doc.file_name || decodeURIComponent(doc.file_url.split('/').pop() || '')}
+                                                {getFileIcon(doc.file_url)}
+                                                <span className="font-medium text-card-foreground hover:underline break-words flex-grow">
+                                                    {decodeURIComponent(doc.file_url.split('/').pop() || '')}
                                                 </span>
                                                 <span className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
                                                     Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
