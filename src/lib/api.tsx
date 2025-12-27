@@ -8,6 +8,13 @@ import { apiRequest } from './api_auth';
 
 // src/lib/api.ts (или src/services/posts.ts)
 
+export interface PostDocument {
+    id: number;
+    file_name: string | null;
+    file_url: string;
+    uploaded_at: string;
+}
+
 // ❗ Препоръчително: Дефинирайте типа на един пост, ако използвате TypeScript
 export interface Post {
     id: number;
@@ -23,6 +30,7 @@ export interface Post {
     published: boolean;
     allowed: boolean;
     images: string[];
+    documents: PostDocument[];
 }
 /**
  * Взима списък с всички постове от Django API.

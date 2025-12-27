@@ -7,7 +7,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Loader2, Tag } from "lucide-react";
+import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileJson, FileWarning } from "lucide-react"; // Corrected icon imports
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
@@ -43,6 +43,24 @@ const Post = () => {
 
         fetchPost();
     }, [id]);
+
+    const getFileIcon = (fileName: string) => {
+        const extension = fileName.split('.').pop()?.toLowerCase();
+        switch (extension) {
+            case 'pdf':
+                return <FileJson className="h-6 w-6 text-red-500" />;
+            case 'docx':
+            case 'doc':
+                return <FileText className="h-6 w-6 text-blue-500" />;
+            case 'xlsx':
+            case 'xls':
+                return <FileSpreadsheet className="h-6 w-6 text-green-500" />;
+            case 'zip':
+                return <FileArchive className="h-6 w-6 text-gray-500" />;
+            default:
+                return <FileWarning className="h-6 w-6 text-gray-500" />;
+        }
+    };
 
     return (
         <div className="min-h-screen w-full bg-background">
@@ -100,6 +118,32 @@ const Post = () => {
                                                     className="w-full h-auto rounded-lg object-cover aspect-square transition-transform hover:scale-105"
                                                 />
                                             </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Document Section */}
+                            {post.documents && post.documents.length > 0 && (
+                                <div className="mt-12">
+                                    <h2 className="text-2xl font-bold mb-4">Прикачени файлове</h2>
+                                    <div className="space-y-3">
+                                        {post.documents.map((doc, index) => (
+                                            <a 
+                                                key={doc.id || index} 
+                                                href={doc.file_url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className="flex items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors"
+                                            >
+                                                {getFileIcon(doc.file_name || doc.file_url)}
+                                                <span className="font-medium text-card-foreground hover:underline break-words">
+                                                    {doc.file_name || decodeURIComponent(doc.file_url.split('/').pop() || '')}
+                                                </span>
+                                                <span className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
+                                                    Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
+                                                </span>
+                                            </a>
                                         ))}
                                     </div>
                                 </div>
