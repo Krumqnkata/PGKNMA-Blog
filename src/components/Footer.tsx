@@ -97,14 +97,14 @@ const Footer = () => {
                 <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                 <span>ул. Стефан Сливков №7, град Стара Загора</span>
               </li>
-              <li className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80">
+              <a href="tel:+359884994500" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Phone className="h-5 w-5 flex-shrink-0 text-primary" />
                 <span>+359 88 499 4500</span>
-              </li>
-              <li className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80">
+              </a>
+              <a href="mailto:info-2400020@edu.mon.bg" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
                 <span>info-2400020@edu.mon.bg</span>
-              </li>
+              </a>
             </ul>
           </div>
         </div>
