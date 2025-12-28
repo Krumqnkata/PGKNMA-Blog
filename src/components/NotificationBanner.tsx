@@ -24,14 +24,20 @@ const NotificationBanner: React.FC = () => {
   }
 
   return (
-    <div className="bg-accent text-accent-foreground text-center py-2">
-      {enabledNotifications.map(notification => (
-        <p 
-          key={notification.id} 
-          className="text-sm font-medium"
-          dangerouslySetInnerHTML={{ __html: notification.html_text }}
-        />
-      ))}
+    <div className="bg-accent text-accent-foreground text-center py-2 px-4">
+      <div className="space-y-2"> {/* Add vertical spacing between notifications */}
+        {enabledNotifications.map((notification, index) => (
+          <React.Fragment key={notification.id}>
+            <p 
+              className="text-sm font-medium"
+              dangerouslySetInnerHTML={{ __html: notification.html_text }}
+            />
+            {index < enabledNotifications.length - 1 && ( // Add a horizontal rule between notifications
+              <hr className="border-t border-accent-foreground/30 my-1" />
+            )}
+          </React.Fragment>
+        ))}
+      </div>
     </div>
   );
 };
