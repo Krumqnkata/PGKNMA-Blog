@@ -39,7 +39,7 @@ const ParticlesComponent = (props: { id?: string, theme?: string }) => {
           value: "transparent",
         },
       },
-      fpsLimit: 120,
+      fpsLimit: 90,
       interactivity: {
         events: {
           onClick: {
