@@ -58,7 +58,7 @@ const NotificationBanner: React.FC = () => {
                 </>
               ) : (
                 <>
-                  <Bell className="mr-1 h-4 w-4" /> Покажи всички ({notificationCount}) <ChevronDown className="ml-1 h-4 w-4" />
+                  <Bell className="mr-1 h-4 w-4" /> Покажи всички известия ({notificationCount}) <ChevronDown className="ml-1 h-4 w-4" />
                 </>
               )}
             </Button>
