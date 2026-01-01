@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSettings } from "@/contexts/SettingsContext"; // New import
 import { useToast } from "@/components/ui/use-toast"; // New import
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const { login } = useAuth();
@@ -21,6 +22,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     setError("");
@@ -62,14 +64,23 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
             />
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="relative flex flex-col gap-1">
             <label className="text-sm font-medium">Парола</label>
             <Input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Вашата парола..."
             />
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-7 h-7 w-7"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </Button>
           </div>
 
           {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
