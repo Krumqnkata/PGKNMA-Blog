@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
 import { RegisterCredentials, checkUsername, validatePassword } from '@/lib/api';
-import { Loader2, Settings, CheckCircle2, XCircle } from "lucide-react";
+import { Loader2, Settings, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -39,6 +39,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [lastName, setLastName] = useState("");
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   // State for username validation
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -263,18 +264,22 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               <div className="relative">
                 <Input
                   id="reg-password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
                   className={isPasswordValid === false ? "border-red-500" : (isPasswordValid === true ? "border-green-500" : "")}
                 />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                  {isCheckingPassword && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-                  {isPasswordValid === true && <CheckCircle2 className="h-4 w-4 text-green-500" />}
-                  {isPasswordValid === false && password.length > 0 && <XCircle className="h-4 w-4 text-red-500" />}
-                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </Button>
               </div>
                {passwordErrors.length > 0 && (
                 <ul className="text-xs text-red-500 mt-1 list-disc list-inside">
@@ -287,7 +292,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               <Label htmlFor="reg-password2">Потвърди паролата</Label>
               <Input
                 id="reg-password2"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="••••••••"
                 value={password2}
                 onChange={(e) => setPassword2(e.target.value)}
