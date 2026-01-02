@@ -2,7 +2,11 @@ import { useEffect } from 'react';
 import { Construction } from 'lucide-react';
 import logoDark from "/logo-dark.png";
 
-const MaintenancePage = () => {
+interface MaintenancePageProps {
+  isBackendError?: boolean;
+}
+
+const MaintenancePage = ({ isBackendError = false }: MaintenancePageProps) => {
   useEffect(() => {
     // Force dark theme when this page is active
     document.documentElement.classList.add('dark');
@@ -13,6 +17,8 @@ const MaintenancePage = () => {
     };
   }, []); // Empty dependency array ensures this runs only once on mount and cleanup on unmount
 
+  const errorCode = isBackendError ? "CONNECTION_ERROR" : "MAINTENANCE_MODE";
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-background text-foreground p-4">
       <div className="text-center max-w-md">
@@ -21,6 +27,12 @@ const MaintenancePage = () => {
         <h1 className="text-4xl font-bold mb-2">Сайтът е в поддръжка</h1>
         <p className="text-lg text-muted-foreground">
           В момента извършваме планирана техническа поддръжка на системата, за да подобрим качеството на услугите и да осигурим по-добро потребителско изживяване. Всички функционалности временно са недостъпни, но очакваме поддръжката да приключи скоро. Моля, опитайте да влезете в системата отново след известно време. Извиняваме се искрено за причиненото неудобство и благодарим за разбирането!
+        </p>
+        <p className="mt-2 text-base text-muted-foreground italic">
+          {isBackendError ? "Причина: Грешка при връзка със сървъра" : "Причина: Планирана техническа поддръжка"}
+        </p>
+        <p className="mt-4 text-sm text-muted-foreground">
+          Код на грешка: {errorCode}
         </p>
         <h2 className="mt-6 text-xl font-semibold">Благодарим ви за разбирането!
         </h2>
