@@ -29,7 +29,7 @@ import FeatureDisabledPage from "./pages/FeatureDisabledPage"; // Import Feature
 
 
 const AppContent = () => { // Renamed App to AppContent
-  const { data: siteStatus, isLoading: isSiteStatusLoading } = useQuery({
+  const { data: siteStatus, isLoading: isSiteStatusLoading, isError: isSiteStatusError } = useQuery({
     queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
     refetchInterval: 60000, // Refetch every 60 seconds
@@ -63,8 +63,8 @@ const AppContent = () => { // Renamed App to AppContent
     );
   }
 
-  if (maintenanceMode) {
-    return <MaintenancePage />;
+  if (maintenanceMode || isSiteStatusError) {
+    return <MaintenancePage isBackendError={isSiteStatusError} />;
   }
   
   // After loading, let the ThemeProvider handle the saved theme

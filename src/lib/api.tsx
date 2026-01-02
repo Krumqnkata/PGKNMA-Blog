@@ -604,13 +604,16 @@ export async function getSiteStatus(): Promise<SiteStatus> {
 
         if (!response.ok) {
             console.error(`HTTP грешка при извличане на статуса на сайта: ${response.status}`);
-            return { maintenance_mode: true }; // Fallback to ensure site is accessible
+            // Don't return maintenance mode here, let the error be handled by throwing
+            const errorData = await response.json().catch(() => ({ detail: 'HTTP error' }));
+            throw new Error(errorData.detail || `HTTP error: ${response.status}`);
         }
 
         return response.json();
     } catch (error) {
         console.error('Грешка при извличане на статуса на сайта:', error);
-        return { maintenance_mode: true }; // Fallback to ensure site is accessible
+        // Re-throw the error so that useQuery can catch it and set isError to true
+        throw error;
     }
 }
 
