@@ -8,13 +8,15 @@ import {
   getApprovedSongs,
   getMemes,
   getNotifications,
+  getChangelog, // Import getChangelog
   SiteStatus,
   Event,
   Post,
   UserPollStatus,
   ApprovedSong,
   Meme,
-  Notification
+  Notification,
+  ChangelogEntry // Import ChangelogEntry
 } from '@/lib/api';
 
 const REFETCH_INTERVAL_MS = 60 * 1000; // 1 minute
@@ -27,6 +29,7 @@ interface GlobalState {
   approvedSongs: { data?: ApprovedSong[]; isLoading: boolean; error: Error | null; };
   memes: { data?: Meme[]; isLoading: boolean; error: Error | null; };
   notifications: { data?: Notification[]; isLoading: boolean; error: Error | null; };
+  changelog: { data?: ChangelogEntry[]; isLoading: boolean; error: Error | null; }; // Add changelog state
   notificationsEnabled: boolean;
   setNotificationsEnabled: (enabled: boolean) => void;
 }
@@ -85,6 +88,13 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({ childre
     retry: false,
   });
 
+  const changelogQuery = useQuery<ChangelogEntry[], Error>({
+    queryKey: ['changelog'],
+    queryFn: getChangelog,
+    refetchInterval: REFETCH_INTERVAL_MS,
+    retry: false,
+  });
+
   const value: GlobalState = {
     siteStatus: { data: siteStatusQuery.data, isLoading: siteStatusQuery.isLoading, error: siteStatusQuery.error },
     events: { data: eventsQuery.data, isLoading: eventsQuery.isLoading, error: eventsQuery.error },
@@ -93,6 +103,7 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({ childre
     approvedSongs: { data: approvedSongsQuery.data, isLoading: approvedSongsQuery.isLoading, error: approvedSongsQuery.error },
     memes: { data: memesQuery.data, isLoading: memesQuery.isLoading, error: memesQuery.error },
     notifications: { data: notificationsQuery.data, isLoading: notificationsQuery.isLoading, error: notificationsQuery.error },
+    changelog: { data: changelogQuery.data, isLoading: changelogQuery.isLoading, error: changelogQuery.error }, // Provide changelog data
     notificationsEnabled,
     setNotificationsEnabled,
   };
