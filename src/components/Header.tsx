@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun, Menu, X, Search, LogIn, LogOut, User } from "lucide-react";
+import { Moon, Sun, Menu, X, Search, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
@@ -9,19 +9,23 @@ import { useTheme } from "next-themes";
 import NotificationBanner from "@/components/NotificationBanner";
 import logoDark from "/logo-dark.png";
 import { useAuth } from "@/contexts/AuthContext";
-import { Link } from "react-router-dom";
+import { UserDropdown } from "./UserDropdown";
+import { useLocation } from "react-router-dom";
+
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const { 
     isAuthenticated, 
-    user, 
     logout,
     loginDialogOpen,
     openLoginDialog,
     closeLoginDialog
   } = useAuth();
+  
+  const location = useLocation();
+  const isOnProfilePage = location.pathname === '/profile';
 
   const { theme, setTheme, systemTheme } = useTheme();
   const logo = logoDark;
@@ -84,17 +88,7 @@ const Header = () => {
           </Button>
           
           {isAuthenticated ? (
-            <>
-              <Button variant="ghost" size="icon" asChild>
-                <Link to="/profile">
-                  <User className="h-5 w-5" />
-                </Link>
-              </Button>
-              <Button className="hidden gap-2 sm:inline-flex" onClick={logout}>
-                <LogOut className="h-4 w-4" />
-                Изход
-              </Button>
-            </>
+            <UserDropdown />
           ) : (
             <Button className="hidden gap-2 sm:inline-flex" onClick={openLoginDialog}>
               <LogIn className="h-4 w-4" />
@@ -132,27 +126,31 @@ const Header = () => {
               </NavLink>
             ))}
 
-            {isAuthenticated ? (
-              <>
-                <NavLink
-                  to="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                  activeClassName="bg-accent text-primary"
-                >
-                  Моят профил
-                </NavLink>
-                <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); logout(); }}>
-                  <LogOut className="h-4 w-4" />
-                  Изход
+            <div className="border-t border-border/40 pt-4 mt-4 space-y-2">
+              {isAuthenticated ? (
+                <>
+                  <NavLink
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+                    activeClassName="bg-accent text-primary"
+                  >
+                    Моят профил
+                  </NavLink>
+                  {!isOnProfilePage && (
+                     <Button variant="outline" className="w-full gap-2" onClick={() => { setMobileMenuOpen(false); logout(); }}>
+                      <LogOut className="h-4 w-4" />
+                      Изход
+                    </Button>
+                  )}
+                </>
+              ) : (
+                <Button className="w-full gap-2" onClick={() => { setMobileMenuOpen(false); openLoginDialog(); }}>
+                  <LogIn className="h-4 w-4" />
+                  Вход
                 </Button>
-              </>
-            ) : (
-              <Button className="mt-4 w-full gap-2" onClick={() => { setMobileMenuOpen(false); openLoginDialog(); }}>
-                <LogIn className="h-4 w-4" />
-                Вход
-              </Button>
-            )}
+              )}
+            </div>
           </div>
         </div>
       )}
