@@ -1,6 +1,7 @@
 import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe, Code } from "lucide-react";
 import type React from "react";
 import PageLoadStats from "./PageLoadStats";
+import { Button } from "@/components/ui/button"; // Import Button
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -19,17 +20,18 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     </svg>
 );
 
-const Footer = () => {
+const Footer: React.FC = () => {
   const quickLinks = [
-    { label: "За нас", href: "/contact" },
+    { label: "Контакт", href: "/contact" },
     { label: "Прием", href: "https://pgknma.com/priem" },
     { label: "Новини", href: "/news" },
   ];
 
   const resources = [
-    { label: "Училищен уебсайт", href: "https://pgknma.com/" },
+    { label: "Сайт на гимназията", href: "https://pgknma.com/" },
     { label: "Политика за поверителност", href: "/privacy-policy" },
     { label: "Условия за ползване", href: "/terms-of-service" },
+    { label: "история на промени в сайта", href: "/changelog" },
   ];
 
   const socialLinks = [

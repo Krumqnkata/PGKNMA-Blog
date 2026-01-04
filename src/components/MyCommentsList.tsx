@@ -3,7 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMyComments, deleteMyComment, Comment } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trash2, Loader2, MessageSquareOff } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Trash2, Loader2, MessageSquareOff, ArrowUpRightFromSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
@@ -63,33 +64,41 @@ const MyCommentsList: React.FC = () => {
               </p>
               <p className="mt-1">"{comment.content}"</p>
             </div>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Изтриване на коментар</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Сигурни ли сте, че искате да изтриете този коментар? Това действие е необратимо.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Отказ</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => deleteMutation.mutate(comment.id)} disabled={deleteMutation.isPending}>
-                    {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Изтрий
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <div className="flex items-center">
+              <Button variant="ghost" size="icon" asChild>
+                <Link to={`/post/${comment.post_id}`} title="Отиди към публикацията">
+                  <ArrowUpRightFromSquare className="h-4 w-4" />
+                </Link>
+              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Изтриване на коментар</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Сигурни ли сте, че искате да изтриете този коментар? Това действие е необратимо.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Отказ</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => deleteMutation.mutate(comment.id)} disabled={deleteMutation.isPending}>
+                      {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      Изтрий
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
           </CardContent>
         </Card>
       ))}
     </div>
   );
 };
+
 
 export default MyCommentsList;

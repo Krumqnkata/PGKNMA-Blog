@@ -86,6 +86,7 @@ export interface User {
 
 export interface Comment {
     id: number;
+    post_id: number;
     author_username: string;
     content: string;
     created_at: string;
@@ -709,4 +710,26 @@ export async function deleteMyComment(commentId: number): Promise<void> {
         throw new Error('Неуспешно изтриване на коментара.');
     }
     // No content is returned on successful deletion
+}
+
+export async function deleteMySongSuggestion(songId: number): Promise<void> {
+    const response = await apiRequest(`/api/my-content/songs/${songId}/delete/`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Неуспешно изтриване на предложението за песен.');
+    }
+}
+
+export async function deleteMyMeme(memeId: number): Promise<void> {
+    const response = await apiRequest(`/api/my-content/memes/${memeId}/delete/`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || 'Неуспешно изтриване на мемето.');
+    }
 }
