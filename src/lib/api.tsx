@@ -617,6 +617,25 @@ export async function getSiteStatus(): Promise<SiteStatus> {
     }
 }
 
+export interface ChangelogEntry {
+  content: string;
+  updated_at: string;
+}
 
+export async function getChangelog(): Promise<ChangelogEntry[]> {
+    try {
+        const response = await apiRequest(`/api/changelog/`, { method: 'GET' });
 
+        if (!response.ok) {
+            if (response.status === 404) return []; // No changelog is not an error
+            console.error(`HTTP error fetching changelog: ${response.status}`);
+            throw new Error('Could not fetch changelog');
+        }
 
+        return response.json();
+    } catch (error) {
+        console.error('API communication error for changelog:', error);
+        // In case of a network error, return empty array to not block the UI
+        return [];
+    }
+}
