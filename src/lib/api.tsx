@@ -639,3 +639,74 @@ export async function getChangelog(): Promise<ChangelogEntry[]> {
         return [];
     }
 }
+
+export interface PasswordChangeData {
+    current_password: string;
+    new_password: string;
+    new_password_confirm: string;
+}
+
+export async function updateUserPassword(data: PasswordChangeData): Promise<{ status: string }> {
+    const response = await apiRequest(`/api/auth/profile/change-password/`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешна смяна на парола.' }));
+        console.error(`HTTP грешка при смяна на парола: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Възникна грешка при смяната на паролата.');
+    }
+
+    return response.json();
+}
+
+export async function deleteMyAccount(): Promise<{ status: string }> {
+    const response = await apiRequest(`/api/auth/profile/delete/`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok && response.status !== 204) {
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изтриване на профила.' }));
+        console.error(`HTTP грешка при изтриване на профил: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Възникна грешка при изтриването на профила.');
+    }
+
+    // For 204 No Content, there is no body, so we return a success status manually
+    return { status: "Профилът е изтрит успешно" };
+}
+
+export async function getMySongSuggestions(): Promise<ApprovedSong[]> {
+    const response = await apiRequest(`/api/my-content/songs/`, { method: 'GET' });
+    if (!response.ok) {
+        throw new Error('Неуспешно зареждане на вашите предложения за песни.');
+    }
+    return response.json();
+}
+
+export async function getMyMemes(): Promise<Meme[]> {
+    const response = await apiRequest(`/api/my-content/memes/`, { method: 'GET' });
+    if (!response.ok) {
+        throw new Error('Неуспешно зареждане на вашите мемета.');
+    }
+    return response.json();
+}
+
+export async function getMyComments(): Promise<Comment[]> {
+    const response = await apiRequest(`/api/my-content/comments/`, { method: 'GET' });
+    if (!response.ok) {
+        throw new Error('Неуспешно зареждане на вашите коментари.');
+    }
+    return response.json();
+}
+
+export async function deleteMyComment(commentId: number): Promise<void> {
+    const response = await apiRequest(`/api/my-content/comments/${commentId}/delete/`, {
+        method: 'DELETE',
+    });
+
+    if (!response.ok) {
+        throw new Error('Неуспешно изтриване на коментара.');
+    }
+    // No content is returned on successful deletion
+}

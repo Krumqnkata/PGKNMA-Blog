@@ -18,6 +18,8 @@ import Developers from "./pages/Developers";
 import Test from "./pages/Test";
 import Post from "./pages/Post";
 import Program from "./pages/Program";
+import MyProfilePage from "./pages/MyProfilePage";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // New imports
 import { useState, useEffect } from "react";
@@ -117,7 +119,10 @@ const AppContent = () => {
                 <Route path="/program" element={<Program />} />
                 <Route path="/bell-suggest" element={settingsData?.enable_bell_suggestions ? <BellSuggest /> : <FeatureDisabledPage />} />
                 <Route path="/weekly-poll" element={settingsData?.enable_weekly_poll ? <WeeklyPoll /> : <FeatureDisabledPage />} />
-                <Route path="/meme-of_the_week" element={settingsData?.enable_meme_of_the_week ? <MemeOfTheWeek /> : <FeatureDisabledPage />} />
+                <Route path="/meme-of-the-week" element={settingsData?.enable_meme_of_the_week ? <MemeOfTheWeek /> : <FeatureDisabledPage />} />
+                
+                <Route path="/profile" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
+
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/terms-of-service" element={<TermsOfService />} />
