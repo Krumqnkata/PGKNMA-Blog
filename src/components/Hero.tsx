@@ -14,7 +14,7 @@ const Hero = () => {
           {/* Badge */}
           <div className="mb-6 inline-flex items-center rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-muted-foreground">
             <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Добре дошли в училищния блог!
+            Добре дошли в ПГКНМА блог!
           </div>
 
           {/* Headline */}
