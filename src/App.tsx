@@ -17,6 +17,7 @@ import TermsOfService from "./pages/TermsOfService";
 import Developers from "./pages/Developers";
 import Test from "./pages/Test";
 import Post from "./pages/Post";
+import Program from "./pages/Program";
 
 // New imports
 import { useState, useEffect } from "react";
@@ -80,6 +81,7 @@ const AppContent = () => { // Renamed App to AppContent
                 <Route path="/news" element={<News />} />
                 <Route path="/post/:id" element={<Post />} />
                 <Route path="/events" element={<SchoolCalendar />} />
+                <Route path="/program" element={<Program />} />
 
                 {/* Conditional Routes */}
                 <Route path="/bell-suggest" element={settings?.enable_bell_suggestions ? <BellSuggest /> : <FeatureDisabledPage />} />

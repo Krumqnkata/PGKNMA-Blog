@@ -9,7 +9,7 @@ import { useTheme } from "next-themes";
 import NotificationBanner from "@/components/NotificationBanner";
 import logoDark from "/logo-dark.png";
 import { useAuth } from "@/contexts/AuthContext";
-
+import { Link } from "react-router-dom";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -34,6 +34,7 @@ const Header = () => {
     { name: "Седмична анкета", path: "/weekly-poll" },
     { name: "Меме на седмицата", path: "/meme-of-the-week" },
     { name: "Контакт", path: "/contact" },
+    {name: "Програма", path: "/program"},
   ];
 
   // --- Check session on mount ---
