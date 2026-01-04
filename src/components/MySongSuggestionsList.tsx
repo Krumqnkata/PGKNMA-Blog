@@ -1,14 +1,38 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getMySongSuggestions, ApprovedSong } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { getMySongSuggestions, deleteMySongSuggestion, ApprovedSong } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2, MicOff } from 'lucide-react';
-import SongMediaDisplay from './SongMediaDisplay'; // Assuming this component can display a song
+import { Button } from '@/components/ui/button';
+import { Loader2, MicOff, Trash2 } from 'lucide-react';
+import SongMediaDisplay from './SongMediaDisplay';
+import { useToast } from '@/hooks/use-toast';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 
 const MySongSuggestionsList: React.FC = () => {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
   const { data: songs, isLoading, isError, error } = useQuery<ApprovedSong[], Error>({
     queryKey: ['my-song-suggestions'],
     queryFn: getMySongSuggestions,
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteMySongSuggestion,
+    onSuccess: () => {
+      toast({
+        title: "Успех",
+        description: "Предложението за песен беше изтрито.",
+      });
+      queryClient.invalidateQueries({ queryKey: ['my-song-suggestions'] });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Грешка",
+        description: error.message || "Възникна грешка при изтриването.",
+        variant: "destructive",
+      });
+    },
   });
 
   const getStatusBadge = (status: string) => {
@@ -53,7 +77,33 @@ const MySongSuggestionsList: React.FC = () => {
                   Предложено на: {new Date(song.submitted_at).toLocaleDateString('bg-BG')} | Гласове: {song.votes}
                 </CardDescription>
               </div>
-              {getStatusBadge(song.status)}
+              <div className="flex items-center gap-2">
+                {getStatusBadge(song.status)}
+                {song.status === 'pending' && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Изтриване на предложение</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Сигурни ли сте, че искате да изтриете това предложение?
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Отказ</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => deleteMutation.mutate(song.id)} disabled={deleteMutation.isPending}>
+                          {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Изтрий
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
+              </div>
             </div>
           </CardHeader>
           <CardContent>

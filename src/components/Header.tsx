@@ -37,12 +37,11 @@ const Header = () => {
     { name: "Предложения за звънец", path: "/bell-suggest" },
     { name: "Седмична анкета", path: "/weekly-poll" },
     { name: "Меме на седмицата", path: "/meme-of-the-week" },
-    { name: "Контакт", path: "/contact" },
-    {name: "Програма", path: "/program"},
+    { name: "Програма", path: "/program"},
   ];
 
   // --- Check session on mount ---
-  
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm ">
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -86,7 +85,7 @@ const Header = () => {
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
-          
+
           {isAuthenticated ? (
             <UserDropdown />
           ) : (
@@ -115,15 +114,15 @@ const Header = () => {
         <div className="border-b border-border bg-background md:hidden">
           <div className="container mx-auto space-y-1 px-4 py-4">
             {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                activeClassName="bg-accent text-primary"
-              >
-                {link.name}
-              </NavLink>
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
+                  activeClassName="bg-accent text-primary"
+                >
+                  {link.name && <span>{link.name}</span>}
+                </NavLink>
             ))}
 
             <div className="border-t border-border/40 pt-4 mt-4 space-y-2">
