@@ -1,12 +1,153 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
-// Уверете се, че CommentType в api.ts дефинира 'username: string'
-import { getComments, addComment, Comment as CommentType } from '@/lib/api'; 
+import { getComments, addComment, Comment as CommentType } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Loader2, MessageSquare } from 'lucide-react';
+import { Loader2, MessageSquare, ReplyIcon } from 'lucide-react';
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-// AvatarImage е импортиран, но не се използва, което е ОК.
+import { toast } from 'sonner';
+
+interface CommentItemProps {
+    comment: CommentType;
+    postId: string;
+    onReplySuccess: () => void;
+    level: number;
+}
+
+const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySuccess, level }) => {
+    const { isAuthenticated, user, openLoginDialog } = useAuth();
+    const [showReplyForm, setShowReplyForm] = useState(false);
+    const [replyContent, setReplyContent] = useState('');
+    const [submittingReply, setSubmittingReply] = useState(false);
+    const replyFormRef = useRef<HTMLTextAreaElement>(null);
+
+    const handleReplySubmit = async () => {
+        if (!replyContent.trim()) {
+            toast.error('Моля, напишете отговор.');
+            return;
+        }
+        if (!isAuthenticated || !user) {
+            openLoginDialog();
+            return;
+        }
+
+        setSubmittingReply(true);
+        try {
+            await addComment(postId, replyContent, comment.id);
+            setReplyContent('');
+            setShowReplyForm(false);
+            onReplySuccess(); // Trigger refresh of comments
+            toast.success('Отговорът е добавен успешно!');
+        } catch (err: any) {
+            toast.error(err.message || 'Грешка при добавяне на отговора.');
+            console.error(err);
+        } finally {
+            setSubmittingReply(false);
+        }
+    };
+
+    useEffect(() => {
+        if (showReplyForm && replyFormRef.current) {
+            replyFormRef.current.focus();
+        }
+    }, [showReplyForm]);
+
+    // Increase indentation to make reply hierarchy more visible
+    const indentation = level * 24; // e.g., level 1 = 24px, level 2 = 48px
+
+    return (
+        <div
+            style={{ paddingLeft: `${indentation}px` }}
+            className={`py-4 border-b last:border-b-0 ${level > 0 ? 'relative pl-8' : ''}`}
+        >
+            {level > 0 && (
+                <div
+                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-200"
+                    style={{ left: `${level * 24 - 12}px` }}
+                />
+            )}
+            <div className="flex items-start gap-4">
+                <Avatar>
+                    <AvatarFallback>{comment.username ? comment.username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
+                </Avatar>
+                <div className="w-full">
+                    <div className="flex items-center gap-2 mb-1">
+                        <span className="font-semibold">{comment.username}</span>
+                        <span className="text-xs text-muted-foreground">
+                            {new Date(comment.created_at).toLocaleString('bg-BG')}
+                        </span>
+                    </div>
+                    <p className="text-sm text-foreground">{comment.content}</p>
+                    <Button
+                        variant="link"
+                        size="sm"
+                        className="h-auto px-0 mt-2 text-xs text-primary"
+                        onClick={() => {
+                            if (!isAuthenticated) {
+                                openLoginDialog();
+                                return;
+                            }
+                            setShowReplyForm(!showReplyForm);
+                        }}
+                    >
+                        <ReplyIcon className="h-3 w-3 mr-1" /> Отговор
+                    </Button>
+
+                    {showReplyForm && (
+                        <div className="mt-3 flex items-start gap-3">
+                             <Avatar className="h-7 w-7">
+                                <AvatarFallback className="h-7 w-7 text-xs">
+                                    {user?.username?.charAt(0).toUpperCase() || '?'}</AvatarFallback>
+                            </Avatar>
+                            <div className="w-full">
+                                <Textarea
+                                    ref={replyFormRef}
+                                    value={replyContent}
+                                    onChange={(e) => setReplyContent(e.target.value)}
+                                    placeholder={`Отговори на ${comment.username}...`}
+                                    className="mb-2 text-sm"
+                                    rows={2}
+                                    disabled={submittingReply}
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => setShowReplyForm(false)}
+                                        disabled={submittingReply}
+                                    >
+                                        Отказ
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        onClick={handleReplySubmit}
+                                        disabled={submittingReply || !replyContent.trim()}
+                                    >
+                                        {submittingReply && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                        Изпрати
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+            {comment.replies && comment.replies.length > 0 && (
+                <div className="mt-4">
+                    {comment.replies.map((reply) => (
+                        <CommentItem
+                            key={reply.id}
+                            comment={reply}
+                            postId={postId}
+                            onReplySuccess={onReplySuccess}
+                            level={level + 1}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
 
 interface CommentsProps {
     postId: string;
@@ -15,54 +156,53 @@ interface CommentsProps {
 const Comments = ({ postId }: CommentsProps) => {
     const { isAuthenticated, user, openLoginDialog } = useAuth();
     const [comments, setComments] = useState<CommentType[]>([]);
-    const [newComment, setNewComment] = useState('');
-    const [loading, setLoading] = useState(true);
-    const [submitting, setSubmitting] = useState(false);
+    const [newCommentContent, setNewCommentContent] = useState('');
+    const [loadingComments, setLoadingComments] = useState(true);
+    const [submittingMainComment, setSubmittingMainComment] = useState(false);
     const [error, setError] = useState('');
 
-    useEffect(() => {
-        const fetchComments = async () => {
-            setLoading(true);
-            setError('');
-            try {
-                const fetchedComments = await getComments(postId);
-                if (fetchedComments) {
-                    setComments(fetchedComments);
-                }
-            } catch (err) {
-                // Тази грешка е логната, но CORS вече не би трябвало да я предизвиква
-                setError('Грешка при зареждане на коментарите.');
-                console.error(err);
-            } finally {
-                setLoading(false);
+    const fetchAndSetComments = async () => {
+        setLoadingComments(true);
+        setError('');
+        try {
+            const fetchedComments = await getComments(postId);
+            if (fetchedComments) {
+                setComments(fetchedComments);
             }
-        };
+        } catch (err) {
+            setError('Грешка при зареждане на коментарите.');
+            console.error(err);
+        } finally {
+            setLoadingComments(false);
+        }
+    };
 
-        fetchComments();
+    useEffect(() => {
+        fetchAndSetComments();
     }, [postId]);
 
-    const handleSubmit = async () => {
-        if (!newComment.trim()) return;
-
-        // ⚠️ Проверете дали потребителят е наличен, преди да изпращате
+    const handleMainCommentSubmit = async () => {
+        if (!newCommentContent.trim()) {
+            toast.error('Моля, напишете коментар.');
+            return;
+        }
         if (!isAuthenticated || !user) {
-            openLoginDialog(); 
+            openLoginDialog();
             return;
         }
 
-        setSubmitting(true);
+        setSubmittingMainComment(true);
         setError('');
         try {
-            const added = await addComment(postId, newComment);
-            if (added) {
-                setComments(prevComments => [added, ...prevComments]); // Add new comment to the top
-                setNewComment('');
-            }
+            await addComment(postId, newCommentContent, null); // Parent is null for top-level comments
+            setNewCommentContent('');
+            fetchAndSetComments(); // Refresh all comments
+            toast.success('Коментарът е добавен успешно!');
         } catch (err: any) {
             setError(err.message || 'Грешка при добавяне на коментара.');
             console.error(err);
         } finally {
-            setSubmitting(false);
+            setSubmittingMainComment(false);
         }
     };
 
@@ -77,20 +217,23 @@ const Comments = ({ postId }: CommentsProps) => {
                 <div className="mb-8">
                     <div className="flex items-start gap-4">
                         <Avatar>
-                            {/* Аватар за текущия потребител */}
                             <AvatarFallback>{user?.username?.charAt(0).toUpperCase() || '?'}</AvatarFallback>
                         </Avatar>
                         <div className="w-full">
                             <Textarea
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Write a comment..."
+                                value={newCommentContent}
+                                onChange={(e) => setNewCommentContent(e.target.value)}
+                                placeholder="Напишете коментар..."
                                 className="mb-2"
                                 rows={3}
+                                disabled={submittingMainComment}
                             />
                             <div className="flex justify-end">
-                                <Button onClick={handleSubmit} disabled={submitting || !newComment.trim()}>
-                                    {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                <Button
+                                    onClick={handleMainCommentSubmit}
+                                    disabled={submittingMainComment || !newCommentContent.trim()}
+                                >
+                                    {submittingMainComment && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Изпрати коментар
                                 </Button>
                             </div>
@@ -104,7 +247,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 </p>
             )}
 
-            {loading ? (
+            {loadingComments ? (
                 <div className="text-center">
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                     <p className="mt-2 text-muted-foreground">Зареждане на коментари...</p>
@@ -114,24 +257,13 @@ const Comments = ({ postId }: CommentsProps) => {
             ) : (
                 <div className="space-y-6">
                     {comments.map((comment) => (
-                        <div key={comment.id} className="flex items-start gap-4">
-                            <Avatar>
-                                <AvatarFallback>
-                                    {/* 🎯 КОРИГИРАНО: author_username -> username, Добавена проверка за безопасност */}
-                                    {comment.username ? comment.username.charAt(0).toUpperCase() : 'U'} 
-                                </AvatarFallback>
-                            </Avatar>
-                            <div className="w-full">
-                                <div className="flex items-center gap-2 mb-1">
-                                    {/* 🎯 КОРИГИРАНО: author_username -> username */}
-                                    <span className="font-semibold">{comment.username}</span> 
-                                    <span className="text-xs text-muted-foreground">
-                                        {new Date(comment.created_at).toLocaleString('bg-BG')}
-                                    </span>
-                                </div>
-                                <p className="text-sm">{comment.content}</p>
-                            </div>
-                        </div>
+                        <CommentItem
+                            key={comment.id}
+                            comment={comment}
+                            postId={postId}
+                            onReplySuccess={fetchAndSetComments}
+                            level={0} // Top-level comments start at level 0
+                        />
                     ))}
                 </div>
             )}
@@ -140,12 +272,3 @@ const Comments = ({ postId }: CommentsProps) => {
 };
 
 export default Comments;
-
-// ⚠️ ЗАБЕЛЕЖКА ЗА REACT ROUTER ПРЕДУПРЕЖДЕНИЯТА:
-// За да премахнете Future Flag Warnings (v7_startTransition и v7_relativeSplatPath),
-// добавете 'future' prop-а към вашия <BrowserRouter> във вашия главен файл (напр. main.tsx):
-/*
-<BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-    <App />
-</BrowserRouter>
-*/

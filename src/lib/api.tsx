@@ -87,9 +87,11 @@ export interface User {
 export interface Comment {
     id: number;
     post_id: number;
-    author_username: string;
+    username: string;
     content: string;
     created_at: string;
+    parent?: number | null; // Optional, can be null for top-level comments
+    replies?: Comment[];    // Nested replies
 }
 
 export async function login(credentials: LoginCredentials): Promise<TokenResponse | null> {
@@ -138,11 +140,16 @@ export async function getComments(postId: string): Promise<Comment[] | null> {
     }
 }
 
-export async function addComment(postId: string, content: string): Promise<Comment | null> {
+export async function addComment(postId: string, content: string, parentId?: number | null): Promise<Comment | null> {
     try {
+        const body: { content: string; parent?: number | null } = { content };
+        if (parentId !== undefined && parentId !== null) {
+            body.parent = parentId;
+        }
+
         const response = await apiRequest(`/api/posts/${postId}/comments/add/`, {
             method: 'POST',
-            body: JSON.stringify({ content }),
+            body: JSON.stringify(body),
         });
 
         if (!response.ok) {
