@@ -91,27 +91,30 @@ const NewsGrid = () => {
                     </Badge>
 
                     {/* Title */}
-                    <CardTitle className="line-clamp-2 text-lg leading-tight group-hover:text-primary">
+                    <CardTitle className="line-clamp-2 text-2xl leading-tight group-hover:text-primary">
                       {item.title}
                     </CardTitle>
-
-                    {/* Date */}
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4" />
-                      <span>{new Date(item.created_at).toLocaleDateString('bg-BG')}</span>
-                    </div>
                   </CardHeader>
 
                   <CardContent>
                     {/* Excerpt */}
-                    <CardDescription className="mb-4 line-clamp-3">
+                    <CardDescription className="mb-4">
                       {item.hook}
                     </CardDescription>
 
-                    {/* Read More Link */}
-                    <div className="inline-flex items-center gap-2 text-sm font-medium text-primary transition-all group-hover:gap-3">
-                      Прочети повече
-                      <ArrowRight className="h-4 w-4" />
+                    {/* Footer with Read More and Date */}
+                    <div className="mt-4 flex items-center justify-between ">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          <span>{new Date(item.created_at).toLocaleDateString('bg-BG')}</span>
+                        </div>
+                        {/* Read More Link */}
+                        <div className="inline-flex items-center gap-2 text-base font-medium text-primary transition-all group-hover:gap-3">
+                          Прочети повече
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                        {/* Date */}
+                        
                     </div>
                   </CardContent>
                 </Card>
