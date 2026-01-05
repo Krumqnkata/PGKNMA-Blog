@@ -17,7 +17,7 @@ import {
   Notification,
 } from '@/lib/api';
 
-const REFETCH_INTERVAL_MS = 60 * 1000; // 1 minute
+const REFETCH_INTERVAL_MS = 90 * 1000; // 1,5 minute
 
 interface GlobalState {
   siteStatus: { data?: SiteStatus; isLoading: boolean; error: Error | null; };
