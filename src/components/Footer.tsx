@@ -31,7 +31,7 @@ const Footer: React.FC = () => {
     { label: "Сайт на гимназията", href: "https://pgknma.com/" },
     { label: "Политика за поверителност", href: "/privacy-policy" },
     { label: "Условия за ползване", href: "/terms-of-service" },
-    { label: "история на промени в сайта", href: "/changelog" },
+    { label: "История на промени", href: "/changelog" },
   ];
 
   const socialLinks = [
