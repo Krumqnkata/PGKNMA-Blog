@@ -14,6 +14,9 @@ export default {
       },
     },
     extend: {
+      screens: {
+        'lg': '900px',
+      },
       fontFamily: {
         sans: ['Montserrat', 'sans-serif'],
       },

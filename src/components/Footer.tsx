@@ -33,7 +33,7 @@ const Footer: React.FC = () => {
     { label: "Условия за ползване", href: "/terms-of-service" },
     { label: "История на промени", href: "/changelog" },
   ];
-
+  
   const socialLinks = [
     { icon: Facebook, href: "https://facebook.com/pgknma", label: "Facebook" },
     { icon: TikTokIcon, href: "https://www.tiktok.com/@pgknma.proffbalkanski", label: "TikTok" },

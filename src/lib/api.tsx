@@ -597,6 +597,7 @@ export interface SiteStatus {
     enable_weekly_poll: boolean;
     enable_meme_of_the_week: boolean;
     enable_user_registration: boolean;
+    enable_program_page: boolean;
 }
 
 export async function getSiteStatus(): Promise<SiteStatus> {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Papa from 'papaparse';
+import { useQuery } from '@tanstack/react-query';
 import {
   Table,
   TableBody,
@@ -19,11 +20,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+// Import API function and type
+import { getSiteStatus, SiteStatus } from '@/lib/api';
+
 // Import layout components
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
+import FeatureDisabledPage from './FeatureDisabledPage'; // Import the new component
 
 // Define the structure of a schedule row
 interface ScheduleRow {
@@ -31,60 +36,73 @@ interface ScheduleRow {
 }
 
 const Program: React.FC = () => {
+  const { data: siteStatus, isLoading: isStatusLoading, isError: isStatusError } = useQuery<SiteStatus>({
+    queryKey: ['siteStatus'],
+    queryFn: getSiteStatus,
+  });
+
   const [headers, setHeaders] = useState<string[]>([]);
   const [data, setData] = useState<ScheduleRow[]>([]);
   const [classes, setClasses] = useState<string[]>([]);
   const [selectedClass, setSelectedClass] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingCsv, setLoadingCsv] = useState<boolean>(true);
+  const [errorCsv, setErrorCsv] = useState<string | null>(null);
+
+  const isProgramEnabled = siteStatus?.enable_program_page;
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const response = await fetch('/program.csv');
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const csvText = await response.text();
-
-        Papa.parse(csvText, {
-          header: true,
-          skipEmptyLines: true,
-          complete: (results) => {
-            const parsedData = results.data as ScheduleRow[];
-            if (results.errors.length > 0) {
-                 setError(`Грешка при парсиране на CSV: ${results.errors.map(e => e.message).join(', ')}`);
-            } else if (parsedData.length > 0) {
-              const tableHeaders = Object.keys(parsedData[0]).filter(h => h !== 'Клас');
-              setHeaders(tableHeaders);
-              setData(parsedData);
-              const uniqueClasses = [...new Set(parsedData.map(row => row['Клас']).filter(Boolean))];
-              setClasses(uniqueClasses);
-              if (uniqueClasses.length > 0) {
-                setSelectedClass(uniqueClasses[0]);
-              }
-            }
-            setLoading(false);
-          },
-          error: (err) => {
-            setError(`Грешка при парсиране на CSV: ${err.message}`);
-            setLoading(false);
+    // Only fetch CSV data if the feature is enabled
+    if (isProgramEnabled === true) {
+      const fetchData = async () => {
+        try {
+          setLoadingCsv(true);
+          setErrorCsv(null);
+          const response = await fetch('/program.csv');
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
-        });
-      } catch (e) {
-        if (e instanceof Error) {
-            setError(`Неуспешно зареждане на файла program.csv: ${e.message}`);
-        } else {
-            setError("Възникна неизвестна грешка при зареждане на данните.");
-        }
-        setLoading(false);
-      }
-    };
+          const csvText = await response.text();
 
-    fetchData();
-  }, []);
+          Papa.parse(csvText, {
+            header: true,
+            skipEmptyLines: true,
+            complete: (results) => {
+              const parsedData = results.data as ScheduleRow[];
+              if (results.errors.length > 0) {
+                   setErrorCsv(`Грешка при парсиране на CSV: ${results.errors.map(e => e.message).join(', ')}`);
+              } else if (parsedData.length > 0) {
+                const tableHeaders = Object.keys(parsedData[0]).filter(h => h !== 'Клас');
+                setHeaders(tableHeaders);
+                setData(parsedData);
+                const uniqueClasses = [...new Set(parsedData.map(row => row['Клас']).filter(Boolean))];
+                setClasses(uniqueClasses);
+                if (uniqueClasses.length > 0) {
+                  setSelectedClass(uniqueClasses[0]);
+                }
+              }
+              setLoadingCsv(false);
+            },
+            error: (err) => {
+              setErrorCsv(`Грешка при парсиране на CSV: ${err.message}`);
+              setLoadingCsv(false);
+            }
+          });
+        } catch (e) {
+          if (e instanceof Error) {
+              setErrorCsv(`Неуспешно зареждане на файла program.csv: ${e.message}`);
+          } else {
+              setErrorCsv("Възникна неизвестна грешка при зареждане на данните.");
+          }
+          setLoadingCsv(false);
+        }
+      };
+
+      fetchData();
+    } else if (isProgramEnabled === false) {
+      // If the program is disabled, we don't need to load the CSV.
+      setLoadingCsv(false);
+    }
+  }, [isProgramEnabled]);
 
   const handleClassChange = (value: string) => {
     setSelectedClass(value);
@@ -93,7 +111,8 @@ const Program: React.FC = () => {
   const filteredData = data.filter(row => row['Клас'] === selectedClass);
 
   const renderContent = () => {
-    if (loading) {
+    // The loading state now only considers the CSV loading.
+    if (loadingCsv) {
       return (
         <div className="py-12 text-center flex justify-center items-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -101,9 +120,9 @@ const Program: React.FC = () => {
         </div>
       );
     }
-
-    if (error) {
-      return <div className="py-12 text-center text-red-500">Грешка: {error}</div>;
+    
+    if (errorCsv) {
+      return <div className="py-12 text-center text-red-500">Грешка: {errorCsv}</div>;
     }
 
     return (
@@ -160,6 +179,27 @@ const Program: React.FC = () => {
       </Card>
     );
   };
+    // Top-level rendering logic based on site status
+  if (isStatusLoading) {
+    return (
+        <div className="flex h-screen items-center justify-center">
+            <Loader2 className="h-16 w-16 animate-spin text-primary" />
+        </div>
+    );
+  }
+
+  if (isStatusError) {
+      return (
+        <div className="flex h-screen flex-col items-center justify-center p-4 text-center">
+            <h1 className='text-2xl font-bold text-red-500'>Грешка при зареждане на настройките на страницата</h1>
+            <p className='text-muted-foreground'>Моля, опитайте по-късно.</p>
+        </div>
+      )
+  }
+
+  if (isProgramEnabled === false) {
+    return <FeatureDisabledPage />;
+  }
 
   return (
     <div className="min-h-screen w-full bg-background">
