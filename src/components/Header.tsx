@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun, Menu, X, Search, LogIn, LogOut } from "lucide-react";
+import { Moon, Sun, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import SearchDialog from "@/components/SearchDialog";
@@ -14,7 +14,6 @@ import { useLocation } from "react-router-dom";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const { 
     isAuthenticated, 
@@ -67,14 +66,7 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="hidden sm:inline-flex"
-            onClick={() => setSearchOpen(true)}
-          >
-            <Search className="h-5 w-5" />
-          </Button>
+
 
           <Button
             variant="ghost"
@@ -154,7 +146,6 @@ const Header = () => {
         </div>
       )}
 
-      <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       <LoginDialog open={loginDialogOpen} onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />
       <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onOpenLogin={openLoginDialog} />
     </header>
