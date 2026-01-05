@@ -81,9 +81,8 @@ const Header = () => {
           {isAuthenticated ? (
             <UserDropdown />
           ) : (
-            <Button className="hidden gap-2 sm:inline-flex" onClick={openLoginDialog}>
-              <LogIn className="h-4 w-4" />
-              Вход
+            <Button variant="ghost" size="icon" className="hidden rounded-full sm:inline-flex" onClick={openLoginDialog}>
+              <UserIcon className="h-5 w-5" />
             </Button>
           )}
 
