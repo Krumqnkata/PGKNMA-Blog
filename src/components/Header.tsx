@@ -51,7 +51,7 @@ const Header = () => {
         </NavLink>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-6 lg:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
@@ -78,19 +78,21 @@ const Header = () => {
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
           </Button>
 
-          {isAuthenticated ? (
-            <UserDropdown />
-          ) : (
-            <Button variant="ghost" size="icon" className="hidden rounded-full sm:inline-flex" onClick={openLoginDialog}>
-              <UserIcon className="h-5 w-5" />
-            </Button>
-          )}
+          <div>
+            {isAuthenticated ? (
+              <UserDropdown />
+            ) : (
+              <Button variant="ghost" size="icon" className="rounded-full" onClick={openLoginDialog}>
+                <UserIcon className="h-5 w-5" />
+              </Button>
+            )}
+          </div>
 
           {/* Mobile menu toggle */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -102,7 +104,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-b border-border bg-background md:hidden">
+        <div className="border-b border-border bg-background lg:hidden">
           <div className="container mx-auto space-y-1 px-4 py-4">
             {navLinks.map((link) => (
                 <NavLink
