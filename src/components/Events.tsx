@@ -82,8 +82,8 @@ const Events = () => {
                     <div className="space-y-1.5 text-sm text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Clock className="h-4 w-4 text-primary" />
-                        <span>{format(parseISO(event.start_datetime), 'HH:mm')}</span>
-                        {event.end_datetime && ` - ${format(parseISO(event.end_datetime), 'HH:mm')}`}
+                        <span>{format(parseISO(event.start_datetime), 'dd.MM.yyyy HH:mm')}</span>
+                        {event.end_datetime && ` - ${format(parseISO(event.end_datetime), 'dd.MM.yyyy HH:mm')}`}
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4 text-primary" />

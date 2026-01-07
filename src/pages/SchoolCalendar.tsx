@@ -153,10 +153,10 @@ const SchoolCalendar = () => {
 
                         <div className="grid gap-3 text-sm md:grid-cols-3">
                           <div className="flex items-center gap-2 text-muted-foreground">
-                            <Clock className="h-4 w-4 text-primary" />
+                            <Calendar className="h-4 w-4 text-primary" />
                             <span>
-                              {format(parseISO(event.start_datetime), 'HH:mm')}
-                              {event.end_datetime && ` - ${format(parseISO(event.end_datetime), 'HH:mm')}`}
+                              {format(parseISO(event.start_datetime), 'dd.MM.yyyy HH:mm')}
+                              {event.end_datetime && ` - ${format(parseISO(event.end_datetime), 'dd.MM.yyyy HH:mm')}`}
                             </span>
                           </div>
                           <div className="flex items-center gap-2 text-muted-foreground">
