@@ -95,7 +95,7 @@ export interface Comment {
 }
 
 export async function login(credentials: LoginCredentials): Promise<TokenResponse | null> {
-    const API_URL = 'http://localhost:8000/api/auth/token/'; // Standard DRF Simple JWT endpoint
+    const API_URL = 'http://188.138.29.7:8680/api/auth/token/'; // Standard DRF Simple JWT endpoint
 
     try {
         const response = await fetch(API_URL, {
@@ -353,7 +353,7 @@ export interface RegisterCredentials {
 }
 
 export async function register(credentials: RegisterCredentials): Promise<User> {
-    const API_URL = 'http://localhost:8000/api/auth/register/';
+    const API_URL = 'http://188.138.29.7:8680/api/auth/register/';
 
     try {
         const response = await fetch(API_URL, {

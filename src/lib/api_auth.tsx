@@ -108,7 +108,7 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
             if (!refreshToken) throw new Error("Няма наличен токен за опресняване");
 
             // Изпращане на заявка за опресняване
-            const refreshResponse = await originalFetch('http://localhost:8000/api/auth/token/refresh/', {
+            const refreshResponse = await originalFetch('http://188.138.29.7:8680/api/auth/token/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refreshToken }),
@@ -156,5 +156,5 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
  */
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
     // Всички пътища в `api.ts` започват с '/api/...'
-    return authFetch(`http://localhost:8000${url}`, options);
+    return authFetch(`http://188.138.29.7:8680${url}`, options);
 };
