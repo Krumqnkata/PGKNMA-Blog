@@ -220,7 +220,7 @@ const Comments = ({ postId }: CommentsProps) => {
         // Now that processing is done, we can stop loading
         setLoadingComments(false);
 
-        return topLevelComments;
+        return topLevelComments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }, [rawComments]);
 
     const handleMainCommentSubmit = async () => {
