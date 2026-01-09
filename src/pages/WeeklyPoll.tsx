@@ -68,7 +68,7 @@ const WeeklyPollContent = () => {
     if (codeBlockRef.current) {
       hljs.highlightElement(codeBlockRef.current);
     }
-  }, [currentQuestion?.code]);
+  }, [currentQuestion?.task_description]);
 
   const unlockLabel = useMemo(() => {
     if (!pollStatus?.unlocks_at) return null;
@@ -82,7 +82,7 @@ const WeeklyPollContent = () => {
 
   const getOptionStyles = useCallback(
     (opt: PollOption) => {
-      const base = "flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors";
+      const base = "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors"; // Changed items-center to items-start
       if (!lastResult || lastResult.questionId !== currentQuestion?.id) {
         return `${base} border-border hover:bg-muted/50`;
       }
@@ -139,28 +139,49 @@ const WeeklyPollContent = () => {
             Можете да отговорите само веднъж на всяка активна анкета. Успех!
           </div>
         )}
-        <div className="rounded-lg border bg-muted/40 p-4 text-sm">
-          <pre className="whitespace-pre-wrap break-words">
-            <code ref={codeBlockRef} className="language-python">
-              {currentQuestion.code}
-            </code>
-          </pre>
+
+        {/* Question Image and Code/Description */}
+        <div className="space-y-4 rounded-lg border bg-muted/40 p-4">
+          {currentQuestion.image_url && (
+            <img 
+              src={`http://188.138.29.7:8000${currentQuestion.image_url}`} 
+              alt={currentQuestion.title} 
+              className="mb-4 max-h-96 w-full rounded-md object-contain"
+            />
+          )}
+          {currentQuestion.task_description && (
+            <pre className="whitespace-pre-wrap break-words text-sm">
+              <code ref={codeBlockRef} className="language-python">
+                {currentQuestion.task_description}
+              </code>
+            </pre>
+          )}
         </div>
+
 
         <RadioGroup
           onValueChange={(val) => setSelectedOptionId(Number(val))}
-          className="space-y-2"
+          className="space-y-3" // Increased space for larger elements
           disabled={isLocked || isSubmitting}
         >
           {currentQuestion.options.map((opt) => (
             <label key={opt.id} className={getOptionStyles(opt)}>
-              <RadioGroupItem value={opt.id.toString()} />
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="uppercase">{opt.key}</Badge>
-                <span>{opt.text}</span>
+              <RadioGroupItem value={opt.id.toString()} className="mt-1 self-start" />
+              <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="uppercase">{opt.key}</Badge>
+                      <span>{opt.text}</span>
+                  </div>
+                  {opt.image_url && (
+                      <img 
+                          src={`http://188.138.29.7:8000${opt.image_url}`} 
+                          alt={`Опция ${opt.key}`} 
+                          className="mt-2 max-h-64 w-full rounded-md object-contain"
+                      />
+                  )}
               </div>
               {lastResult && lastResult.questionId === currentQuestion.id && (
-                <div className="ml-auto flex items-center gap-2 text-xs font-semibold">
+                <div className="ml-auto flex self-start items-center gap-2 text-xs font-semibold">
                   {lastResult.selected === opt.key && lastResult.correct === opt.key && (
                     <Badge variant="secondary" className="bg-emerald-100 text-emerald-900">Ваш избор · Верен</Badge>
                   )}
@@ -193,9 +214,9 @@ const WeeklyPoll = () => {
         <main className="container mx-auto px-4 py-12">
           <div className="mb-10 text-center">
             <Badge variant="secondary" className="mb-3">Седмична анкета</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Код на седмицата</h1>
+            <h1 className="text-4xl font-bold sm:text-5xl">Задача на седмицата</h1>
             <p className="mt-3 text-lg text-muted-foreground">
-              Получавайте малко предизвикателство по програмиране всяка седмица.
+              Получавайте малко предизвикателство по разни теми всяка седмица.
             </p>
           </div>
   
