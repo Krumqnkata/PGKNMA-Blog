@@ -255,6 +255,7 @@ export interface ContactFormData {
     name: string;
     email: string;
     message: string;
+    reason: string;
 }
 
 export async function submitContactForm(data: ContactFormData): Promise<{ detail: string }> {
