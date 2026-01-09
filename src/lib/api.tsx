@@ -172,13 +172,15 @@ export interface PollOption {
     id: number;
     key: "a" | "b" | "c" | "d";
     text: string;
+    image_url: string | null;
 }
 
 export interface PollQuestion {
     id: number;
     title: string;
     subtitle: string;
-    code: string;
+    task_description: string;
+    image_url: string | null;
     options: PollOption[];
 }
 

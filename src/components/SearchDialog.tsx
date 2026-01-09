@@ -24,7 +24,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
     { name: "Новини и актуализации", path: "/news", icon: FileText, keywords: "статии блог публикации съобщения" },
     { name: "Училищен календар", path: "/events", icon: Calendar, keywords: "събития график дати дейности" },
     { name: "Предложете звънец", path: "/bell-suggest#bell-song", icon: Music2, keywords: "песен предложете звънец формуляр за песен на звънец" },
-    { name: "Седмична анкета", path: "/weekly-poll", icon: Vote, keywords: "код на седмицата анкета предизвикателство въпрос" },
+    { name: "Седмична анкета", path: "/weekly-poll", icon: Vote, keywords: "задача на седмицата анкета предизвикателство въпрос" },
     { name: "Меме на седмицата", path: "/meme-of-the-week", icon: Laugh, keywords: "меме смях забавление училищен живот" },
     { name: "Контакт", path: "/contact", icon: Mail, keywords: "свържете се с нас пишете ни имейл" },
     { name: "Политика за поверителност", path: "/privacy-policy", icon: FileLock, keywords: "поверителност лични данни gdpr права" },
