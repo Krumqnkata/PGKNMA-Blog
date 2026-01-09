@@ -5,6 +5,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -29,6 +37,9 @@ const FormSchema = z.object({
   message: z.string().min(10, {
     message: "Съобщението трябва да е поне 10 символа.",
   }),
+  reason: z.string({
+    required_error: "Моля, изберете причина за контакт.",
+  }),
 });
 
 export function ContactForm() {
@@ -38,6 +49,7 @@ export function ContactForm() {
       name: "",
       email: "",
       message: "",
+      reason: "",
     },
   });
 
@@ -72,7 +84,7 @@ export function ContactForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Име</FormLabel>
+              <FormLabel>Име *</FormLabel>
               <FormControl>
                 <Input placeholder="Вашето име" {...field} />
               </FormControl>
@@ -85,7 +97,7 @@ export function ContactForm() {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Имейл</FormLabel>
+              <FormLabel>Имейл *</FormLabel>
               <FormControl>
                 <Input placeholder="Вашият имейл" {...field} />
               </FormControl>
@@ -93,12 +105,39 @@ export function ContactForm() {
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="reason"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Причина за контакт *</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Изберете причина..." />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="general">Общо запитване</SelectItem>
+                  <SelectItem value="suggestion">Предложение за блога</SelectItem>
+                  <SelectItem value="technical_issue">Технически проблем</SelectItem>
+                  <SelectItem value="event_question">Въпрос за събитие</SelectItem>
+                  <SelectItem value="bug_report">Открит бъг</SelectItem>
+                  <SelectItem value="partnership">Партньорство/Сътрудничество</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="message"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Съобщение</FormLabel>
+              <FormLabel>Съобщение *</FormLabel>
               <FormControl>
                 <Textarea
                   placeholder="Напишете вашето съобщение тук."
@@ -114,6 +153,13 @@ export function ContactForm() {
           {isPending ? "Изпращане..." : "Изпращане"}
         </Button>
       </form>
+      <p className="text-sm text-muted-foreground mt-4">
+        Полетата отбелязани със * са задължителни.
+      </p>
+      <p className="text-sm text-muted-foreground mt-4">
+        Препоръчително е да не споделяте лична информация в съобщението си.
+        Също така е добре да сте влезли с вашия акаунт, за да можем да ви отговорим по-лесно.
+      </p>
     </Form>
   );
 }
