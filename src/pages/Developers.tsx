@@ -21,7 +21,7 @@ const developers = [
     github: "https://github.com/Krumqnkata",
   },
   {
-    name: "Инж. Людмил Бонев - учител в ПГКНМА 'Проф. Минко Балкански'",
+    name: "Инж. Людмил Бонев",
     role: "Ментор, двигател на проекта и вдъхновител",
     avatar: "/bonev.jpg", // Local image for Mr. Bonev
     github: "",
