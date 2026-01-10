@@ -219,7 +219,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               <div className="relative">
                 <Input
                   id="reg-username"
-                  placeholder="Вашето име..."
+                  placeholder="Вашето потребителско име..."
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   disabled={isLoading}
