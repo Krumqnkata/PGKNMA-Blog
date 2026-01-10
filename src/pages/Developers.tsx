@@ -9,13 +9,13 @@ import CookieConsent from "@/components/CookieConsent";
 
 const developers = [
   {
-    name: "Александър",
+    name: "Александър /@ad0312/",
     role: "Full-Stack гуру и главен архитект на системата",
     avatar: "https://avatars.githubusercontent.com/u/246351746?v=4", // Using AlexanderYthef0's avatar
     github: "https://github.com/ythef0",
   },
   {
-    name: "Крум",
+    name: "Крум /@Krumqnkata/",
     role: "UI/UX нинджа и фронтенд магьосник",
     avatar: "https://avatars.githubusercontent.com/u/213969107?v=4", // Using Krumqnkata's avatar
     github: "https://github.com/Krumqnkata",
