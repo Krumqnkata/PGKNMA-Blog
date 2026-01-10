@@ -15,7 +15,6 @@ import Contact from "./pages/Contact";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import Developers from "./pages/Developers";
-import Test from "./pages/Test";
 import Post from "./pages/Post";
 import Program from "./pages/Program";
 import MyProfilePage from "./pages/MyProfilePage";
@@ -98,7 +97,6 @@ const AppContent = () => {
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/developers" element={<Developers />} />
-                  <Route path="/test" element={<Test/>}/>
                   <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>
