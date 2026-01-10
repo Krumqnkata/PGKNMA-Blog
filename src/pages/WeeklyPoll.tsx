@@ -144,7 +144,7 @@ const WeeklyPollContent = () => {
         <div className="space-y-4 rounded-lg border bg-muted/40 p-4">
           {currentQuestion.image_url && (
             <img 
-              src={`http://188.138.29.7:8000${currentQuestion.image_url}`} 
+              src={`http://188.138.29.7:8680${currentQuestion.image_url}`} 
               alt={currentQuestion.title} 
               className="mb-4 max-h-96 w-full rounded-md object-contain"
             />
@@ -174,7 +174,7 @@ const WeeklyPollContent = () => {
                   </div>
                   {opt.image_url && (
                       <img 
-                          src={`http://188.138.29.7:8000${opt.image_url}`} 
+                          src={`http://188.138.29.7:8680${opt.image_url}`} 
                           alt={`Опция ${opt.key}`} 
                           className="mt-2 max-h-64 w-full rounded-md object-contain"
                       />
