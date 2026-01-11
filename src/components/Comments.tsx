@@ -262,6 +262,9 @@ const Comments = ({ postId }: CommentsProps) => {
                             <AvatarFallback>{user?.username?.charAt(0).toUpperCase() || '?'}</AvatarFallback>
                         </Avatar>
                         <div className="w-full">
+                            <p className="text-sm text-muted-foreground mb-2">
+                                Моля, спазвайте добрия тон. Обидно съдържание и спам ще бъдат премахвани.
+                            </p>
                             <Textarea
                                 value={newCommentContent}
                                 onChange={(e) => setNewCommentContent(e.target.value)}
