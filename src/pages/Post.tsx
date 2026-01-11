@@ -89,6 +89,13 @@ const Post = () => {
                                     <Badge variant="secondary">{post.category_name}</Badge>
                                 </div>
                             </div>
+                            {post.banner && (
+                                <img
+                                    src={post.banner}
+                                    alt={`Банер за ${post.title}`}
+                                    className="w-full max-h-96 object-contain rounded-lg mb-8"
+                                />
+                            )}
 
                             <div className="prose prose-lg max-w-none break-words">
                                 <ReactMarkdown 
