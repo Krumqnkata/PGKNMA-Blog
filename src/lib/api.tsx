@@ -658,6 +658,27 @@ export interface PasswordChangeData {
     new_password_confirm: string;
 }
 
+export interface UsernameChangeData {
+    current_password: string;
+    new_username: string;
+}
+
+export async function changeUsername(data: UsernameChangeData): Promise<{ status: string }> {
+    const response = await apiRequest(`/api/auth/profile/change-username/`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ new_username: ['Неуспешна смяна на потребителско име.'] }));
+        const errorMessage = errorData.new_username ? errorData.new_username[0] : 'Възникна грешка при смяната на потребителското име.';
+        console.error(`HTTP грешка при смяна на потребителско име: ${response.status}`, errorData);
+        throw new Error(errorMessage);
+    }
+
+    return response.json();
+}
+
 export async function updateUserPassword(data: PasswordChangeData): Promise<{ status: string }> {
     const response = await apiRequest(`/api/auth/profile/change-password/`, {
         method: 'PUT',
