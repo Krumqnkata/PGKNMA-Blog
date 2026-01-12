@@ -353,6 +353,9 @@ export interface RegisterCredentials {
     email: string;
     first_name: string; // Added first_name
     last_name: string;  // Added last_name
+    captcha_num1: number;
+    captcha_num2: number;
+    captcha_answer: string;
 }
 
 export async function register(credentials: RegisterCredentials): Promise<User> {

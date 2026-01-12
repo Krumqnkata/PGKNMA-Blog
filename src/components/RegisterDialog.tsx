@@ -41,6 +41,11 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // State for CAPTCHA
+  const [captchaNum1, setCaptchaNum1] = useState(0);
+  const [captchaNum2, setCaptchaNum2] = useState(0);
+  const [captchaAnswer, setCaptchaAnswer] = useState("");
+
   // State for username validation
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
   const [isUsernameAvailable, setIsUsernameAvailable] = useState<boolean | null>(null);
@@ -54,6 +59,15 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
 
 
   const isLoading = authLoading || localLoading;
+
+    // Generate new CAPTCHA question when dialog opens
+  useEffect(() => {
+    if (open) {
+      setCaptchaNum1(Math.floor(Math.random() * 10) + 1);
+      setCaptchaNum2(Math.floor(Math.random() * 10) + 1);
+      setCaptchaAnswer("");
+    }
+  }, [open]);
 
   // Debounced Username Check
   useEffect(() => {
@@ -153,6 +167,10 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       setError("Моля, попълнете всички задължителни полета.");
       return;
     }
+    if (!captchaAnswer) {
+      setError("Моля, решете задачата за проверка.");
+      return;
+    }
 
     setLocalLoading(true);
     try {
@@ -163,6 +181,9 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         password2,
         first_name: firstName,
         last_name: lastName,
+        captcha_num1: captchaNum1,
+        captcha_num2: captchaNum2,
+        captcha_answer: captchaAnswer,
       };
       await register(credentials);
       toast({ title: "Успешна регистрация", description: `Потребител ${username} беше регистриран. Сега можете да влезете в профила си.`, variant: "default" });
@@ -173,6 +194,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       setPassword2('');
       setFirstName('');
       setLastName('');
+      setCaptchaAnswer('');
     } catch (err: any) {
       const errorMessage = err.message || "Неуспешна регистрация. Моля, опитайте отново.";
       setError(errorMessage);
@@ -186,7 +208,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
     }
   };
 
-  const canSubmit = !isLoading && isUsernameAvailable === true && isPasswordValid === true && passwordsMatch === true;
+  const canSubmit = !isLoading && isUsernameAvailable === true && isPasswordValid === true && passwordsMatch === true && captchaAnswer !== "";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -300,6 +322,18 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
                 className={passwordsMatch === false ? "border-red-500" : (passwordsMatch === true ? "border-green-500" : "")}
               />
               {passwordsMatch === false && <p className="text-xs text-red-500 mt-1">Паролите не съвпадат.</p>}
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="reg-captcha">Колко е {captchaNum1} + {captchaNum2}?</Label>
+              <Input
+                id="reg-captcha"
+                type="text"
+                placeholder="Вашият отговор..."
+                value={captchaAnswer}
+                onChange={(e) => setCaptchaAnswer(e.target.value)}
+                disabled={isLoading}
+              />
             </div>
 
             {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
