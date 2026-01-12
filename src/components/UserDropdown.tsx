@@ -15,7 +15,7 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 // Икони
-import { User as UserIcon, Settings, LogOut, ChevronDown } from 'lucide-react';
+import { User as UserIcon, Settings, LogOut, ChevronDown, Shield } from 'lucide-react';
 
 /**
  * Извлича първата буква от потребителското име за аватара.
@@ -59,6 +59,12 @@ export const UserDropdown: React.FC = () => {
           <Link to="/admin/">
             <Settings className="mr-2 h-4 w-4" />
             <span>Администрация на сайта</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/profile?tab=rules">
+            <Shield className="mr-2 h-4 w-4" />
+            <span>Правила</span>
           </Link>
         </DropdownMenuItem>
         

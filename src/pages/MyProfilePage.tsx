@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainLayout from '@/components/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,11 +10,29 @@ import RulesContent from '@/components/RulesContent'; // Import the new componen
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield } from 'lucide-react'; // Import Shield icon
+import { useLocation } from 'react-router-dom'; // Import useLocation
 
 const MyProfilePage: React.FC = () => {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState('settings');
   const isMobile = useIsMobile();
+  const location = useLocation();
+
+  // Initialize activeTab from URL query parameter, default to 'settings'
+  const [activeTab, setActiveTab] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('tab') || 'settings';
+  });
+
+  // Update activeTab when URL search params change
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const tabFromUrl = params.get('tab');
+    if (tabFromUrl && tabFromUrl !== activeTab) {
+      setActiveTab(tabFromUrl);
+    } else if (!tabFromUrl && activeTab !== 'settings') {
+      setActiveTab('settings');
+    }
+  }, [location.search]);
 
   const tabs = [
     { value: 'settings', label: 'Настройки', Icon: User },
