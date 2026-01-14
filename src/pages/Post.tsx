@@ -93,7 +93,7 @@ const Post = () => {
                                 <img
                                     src={post.banner}
                                     alt={`Банер за ${post.title}`}
-                                    className="w-full max-h-96 object-contain rounded-lg mb-8"
+                                    className="w-full max-h-96 object-contain rounded-3xl mb-8"
                                 />
                             )}
 
