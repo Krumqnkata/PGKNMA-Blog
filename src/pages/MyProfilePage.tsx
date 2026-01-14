@@ -11,6 +11,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
+import BackToTop from '@/components/BackToTop';
 
 const MyProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -89,6 +90,7 @@ const MyProfilePage: React.FC = () => {
           ))}
         </Tabs>
       </div>
+      <BackToTop />
     </MainLayout>
   );
 };
