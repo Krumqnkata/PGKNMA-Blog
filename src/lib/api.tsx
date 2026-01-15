@@ -697,19 +697,18 @@ export async function updateUserPassword(data: PasswordChangeData): Promise<{ st
     return response.json();
 }
 
-export async function deleteMyAccount(): Promise<{ status: string }> {
-    const response = await apiRequest(`/api/auth/profile/delete/`, {
-        method: 'DELETE',
+export async function deactivateMyAccount(): Promise<{ status: string }> {
+    const response = await apiRequest(`/api/auth/profile/deactivate/`, {
+        method: 'PUT',
     });
 
-    if (!response.ok && response.status !== 204) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изтриване на профила.' }));
-        console.error(`HTTP грешка при изтриване на профил: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Възникна грешка при изтриването на профила.');
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно деактивиране на профила.' }));
+        console.error(`HTTP грешка при деактивиране на профил: ${response.status}`, errorData);
+        throw new Error(errorData.detail || 'Възникна грешка при деактивирането на профила.');
     }
 
-    // For 204 No Content, there is no body, so we return a success status manually
-    return { status: "Профилът е изтрит успешно" };
+    return response.json();
 }
 
 export async function getMySongSuggestions(): Promise<ApprovedSong[]> {
