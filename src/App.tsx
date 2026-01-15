@@ -31,7 +31,7 @@ import { Loader2, LoaderPinwheel } from "lucide-react";
 import { SettingsProvider, useSettings } from "./contexts/SettingsContext"; // Import SettingsProvider and useSettings
 import FeatureDisabledPage from "./pages/FeatureDisabledPage";
 import { GlobalStateProvider } from "./contexts/GlobalStateContext"; // Import global state context
-
+import EasterEgg from "./pages/EasterEgg";
 
 const AppContent = () => {
   // Get site status from useQuery (this remains local for now)
@@ -98,6 +98,7 @@ const AppContent = () => {
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/developers" element={<Developers />} />
                   <Route path="*" element={<NotFound />} />
+                  <Route path="/easter-egg" element={<EasterEgg />} />
                 </Routes>
             </BrowserRouter>
           </TooltipProvider>

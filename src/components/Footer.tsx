@@ -1,4 +1,5 @@
-import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe, Code } from "lucide-react";
+import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe, Code, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 import type React from "react";
 import PageLoadStats from "./PageLoadStats";
 import { Button } from "@/components/ui/button"; // Import Button
@@ -130,6 +131,13 @@ const Footer: React.FC = () => {
               <Code className="h-4 w-4" />
               <span>Разработка от учениците на ПГКНМА "Проф. Минко Балкански"</span>
             </a>
+            {/* Even more discrete Easter Egg Button */}
+            <span className="hidden sm:inline text-[hsl(var(--footer-foreground))]/80">|</span> {/* Separator */}                                            
+          {/* Easter Egg Button */}                                                                                                                        
+              <Link to="/easter-egg" className="flex items-center gap-1 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary" aria-label="Easter Egg"> 
+              <Sparkles className="h-4 w-4" />
+              <span>Тайна функция</span>
+            </Link>
           </div>
 
           {/* Social Links */}
