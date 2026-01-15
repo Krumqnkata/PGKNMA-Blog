@@ -6,7 +6,7 @@ const EasterEgg: React.FC = () => {
   const [answerInput, setAnswerInput] = useState('');
   const [feedbackMessage, setFeedbackMessage] = useState('');
 
-  const question = "Коя е рожденната дата на Проф. Минко Балкански?";
+  const question = "През коя година е роден професор Минко Балкански?";
   const correctAnswer = "1927"; // Updated answer
 
   const handleSubmit = () => {
