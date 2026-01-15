@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useMutation } from '@tanstack/react-query';
-import { updateUserPassword, deleteMyAccount, PasswordChangeData, changeUsername, UsernameChangeData, checkUsername, validatePassword } from '@/lib/api';
+import { updateUserPassword, deactivateMyAccount, PasswordChangeData, changeUsername, UsernameChangeData, checkUsername, validatePassword } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
@@ -194,12 +194,12 @@ const AccountSettings: React.FC = () => {
       },
   });
 
-  const deleteAccountMutation = useMutation({
-    mutationFn: deleteMyAccount,
+  const deactivateAccountMutation = useMutation({
+    mutationFn: deactivateMyAccount,
     onSuccess: () => {
       toast({
-        title: "Профилът е изтрит",
-        description: "Вашият профил беше изтрит успешно. Ще бъдете отписани.",
+        title: "Профилът е деактивиран",
+        description: "Вашият профил беше деактивиран успешно. Ще бъдете отписани.",
       });
       setTimeout(() => {
         logout();
@@ -239,8 +239,8 @@ const AccountSettings: React.FC = () => {
       }
   };
 
-  const handleDeleteAccount = () => {
-    deleteAccountMutation.mutate();
+  const handleDeactivateAccount = () => {
+    deactivateAccountMutation.mutate();
   };
 
   const canChangeUsername = isUsernameAvailable === true && !isCheckingUsername;
@@ -395,28 +395,28 @@ const AccountSettings: React.FC = () => {
 
       <Card className="border-destructive">
         <CardHeader>
-          <CardTitle>Изтриване на акаунт</CardTitle>
+          <CardTitle>Деактивиране на акаунт</CardTitle>
           <CardDescription>
-            Това действие е необратимо. Всички ваши данни, включително публикации, коментари и предложения, ще бъдат изтрити завинаги.
+            Можете да деактивирате акаунта си, вместо да го изтриете. Вашият акаунт ще бъде скрит и няма да можете да влизате в него. Можете да го активирате отново по всяко време, като се свържете с администратор.
           </CardDescription>
         </CardHeader>
         <CardFooter>
           <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive">Изтрий акаунта си</Button>
+              <Button variant="destructive">Деактивирай акаунта си</Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Наистина ли сте сигурни?</AlertDialogTitle>
+                <AlertDialogTitle>Наистина ли искате да деактивирате акаунта си?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Това действие не може да бъде отменено. Вашият акаунт и цялото свързано съдържание ще бъдат изтрити перманентно.
+                  Вашият акаунт ще бъде деактивиран и няма да имате достъп до него. Можете да го активирате отново по-късно.
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Отказ</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteAccount} disabled={deleteAccountMutation.isPending}>
-                  {deleteAccountMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Да, изтрий акаунта ми
+                <AlertDialogAction onClick={handleDeactivateAccount} disabled={deactivateAccountMutation.isPending}>
+                  {deactivateAccountMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Да, деактивирай акаунта ми
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
