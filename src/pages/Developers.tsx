@@ -23,8 +23,8 @@ const developers = [
   {
     name: "Инж. Людмил Бонев",
     role: "Ментор, двигател на проекта и вдъхновител",
-    avatar: "/bonev.jpg", // Local image for Mr. Bonev
-    github: "",
+    avatar: "https://avatars.githubusercontent.com/u/86717130?v=4", // Local image for Mr. Bonev
+    github: "https://github.com/lkbonev72",
   },
 ];
 // ==========================
