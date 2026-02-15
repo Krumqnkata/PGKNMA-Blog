@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import hljs from 'highlight.js';
+import '@/styles/atom-one-dark.css';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileJson, FileWarning } from "lucide-react"; // Corrected icon imports
+import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileJson, FileWarning } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
@@ -43,6 +44,7 @@ const Post = () => {
 
         fetchPost();
     }, [id]);
+
 
     const getFileIcon = (fileName: string) => {
         const extension = fileName.split('.').pop()?.toLowerCase();
@@ -97,13 +99,7 @@ const Post = () => {
                                 />
                             )}
 
-                            <div className="prose prose-lg max-w-none break-words">
-                                <ReactMarkdown 
-                                    remarkPlugins={[remarkGfm]}
-                                >
-                                    {post.content}
-                                </ReactMarkdown>
-                            </div>
+                            <MarkdownRenderer content={post.content} />
 
                             {/* Image Gallery Section */}
                             {post.images && post.images.length > 0 && (

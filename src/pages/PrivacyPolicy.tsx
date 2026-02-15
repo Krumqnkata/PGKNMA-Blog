@@ -4,8 +4,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
 import { getPrivacyPolicy, PrivacyPolicyContent } from "../lib/api";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 const PrivacyPolicy = () => {
   const [policy, setPolicy] = useState<PrivacyPolicyContent | null>(null);
@@ -65,7 +64,7 @@ const PrivacyPolicy = () => {
           )}
 
           {policy ? (
-            <ReactMarkdown children={policy.content} remarkPlugins={[remarkGfm]} />
+            <MarkdownRenderer content={policy.content} />
           ) : (
             <p>Не е налична политика за поверителност.</p>
           )}
