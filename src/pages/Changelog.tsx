@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 import MainLayout from '@/components/MainLayout';
 import BackToTop from '@/components/BackToTop';
 interface ChangelogEntry {
@@ -81,9 +81,7 @@ const Changelog: React.FC = () => {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose prose-sm dark:prose-invert max-w-none">
-                      <ReactMarkdown>{entry.content}</ReactMarkdown>
-                    </div>
+                    <MarkdownRenderer content={entry.content} />
                   </CardContent>
                 </Card>
               ))}
