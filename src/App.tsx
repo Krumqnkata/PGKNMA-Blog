@@ -20,6 +20,7 @@ import Program from "./pages/Program";
 import MyProfilePage from "./pages/MyProfilePage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Changelog from "./pages/Changelog";
+import TVScreen from "./pages/TVScreen";
 
 
 // New imports
@@ -97,6 +98,7 @@ const AppContent = () => {
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/developers" element={<Developers />} />
+                  <Route path="/tv" element={<TVScreen />} />
                   <Route path="*" element={<NotFound />} />
                   <Route path="/easter-egg" element={<EasterEgg />} />
                 </Routes>
