@@ -108,7 +108,7 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
             if (!refreshToken) throw new Error("Няма наличен токен за опресняване");
 
             // Изпращане на заявка за опресняване
-            const refreshResponse = await originalFetch('https://pgknma.space/api/auth/token/refresh/', {
+            const refreshResponse = await originalFetch('/api/auth/token/refresh/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refreshToken }),
@@ -156,5 +156,5 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
  */
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
     // Всички пътища в `api.ts` започват с '/api/...'
-    return authFetch(`https://pgknma.space${url}`, options);
+    return authFetch(`${url}`, options);
 };
