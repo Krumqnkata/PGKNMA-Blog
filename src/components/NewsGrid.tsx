@@ -37,7 +37,7 @@ const NewsGrid = () => {
         <div className="mb-12 text-center">
           <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Последни новини</h2>
           <p className="text-lg text-muted-foreground">
-            Бъдете информирани с най-новите новини и съобщения за училищния живот.
+            Бъдете информирани с най-новите публикации и съобщения за училищния живот.
           </p>
         </div>
 

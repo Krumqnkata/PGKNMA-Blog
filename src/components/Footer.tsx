@@ -54,7 +54,7 @@ const Footer: React.FC = () => {
               <span className="text-xl font-bold">ПГКНМА Блог</span>
             </div>
             <p className="text-sm text-[hsl(var(--footer-foreground))]/80 leading-relaxed">
-              Овластяване на учениците и ангажиране на родителите чрез образование, иновации и общност.
+              Овластяване на учениците и активно партньорство с родителите чрез иновации и споделени ценности.
             </p>
           </div>
 
@@ -124,7 +124,7 @@ const Footer: React.FC = () => {
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <div className="flex flex-col items-center gap-2 text-center sm:flex-row sm:gap-4 sm:text-left">
             <p className="text-sm text-[hsl(var(--footer-foreground))]/80">
-            © {new Date().getFullYear()} ПГКНМА блог. Всички права запазени.
+            © {new Date().getFullYear()} ПГКНМА Блог. Всички права запазени.
             </p>
             <span className="hidden sm:inline text-[hsl(var(--footer-foreground))]/80">|</span>
             <a href="/developers" className="flex items-center gap-2 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">

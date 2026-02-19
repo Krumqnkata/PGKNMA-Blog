@@ -57,7 +57,7 @@ const Events = () => {
         <div className="mb-12 text-center">
           <h2 className="mb-3 text-3xl font-bold sm:text-4xl">Календар на училището</h2>
           <p className="text-lg text-muted-foreground">
-            Календари на събития, ваканции и важни дати за училището.
+            Календар на събития, ваканции и важни дати за училището.
           </p>
         </div>
 
