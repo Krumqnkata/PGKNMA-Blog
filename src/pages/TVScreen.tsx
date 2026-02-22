@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Instagram } from "lucide-react";
+import { Loader2, Instagram, Clock } from "lucide-react";
 import { getApprovedSongs, getMemes, getPollStatistics, getEvents } from "../lib/api";
 
 interface ApprovedSong {
@@ -89,10 +89,16 @@ const TVScreenHeader = () => (
   </div>
 );
 
-const TVScreenFooter = () => (
+const TVScreenFooter = ({ currentDay, formattedTime }: { currentDay: string; formattedTime: string }) => (
   <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-gray-900/20 backdrop-blur-sm shadow-lg border-t border-gray-800 text-gray-400 text-sm h-16">
     <div className="flex items-center justify-between w-full max-w-7xl mx-auto px-4">
-      <p>&copy; {new Date().getFullYear()} ПГКНМА Блог - Всички права запазени</p>
+      <div className="flex items-center gap-4">
+        <p>&copy; {new Date().getFullYear()} ПГКНМА Блог - Всички права запазени</p>
+        <div className="flex items-center gap-2 text-gray-400">
+          <Clock className="h-4 w-4" />
+          <span>{currentDay}, {formattedTime}</span>
+        </div>
+      </div>
       <div className="flex items-center gap-6">
         <span className="text-gray-500">Последвайте ни:</span>
         <a
@@ -123,6 +129,19 @@ const TVScreenFooter = () => (
 const TVScreen = () => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const daysOfWeek = ["Неделя", "Понеделник", "Вторник", "Сряда", "Четвъртък", "Петък", "Събота"];
+  const currentDay = daysOfWeek[currentTime.getDay()];
+  const formattedTime = currentTime.toLocaleTimeString("bg-BG", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
 
   const { data: songs, isLoading: isLoadingSongs, isError: isErrorSongs } = useQuery<ApprovedSong[], Error>({
     queryKey: ['approvedSongs'],
@@ -349,7 +368,7 @@ const TVScreen = () => {
       <div className="relative z-10">
         <TVScreenHeader />
         {sections[currentSectionIndex]()}
-        <TVScreenFooter />
+        <TVScreenFooter currentDay={currentDay} formattedTime={formattedTime} />
       </div>
     </div>
   );
