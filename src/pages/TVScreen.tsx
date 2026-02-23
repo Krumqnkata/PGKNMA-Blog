@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2, Instagram, Clock } from "lucide-react";
+import { Loader2, Instagram, Clock, Calendar, MapPin, Users } from "lucide-react";
 import { getApprovedSongs, getMemes, getPollStatistics, getEvents } from "../lib/api";
+import { format, parseISO } from "date-fns";
+import MarkdownRenderer from "@/components/MarkdownRenderer";
 
 interface ApprovedSong {
     id: number;
@@ -219,6 +221,17 @@ const TVScreen = () => {
     return "";
   };
 
+  const getCategoryColor = (category: string) => {
+    const colors: { [key: string]: string } = {
+      Academic: "bg-blue-500 text-blue-100",
+      Sports: "bg-green-500 text-green-100",
+      Arts: "bg-purple-500 text-purple-100",
+      Community: "bg-orange-500 text-orange-100",
+      Holiday: "bg-red-500 text-red-100",
+    };
+    return colors[category] || "bg-gray-500 text-gray-100";
+  };
+
   const renderSongs = () => (
     <div className="min-h-screen pt-24 pb-16 flex flex-col justify-center items-center text-white p-8">
       <h1 className="text-6xl font-extrabold mb-12 text-center text-blue-400 drop-shadow-lg">🎵 Топ Песни</h1>
@@ -309,36 +322,91 @@ const TVScreen = () => {
     </div>
   );
 
-  const renderEvents = () => (
-    <div className="min-h-screen pt-24 pb-16 flex flex-col justify-center items-center text-white p-8">
-      <h1 className="text-6xl font-extrabold mb-12 text-center text-green-400 drop-shadow-lg">📅 Предстоящи Събития</h1>
-      <div className="flex justify-center items-stretch gap-8 w-full max-w-7xl px-4">
-        {upcomingEvents.length > 0 ? (
-          upcomingEvents.map((event, index) => (
-            <div
-              key={event.id}
-              className={`flex flex-col items-center text-center p-6 rounded-lg shadow-xl bg-gray-900/80 backdrop-blur-sm transition-all duration-500 ease-in-out flex-1 min-w-0 h-full justify-between
-                ${index === 0 ? 'border-4 border-yellow-400 scale-105' : ''}
-                ${index === 1 ? 'border-4 border-gray-300' : ''}
-                ${index === 2 ? 'border-4 border-orange-400 scale-95' : ''}
-              `}
-            >
-              <span className="text-6xl mb-4">{getRankEmoji(index)}</span>
-              <span className="text-4xl font-bold mb-2 leading-tight">{event.title}</span>
-              <span className="text-2xl text-gray-300 mb-2 leading-tight">{new Date(event.start_datetime).toLocaleDateString('bg-BG', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })}</span>
-              <span className="text-2xl text-gray-300 mb-4 leading-tight">{event.location}</span>
-              <span className="text-3xl text-blue-300 mt-auto">{event.category}</span>
-            </div>
-          ))
+  const renderEvents = () => {
+    const eventsToShow = upcomingEvents.length > 0 ? upcomingEvents : [];
+    
+    return (
+      <div className="min-h-screen pt-24 pb-16 flex flex-col justify-center items-center text-white p-8">
+        <h1 className="text-6xl font-extrabold mb-12 text-center text-green-400 drop-shadow-lg">📅 Предстоящи Събития</h1>
+        
+        {eventsToShow.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl px-4">
+            {eventsToShow.map((event, index) => {
+              const startDate = parseISO(event.start_datetime);
+              const endDate = event.end_datetime ? parseISO(event.end_datetime) : null;
+              const isToday = format(startDate, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
+              
+              return (
+                <div
+                  key={event.id}
+                  className={`relative flex flex-col items-start text-left p-6 rounded-xl shadow-2xl bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm transition-all duration-500 ease-in-out
+                    ${isToday ? 'border-4 border-green-400 animate-pulse' : 'border-2 border-gray-700'}
+                    ${index === 0 ? 'scale-105 z-10' : ''}
+                  `}
+                >
+                  {/* Category Badge */}
+                  <span className={`px-3 py-1 rounded-full text-sm font-semibold mb-4 ${getCategoryColor(event.category)}`}>
+                    {event.category}
+                  </span>
+                  
+                  {/* Title */}
+                  <h3 className="text-3xl font-bold mb-4 leading-tight text-white">{event.title}</h3>
+                  
+                  {/* Date & Time */}
+                  <div className="w-full space-y-3 mb-4">
+                    <div className="flex items-center gap-3 text-gray-300">
+                      <Calendar className="h-6 w-6 text-green-400 flex-shrink-0" />
+                      <span className="text-xl truncate">
+                        {format(startDate, "dd.MM.yyyy")}
+                        {endDate && ` - ${format(endDate, "dd.MM.yyyy")}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-300">
+                      <Clock className="h-6 w-6 text-green-400 flex-shrink-0" />
+                      <span className="text-xl truncate">
+                        {format(startDate, "HH:mm")}
+                        {endDate && ` - ${format(endDate, "HH:mm")}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 text-gray-300">
+                      <MapPin className="h-6 w-6 text-green-400 flex-shrink-0" />
+                      <span className="text-xl truncate">{event.location}</span>
+                    </div>
+                    {event.attendees_text && (
+                      <div className="flex items-center gap-3 text-gray-300">
+                        <Users className="h-6 w-6 text-green-400 flex-shrink-0" />
+                        <span className="text-xl truncate">{event.attendees_text}</span>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Description with Markdown */}
+                  {event.description && (
+                    <div className="text-gray-400 text-lg mb-4 prose prose-invert prose-sm max-w-none">
+                      <MarkdownRenderer content={event.description} />
+                    </div>
+                  )}
+                  
+                  {/* Today Badge */}
+                  {isToday && (
+                    <div className="absolute top-4 right-4 px-3 py-1 bg-green-500 text-white text-sm font-bold rounded-full animate-bounce">
+                      ДНЕС!
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <p className="text-center text-gray-300 text-5xl">Все още няма предстоящи събития.</p>
         )}
+        
+        <div className="mt-8 text-center text-gray-300 text-2xl max-w-4xl">
+          <span className="text-yellow-500">ℹ️</span> <span className="italic">За да видите всички събития и да участвате, моля влезте в блога на адрес: <a href="https://pgknma.space" target="_blank" rel="noopener noreferrer" className="underline text-blue-300 hover:text-blue-200">pgknma.space</a></span>
+        </div>
       </div>
-      <div className="mt-8 text-center text-gray-300 text-2xl max-w-4xl">
-        <span className="text-yellow-500">ℹ️</span> <span className="italic">За да видите всички събития и да участвате, моля влезте в блога на адрес: <a href="https://pgknma.space" target="_blank" rel="noopener noreferrer" className="underline text-blue-300 hover:text-blue-200">pgknma.space</a></span>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const sections = [renderSongs, renderMemes, renderPollUsers, renderEvents];
 
