@@ -1,13 +1,16 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker } from "react-day-picker";
+import { format } from "date-fns";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-export type CalendarProps = React.ComponentProps<typeof DayPicker>;
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+  eventsByDate?: Map<string, number>;
+};
 
-function Calendar({ className, classNames, showOutsideDays = true, ...props }: CalendarProps) {
+function Calendar({ className, classNames, showOutsideDays = true, eventsByDate, ...props }: CalendarProps) {
   return (
     <DayPicker
       showOutsideDays={showOutsideDays}
@@ -44,6 +47,21 @@ function Calendar({ className, classNames, showOutsideDays = true, ...props }: C
       components={{
         IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
         IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+        DayContent: ({ date }) => {
+          const dateKey = format(date, "yyyy-MM-dd");
+          const eventCount = eventsByDate?.get(dateKey) || 0;
+          
+          return (
+            <div className="relative flex h-full w-full flex-col items-center justify-center">
+              <span className="text-sm">{date.getDate()}</span>
+              {eventCount > 0 && (
+                <div className="absolute bottom-1 flex gap-0.5">
+                  <div className="h-1 w-1 rounded-full bg-primary" />
+                </div>
+              )}
+            </div>
+          );
+        },
       }}
       {...props}
     />
