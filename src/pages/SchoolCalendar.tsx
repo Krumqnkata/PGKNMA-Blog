@@ -214,7 +214,11 @@ const SchoolCalendar = () => {
               {/* Events Grid */}
               <div className="grid gap-3 sm:gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {events
-                  .filter((event) => selectedCategory === "All" || event.category === selectedCategory)
+                  .filter((event) => {
+                    const isFutureEvent = parseISO(event.start_datetime) >= new Date();
+                    const matchesCategory = selectedCategory === "All" || event.category === selectedCategory;
+                    return isFutureEvent && matchesCategory;
+                  })
                   .sort((a, b) => parseISO(a.start_datetime).getTime() - parseISO(b.start_datetime).getTime())
                   .map((event) => (
                     <EventCardCompact key={event.id} event={event} />
