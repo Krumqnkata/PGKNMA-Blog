@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Calendar, MapPin, Clock, Users, MousePointerClick } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
-import ParticlesComponent from "@/components/Particles";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents, Event } from "@/lib/api";
 import { format, parseISO } from "date-fns";
@@ -105,14 +104,9 @@ const SchoolCalendar = () => {
   return (
     <div className="min-h-screen w-full">
       <Header />
-      <main className="relative">
-        {/* Particles Background */}
-        <div className="fixed inset-0 z-0 pointer-events-none">
-          <ParticlesComponent id="school-calendar-particles" theme="light" />
-        </div>
-
+      <main>
         {/* Hero Section */}
-        <section className="relative z-10 w-full bg-gradient-to-br from-primary/20 via-background to-background py-12 md:py-16">
+        <section className="w-full bg-gradient-to-br from-primary/20 via-background to-background py-12 md:py-16">
           <div className="container mx-auto px-4">
             <h1 className="text-3xl font-bold md:text-4xl lg:text-5xl">Училищен календар</h1>
             <p className="mt-3 text-sm text-muted-foreground md:text-base">
@@ -122,12 +116,12 @@ const SchoolCalendar = () => {
         </section>
 
         {/* Calendar and Events Section */}
-        <section className="relative z-10 w-full py-8">
+        <section className="w-full py-8">
           <div className="container mx-auto px-4">
             <div className="grid gap-6 lg:grid-cols-12">
               {/* Calendar */}
               <div className="lg:col-span-5">
-                <Card className="border-border overflow-hidden bg-background/80 backdrop-blur-sm">
+                <Card className="border-border overflow-hidden">
                   <CardContent className="p-2 sm:p-4">
                     <div className="overflow-x-auto">
                       <CalendarComponent
@@ -168,7 +162,7 @@ const SchoolCalendar = () => {
 
               {/* Events List for Selected Date */}
               <div className="lg:col-span-7">
-                <Card className="border-border overflow-hidden bg-background/80 backdrop-blur-sm">
+                <Card className="border-border overflow-hidden">
                   <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="mb-4">
                       <h2 className="text-base font-semibold sm:text-lg md:text-xl">
@@ -199,7 +193,7 @@ const SchoolCalendar = () => {
             </div>
 
             {/* All Events Section */}
-            <div className="relative z-10 mt-8 sm:mt-12">
+            <div className="mt-8 sm:mt-12">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="text-xl font-bold sm:text-2xl md:text-3xl">Всички събития</h2>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 px-3 py-2 rounded-full">

@@ -3,10 +3,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input"; // Import Input
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Loader2, Tag, Search } from "lucide-react"; // Import Search
+import { Calendar, User, Loader2, Tag, Search } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { Link } from "react-router-dom";
 import { getPosts, Post } from '@/lib/api';
