@@ -8,95 +8,95 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Light Mode Colors - Ocean Depths */
-    --background: 200 25% 95%;
-    --foreground: 210 30% 20%;
+    /* Light Mode Colors - Teal Theme */
+    --background: 180 20% 96%;
+    --foreground: 180 50% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 210 30% 20%;
+    --card-foreground: 180 50% 15%;
 
-    --popover: 200 20% 97%;
-    --popover-foreground: 210 30% 20%;
+    --popover: 180 15% 98%;
+    --popover-foreground: 180 50% 15%;
 
-    --primary: 199 89% 48%;
+    --primary: 174 72% 40%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 200 25% 90%;
-    --secondary-foreground: 210 30% 20%;
+    --secondary: 180 30% 90%;
+    --secondary-foreground: 180 50% 15%;
 
-    --muted: 200 20% 85%;
-    --muted-foreground: 210 20% 45%;
+    --muted: 180 20% 88%;
+    --muted-foreground: 180 25% 40%;
 
-    --accent: 199 50% 90%;
-    --accent-foreground: 210 30% 20%;
+    --accent: 174 40% 92%;
+    --accent-foreground: 180 50% 15%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 200 20% 82%;
-    --input: 200 20% 82%;
-    --ring: 38 92% 60%;
+    --border: 180 20% 85%;
+    --input: 180 20% 85%;
+    --ring: 174 72% 40%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 200 20% 96%;
-    --sidebar-foreground: 210 30% 20%;
-    --sidebar-primary: 199 89% 48%;
+    --sidebar-background: 180 15% 97%;
+    --sidebar-foreground: 180 50% 15%;
+    --sidebar-primary: 174 72% 40%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 199 50% 90%;
-    --sidebar-accent-foreground: 210 30% 20%;
-    --sidebar-border: 200 20% 85%;
-    --sidebar-ring: 38 92% 60%;
+    --sidebar-accent: 174 40% 92%;
+    --sidebar-accent-foreground: 180 50% 15%;
+    --sidebar-border: 180 20% 88%;
+    --sidebar-ring: 174 72% 40%;
 
-    --header-background: 199 89% 40%;
+    --header-background: 174 72% 35%;
     --header-foreground: 0 0% 100%;
-    --footer-background: 199 70% 30%;
-    --footer-foreground: 200 25% 95%;
+    --footer-background: 174 60% 28%;
+    --footer-foreground: 180 20% 96%;
   }
 
   .dark {
-    /* Dark Mode Colors - Ocean Depths */
-    --background: 210 30% 12%;
-    --foreground: 200 25% 95%;
+    /* Dark Mode Colors - Teal Theme */
+    --background: 180 50% 10%;
+    --foreground: 180 20% 95%;
 
-    --card: 210 28% 15%;
-    --card-foreground: 200 25% 95%;
+    --card: 180 40% 13%;
+    --card-foreground: 180 20% 95%;
 
-    --popover: 210 28% 15%;
-    --popover-foreground: 200 25% 95%;
+    --popover: 180 40% 13%;
+    --popover-foreground: 180 20% 95%;
 
-    --primary: 199 89% 58%;
-    --primary-foreground: 210 30% 12%;
+    --primary: 174 72% 50%;
+    --primary-foreground: 180 50% 10%;
 
-    --secondary: 210 25% 20%;
-    --secondary-foreground: 200 25% 95%;
+    --secondary: 180 35% 18%;
+    --secondary-foreground: 180 20% 95%;
 
-    --muted: 210 25% 22%;
-    --muted-foreground: 200 20% 70%;
+    --muted: 180 30% 20%;
+    --muted-foreground: 180 20% 70%;
 
-    --accent: 199 50% 25%;
-    --accent-foreground: 200 25% 95%;
+    --accent: 174 40% 25%;
+    --accent-foreground: 180 20% 95%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 210 25% 25%;
-    --input: 210 25% 25%;
-    --ring: 38 92% 70%;
+    --border: 180 30% 25%;
+    --input: 180 30% 25%;
+    --ring: 174 72% 50%;
 
-    --sidebar-background: 210 28% 15%;
-    --sidebar-foreground: 200 25% 95%;
-    --sidebar-primary: 199 89% 58%;
-    --sidebar-primary-foreground: 210 30% 12%;
-    --sidebar-accent: 199 50% 25%;
-    --sidebar-accent-foreground: 200 25% 95%;
-    --sidebar-border: 210 25% 25%;
-    --sidebar-ring: 38 92% 70%;
+    --sidebar-background: 180 40% 13%;
+    --sidebar-foreground: 180 20% 95%;
+    --sidebar-primary: 174 72% 50%;
+    --sidebar-primary-foreground: 180 50% 10%;
+    --sidebar-accent: 174 40% 25%;
+    --sidebar-accent-foreground: 180 20% 95%;
+    --sidebar-border: 180 30% 25%;
+    --sidebar-ring: 174 72% 50%;
 
-    --header-background: 199 89% 45%;
+    --header-background: 174 72% 38%;
     --header-foreground: 0 0% 100%;
-    --footer-background: 199 70% 35%;
-    --footer-foreground: 200 25% 95%;
+    --footer-background: 174 60% 30%;
+    --footer-foreground: 180 20% 95%;
   }
 }
 
