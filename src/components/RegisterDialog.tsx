@@ -20,6 +20,8 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useSettings } from "@/contexts/SettingsContext";
+// 1. Импорт на Turnstile
+import { Turnstile } from '@marsidev/react-turnstile';
 
 interface RegisterDialogProps {
   open: boolean;
@@ -41,10 +43,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // State for CAPTCHA
-  const [captchaNum1, setCaptchaNum1] = useState(0);
-  const [captchaNum2, setCaptchaNum2] = useState(0);
-  const [captchaAnswer, setCaptchaAnswer] = useState("");
+  // 2. Новият стейт за Cloudflare Токена
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
   // State for username validation
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -57,15 +57,13 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
   const [passwordsMatch, setPasswordsMatch] = useState<boolean | null>(null);
 
-
   const isLoading = authLoading || localLoading;
 
-    // Generate new CAPTCHA question when dialog opens
+  // Ресет на токена при затваряне/отваряне на диалога
   useEffect(() => {
-    if (open) {
-      setCaptchaNum1(Math.floor(Math.random() * 10) + 1);
-      setCaptchaNum2(Math.floor(Math.random() * 10) + 1);
-      setCaptchaAnswer("");
+    if (!open) {
+      setTurnstileToken(null);
+      setError("");
     }
   }, [open]);
 
@@ -103,9 +101,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       checkUsernameAvailability();
     }, 500);
 
-    return () => {
-      clearTimeout(timerId);
-    };
+    return () => clearTimeout(timerId);
   }, [username]);
 
   // Debounced Password Check
@@ -148,7 +144,6 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
     }
   }, [password, password2]);
 
-
   const handleRegister = async () => {
     setError("");
     if (isUsernameAvailable === false) {
@@ -167,8 +162,10 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       setError("Моля, попълнете всички задължителни полета.");
       return;
     }
-    if (!captchaAnswer) {
-      setError("Моля, решете задачата за проверка.");
+    
+    // 3. Проверка дали Cloudflare е потвърдил човека
+    if (!turnstileToken) {
+      setError("Моля, потвърдете, че не сте робот.");
       return;
     }
 
@@ -181,20 +178,22 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         password2,
         first_name: firstName,
         last_name: lastName,
-        captcha_num1: captchaNum1,
-        captcha_num2: captchaNum2,
-        captcha_answer: captchaAnswer,
+        // Пращаме токена в полето за captcha_answer
+        captcha_answer: turnstileToken, 
       };
+
       await register(credentials);
       toast({ title: "Успешна регистрация", description: `Потребител ${username} беше регистриран. Сега можете да влезете в профила си.`, variant: "default" });
       onOpenChange(false);
+      
+      // Изчистване на формата
       setEmail('');
       setUsername('');
       setPassword('');
       setPassword2('');
       setFirstName('');
       setLastName('');
-      setCaptchaAnswer('');
+      setTurnstileToken(null);
     } catch (err: any) {
       const errorMessage = err.message || "Неуспешна регистрация. Моля, опитайте отново.";
       setError(errorMessage);
@@ -203,12 +202,14 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         description: errorMessage,
         variant: "destructive",
       });
+      // При грешка е добре да ресетнем токена, за да се генерира нов
+      setTurnstileToken(null);
     } finally {
       setLocalLoading(false);
     }
   };
 
-  const canSubmit = !isLoading && isUsernameAvailable === true && isPasswordValid === true && passwordsMatch === true && captchaAnswer !== "";
+  const canSubmit = !isLoading && isUsernameAvailable === true && isPasswordValid === true && passwordsMatch === true && turnstileToken !== null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -280,7 +281,6 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               </div>
             </div>
 
-            
             <div className="space-y-1">
               <Label htmlFor="reg-password">Парола</Label>
               <div className="relative">
@@ -324,15 +324,16 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               {passwordsMatch === false && <p className="text-xs text-red-500 mt-1">Паролите не съвпадат.</p>}
             </div>
 
-            <div className="space-y-1">
-              <Label htmlFor="reg-captcha">Колко е {captchaNum1} + {captchaNum2}?</Label>
-              <Input
-                id="reg-captcha"
-                type="text"
-                placeholder="Вашият отговор..."
-                value={captchaAnswer}
-                onChange={(e) => setCaptchaAnswer(e.target.value)}
-                disabled={isLoading}
+            {/* 4. Секцията с Cloudflare Turnstile */}
+            <div className="flex justify-center py-2">
+              <Turnstile 
+                siteKey="0x4AAAAAACoCbGkI6ACpCd1v" 
+                onSuccess={(token) => {
+                  setTurnstileToken(token);
+                  setError("");
+                }}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => setError("Грешка при проверката за сигурност.")}
               />
             </div>
 
@@ -342,6 +343,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {isLoading ? "Регистрация..." : "Регистрация"}
             </Button>
+            
             <p className="text-sm text-muted-foreground text-center mt-2">
               Вече имаш профил?{" "}
               <button
@@ -354,7 +356,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               >
                 Вход
               </button>
-          </p>
+            </p>
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center p-8 text-center">
@@ -374,7 +376,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               >
                 Вход
               </button>
-          </p>
+            </p>
           </div>
         )}
       </DialogContent>
