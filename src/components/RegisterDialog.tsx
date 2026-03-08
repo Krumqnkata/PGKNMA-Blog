@@ -76,6 +76,14 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         return;
       }
 
+      // Проверка за латиница (английски букви), цифри и долна черта
+      const isEnglishOnly = /^[a-zA-Z0-9_]+$/.test(username);
+      if (!isEnglishOnly) {
+        setIsUsernameAvailable(false);
+        setUsernameError('Потребителското име може да съдържа само латински букви, цифри и долна черта.');
+        return;
+      }
+
       setIsCheckingUsername(true);
       setIsUsernameAvailable(null);
       setUsernameError('');
