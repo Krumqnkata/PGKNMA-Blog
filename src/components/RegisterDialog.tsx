@@ -221,7 +221,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      {/* Добавени max-h-[90dvh] и overflow-y-auto тук */}
+      <DialogContent className="sm:max-w-md max-h-[90dvh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Регистрация</DialogTitle>
           <DialogDescription>
@@ -232,7 +233,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         </DialogHeader>
 
         {settings?.enable_user_registration ? (
-          <div className="flex flex-col gap-4 mt-2">
+          <div className="flex flex-col gap-4 mt-2 px-1">
+            {/* Добавен px-1 тук */}
             <div className="space-y-1">
               <Label htmlFor="reg-email">Имейл</Label>
               <Input
