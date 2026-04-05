@@ -81,10 +81,27 @@ const Post = () => {
     return (
         <div className="min-h-screen w-full bg-background">
             <Header />
-            {/* Reading Progress Bar */}
-            <div className="fixed top-16 left-0 w-full h-1 z-50 pointer-events-none">
+            {/* RGB Reading Progress Bar */}
+            <style>
+                {`
+                @keyframes rainbow-progress {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+                .animate-rgb-bar {
+                    background: linear-gradient(
+                        90deg, 
+                        #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff, #ff0000
+                    );
+                    background-size: 400% 100%;
+                    animation: rainbow-progress 5s linear infinite;
+                }
+                `}
+            </style>
+            <div className="fixed top-16 left-0 w-full h-1.5 z-50 pointer-events-none">
                 <div 
-                    className="h-full bg-red-600 transition-all duration-150 ease-out shadow-[0_0_15px_rgba(220,38,38,0.8)]"
+                    className="h-full animate-rgb-bar transition-all duration-150 ease-out shadow-[0_0_10px_rgba(255,255,255,0.3)]"
                     style={{ width: `${scrollProgress}%` }}
                 />
             </div>
