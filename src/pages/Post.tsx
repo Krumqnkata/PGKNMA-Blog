@@ -27,6 +27,20 @@ const Post = () => {
     const [loading, setLoading] = useState(true);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
+    const [scrollProgress, setScrollProgress] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const currentScroll = window.scrollY;
+            if (totalScroll > 0) {
+                setScrollProgress((currentScroll / totalScroll) * 100);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -67,6 +81,13 @@ const Post = () => {
     return (
         <div className="min-h-screen w-full bg-background">
             <Header />
+            {/* Reading Progress Bar */}
+            <div className="fixed top-16 left-0 w-full h-1 z-50 pointer-events-none">
+                <div 
+                    className="h-full bg-red-600 transition-all duration-150 ease-out shadow-[0_0_15px_rgba(220,38,38,0.8)]"
+                    style={{ width: `${scrollProgress}%` }}
+                />
+            </div>
             <main className="py-12 md:py-16">
                 <div className="container mx-auto px-4">
                     {loading ? (

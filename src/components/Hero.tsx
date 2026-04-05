@@ -1,9 +1,48 @@
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, Newspaper } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const [text, setText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [loopNum, setLoopNum] = useState(0);
+  const [typingSpeed, setTypingSpeed] = useState(150);
+
+  const phrases = [
+    "Нашата Гимназия",
+    "Училищния Живот",
+    "Твоето Бъдеще",
+    "Новите Технологии",
+    "Нашите Проекти",
+  ];
+
+  useEffect(() => {
+    const handleType = () => {
+      const i = loopNum % phrases.length;
+      const fullText = phrases[i];
+
+      setText(
+        isDeleting
+          ? fullText.substring(0, text.length - 1)
+          : fullText.substring(0, text.length + 1)
+      );
+
+      setTypingSpeed(isDeleting ? 75 : 150);
+
+      if (!isDeleting && text === fullText) {
+        setTimeout(() => setIsDeleting(true), 2000);
+      } else if (isDeleting && text === "") {
+        setIsDeleting(false);
+        setLoopNum(loopNum + 1);
+      }
+    };
+
+    const timer = setTimeout(handleType, typingSpeed);
+    return () => clearTimeout(timer);
+  }, [text, isDeleting, loopNum, typingSpeed, phrases]);
+
   return (
     <section className="relative overflow-hidden border-b border-border">
       {/* Background Gradient */}
@@ -18,9 +57,12 @@ const Hero = () => {
           </div>
 
           {/* Headline */}
-          <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
-            Бъдете в крак с всичко за
-            <span className="block text-primary">Нашата Гимназия</span>
+          <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl min-h-[3em] sm:min-h-[2.5em] lg:min-h-0">
+            Бъдете в крак с всичко за{" "}
+            <span className="block text-primary">
+              {text}
+              <span className="ml-1 inline-block h-[0.9em] w-1 animate-pulse bg-primary align-middle" />
+            </span>
           </h1>
 
           {/* Subheadline */}
