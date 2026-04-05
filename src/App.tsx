@@ -33,6 +33,7 @@ import { SettingsProvider, useSettings } from "./contexts/SettingsContext"; // I
 import FeatureDisabledPage from "./pages/FeatureDisabledPage";
 import { GlobalStateProvider } from "./contexts/GlobalStateContext"; // Import global state context
 import EasterEgg from "./pages/EasterEgg";
+import CustomCursor from "./components/CustomCursor";
 
 const AppContent = () => {
   // Get site status from useQuery (this remains local for now)
@@ -77,6 +78,7 @@ const AppContent = () => {
 
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+      <CustomCursor />
       <AuthProvider>
           <TooltipProvider>
             <Toaster />
