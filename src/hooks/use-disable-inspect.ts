@@ -13,7 +13,7 @@ export const useDisableInspect = () => {
       );
       console.log(
         "%cStrictly Dev Only: Модифицирането на кода тук компрометира защитата на вашите данни. Действайте на собствен риск.",
-        "color: yellow; font-size: 24px; font-weight: bold; text-shadow: 2px 2px black;"
+        "color: yellow; font-size: 18px; font-weight: bold; text-shadow: 2px 2px black;"
       );
     };
     
@@ -29,7 +29,7 @@ export const useDisableInspect = () => {
       if (isDocked) {
         showWarning();
       }
-    }, 13000);
+    }, 30000);
 
     // Disable right-click
     const handleContextMenu = (e: MouseEvent) => {
