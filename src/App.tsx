@@ -34,8 +34,12 @@ import FeatureDisabledPage from "./pages/FeatureDisabledPage";
 import { GlobalStateProvider } from "./contexts/GlobalStateContext"; // Import global state context
 import EasterEgg from "./pages/EasterEgg";
 import CustomCursor from "./components/CustomCursor";
+import { useDisableInspect } from "./hooks/use-disable-inspect";
 
 const AppContent = () => {
+  // Disable inspect tools (right click, F12, etc.)
+  useDisableInspect();
+
   // Get site status from useQuery (this remains local for now)
   const { data: siteStatus, isLoading: isSiteStatusLoading, isError: isSiteStatusError } = useQuery({
     queryKey: ['siteStatus'],
