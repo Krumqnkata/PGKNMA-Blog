@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import hljs from 'highlight.js';
 import '@/styles/atom-one-dark.css';
@@ -28,19 +28,45 @@ const Post = () => {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [scrollProgress, setScrollProgress] = useState(0);
+    const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const handleScroll = () => {
-            const totalScroll = document.documentElement.scrollHeight - window.innerHeight;
-            const currentScroll = window.scrollY;
-            if (totalScroll > 0) {
-                setScrollProgress((currentScroll / totalScroll) * 100);
+            if (!contentRef.current) return;
+            
+            const rect = contentRef.current.getBoundingClientRect();
+            const scrollTop = window.scrollY;
+            const viewportHeight = window.innerHeight;
+            const contentTop = rect.top + scrollTop;
+            const contentHeight = rect.height;
+            
+            // Total distance to scroll: from top of content at top of viewport 
+            // to bottom of content at bottom of viewport
+            const totalToScroll = contentHeight - viewportHeight;
+            
+            let progress = 0;
+            if (totalToScroll <= 0) {
+                // If content is shorter than viewport, it's 100% once it's fully visible
+                progress = scrollTop + viewportHeight >= contentTop + contentHeight ? 100 : 0;
+            } else {
+                const currentScroll = scrollTop - contentTop;
+                progress = (currentScroll / totalToScroll) * 100;
             }
+            
+            setScrollProgress(Math.min(100, Math.max(0, progress)));
         };
 
         window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+        window.addEventListener("resize", handleScroll);
+        
+        // Initial calculation
+        handleScroll();
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+            window.removeEventListener("resize", handleScroll);
+        };
+    }, [post]);
 
     useEffect(() => {
         const fetchPost = async () => {
@@ -114,81 +140,83 @@ const Post = () => {
                         </div>
                     ) : post && id ? (
                         <article className="max-w-4xl mx-auto">
-                            <h1 className="text-3xl md:text-5xl font-bold mb-4">{post.title}</h1>
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
-                                <div className="flex items-center gap-1.5">
-                                    <User className="h-4 w-4" />
-                                    <span>{post.author_username || `User ID: ${post.author}`}</span>
+                            <div ref={contentRef}>
+                                <h1 className="text-3xl md:text-5xl font-bold mb-4">{post.title}</h1>
+                                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
+                                    <div className="flex items-center gap-1.5">
+                                        <User className="h-4 w-4" />
+                                        <span>{post.author_username || `User ID: ${post.author}`}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Calendar className="h-4 w-4" />
+                                        <span>{new Date(post.created_at).toLocaleDateString('bg-BG')}</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Tag className="h-4 w-4" />
+                                        <Badge variant="secondary">{post.category_name}</Badge>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Calendar className="h-4 w-4" />
-                                    <span>{new Date(post.created_at).toLocaleDateString('bg-BG')}</span>
-                                </div>
-                                <div className="flex items-center gap-1.5">
-                                    <Tag className="h-4 w-4" />
-                                    <Badge variant="secondary">{post.category_name}</Badge>
-                                </div>
+                                {post.banner && (
+                                    <img
+                                        src={post.banner}
+                                        alt={`Банер за ${post.title}`}
+                                        className="w-full max-h-96 object-contain rounded-3xl mb-8"
+                                    />
+                                )}
+
+                                <MarkdownRenderer content={post.content} />
+
+                                {/* Image Gallery Section */}
+                                {post.images && post.images.length > 0 && (
+                                    <div className="mt-12">
+                                        <h2 className="text-2xl font-bold mb-4">Галерия</h2>
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                            {post.images.map((image, index) => (
+                                                <div
+                                                    key={index}
+                                                    className="cursor-pointer"
+                                                    onClick={() => {
+                                                        setLightboxIndex(index);
+                                                        setLightboxOpen(true);
+                                                    }}
+                                                >
+                                                    <img
+                                                        src={image}
+                                                        alt={`Image ${index + 1} for post ${post.title}`}
+                                                        className="w-full h-auto rounded-lg object-cover aspect-square transition-transform hover:scale-105"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Document Section */}
+                                {post.documents && post.documents.length > 0 && (
+                                    <div className="mt-12">
+                                        <h2 className="text-2xl font-bold mb-4">Прикачени файлове</h2>
+                                        <div className="space-y-3">
+                                            {post.documents.map((doc, index) => (
+                                                <a 
+                                                    key={doc.id || index} 
+                                                    href={doc.file_url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer" 
+                                                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors flex-wrap"
+                                                >
+                                                    {getFileIcon(doc.file_url)}
+                                                    <span className="font-medium text-card-foreground hover:underline break-words flex-grow">
+                                                        {decodeURIComponent(doc.file_url.split('/').pop() || '')}
+                                                    </span>
+                                                    <span className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
+                                                        Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
+                                                    </span>
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                             </div>
-                            {post.banner && (
-                                <img
-                                    src={post.banner}
-                                    alt={`Банер за ${post.title}`}
-                                    className="w-full max-h-96 object-contain rounded-3xl mb-8"
-                                />
-                            )}
-
-                            <MarkdownRenderer content={post.content} />
-
-                            {/* Image Gallery Section */}
-                            {post.images && post.images.length > 0 && (
-                                <div className="mt-12">
-                                    <h2 className="text-2xl font-bold mb-4">Галерия</h2>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                        {post.images.map((image, index) => (
-                                            <div
-                                                key={index}
-                                                className="cursor-pointer"
-                                                onClick={() => {
-                                                    setLightboxIndex(index);
-                                                    setLightboxOpen(true);
-                                                }}
-                                            >
-                                                <img
-                                                    src={image}
-                                                    alt={`Image ${index + 1} for post ${post.title}`}
-                                                    className="w-full h-auto rounded-lg object-cover aspect-square transition-transform hover:scale-105"
-                                                />
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Document Section */}
-                            {post.documents && post.documents.length > 0 && (
-                                <div className="mt-12">
-                                    <h2 className="text-2xl font-bold mb-4">Прикачени файлове</h2>
-                                    <div className="space-y-3">
-                                        {post.documents.map((doc, index) => (
-                                            <a 
-                                                key={doc.id || index} 
-                                                href={doc.file_url} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer" 
-                                                className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors flex-wrap"
-                                            >
-                                                {getFileIcon(doc.file_url)}
-                                                <span className="font-medium text-card-foreground hover:underline break-words flex-grow">
-                                                    {decodeURIComponent(doc.file_url.split('/').pop() || '')}
-                                                </span>
-                                                <span className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
-                                                    Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
-                                                </span>
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                             
                             <Comments postId={id} />
 
