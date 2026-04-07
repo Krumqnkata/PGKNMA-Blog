@@ -202,15 +202,19 @@ const Post = () => {
                                                     href={doc.file_url} 
                                                     target="_blank" 
                                                     rel="noopener noreferrer" 
-                                                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors flex-wrap"
+                                                    className="flex items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors w-full min-w-0"
                                                 >
-                                                    {getFileIcon(doc.file_url)}
-                                                    <span className="font-medium text-card-foreground hover:underline break-words flex-grow">
-                                                        {decodeURIComponent(doc.file_url.split('/').pop() || '')}
-                                                    </span>
-                                                    <span className="text-sm text-muted-foreground ml-auto whitespace-nowrap">
-                                                        Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
-                                                    </span>
+                                                    <div className="shrink-0 flex items-center">
+                                                        {getFileIcon(doc.file_url)}
+                                                    </div>
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between flex-grow min-w-0 gap-x-4 gap-y-1">
+                                                        <span className="font-medium text-card-foreground hover:underline truncate">
+                                                            {decodeURIComponent(doc.file_url.split('/').pop() || '')}
+                                                        </span>
+                                                        <span className="text-sm text-muted-foreground shrink-0 whitespace-nowrap sm:ml-auto">
+                                                            Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
+                                                        </span>
+                                                    </div>
                                                 </a>
                                             ))}
                                         </div>
