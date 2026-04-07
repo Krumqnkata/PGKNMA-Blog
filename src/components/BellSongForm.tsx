@@ -10,6 +10,12 @@ import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 import { submitBellSongSuggestion, BellSongSuggestionData } from '@/lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Viewer, Worker } from '@react-pdf-viewer/core';
+import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
+
+// Import styles
+import '@react-pdf-viewer/core/lib/styles/index.css';
+import '@react-pdf-viewer/default-layout/lib/styles/index.css';
 
 
 type BellSongFormValues = {
@@ -21,6 +27,7 @@ type BellSongFormValues = {
 
 const BellSongForm = () => {
   const { isAuthenticated, openLoginDialog } = useAuth(); // Use AuthContext
+  const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const {
     register,
@@ -78,23 +85,33 @@ const BellSongForm = () => {
             Споделете любимата си песен за междучасието. Ще я разгледаме и ще ви уведомим при одобрение.
           </p>
           <div className="mt-8">
-            <Dialog>
+            <Dialog onOpenChange={(open) => {
+              if (!open) {
+                // Fallback cleanup for scroll lock
+                document.body.style.overflow = 'auto';
+                document.body.style.pointerEvents = 'auto';
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button variant="default" size="lg" className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300 font-semibold px-8 py-6 rounded-full">
                   <FileText className="h-5 w-5" />
                   Регламент за избор на звънец
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-4xl w-[95vw] h-[90vh] flex flex-col p-0 overflow-hidden">
+              <DialogContent 
+                className="max-w-4xl w-[95vw] h-[90vh] flex flex-col p-0 overflow-hidden"
+                onCloseAutoFocus={(e) => e.preventDefault()}
+              >
                 <DialogHeader className="p-6 border-b">
                   <DialogTitle>Регламент за избор на звънец</DialogTitle>
                 </DialogHeader>
-                <div className="flex-grow w-full h-full bg-muted">
-                  <iframe 
-                    src="/bell.pdf" 
-                    className="w-full h-full border-none"
-                    title="Регламент за избор на звънец"
-                  />
+                <div className="flex-grow w-full h-full bg-muted overflow-auto">
+                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
+                    <Viewer
+                      fileUrl="/bell.pdf"
+                      plugins={[defaultLayoutPluginInstance]}
+                    />
+                  </Worker>
                 </div>
               </DialogContent>
             </Dialog>
