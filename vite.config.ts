@@ -19,6 +19,17 @@ export default defineConfig(({ mode }) => ({
     },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'pdf-viewer': ['@react-pdf-viewer/core', '@react-pdf-viewer/default-layout', 'pdfjs-dist'],
+          'vendor': ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query'],
+          'ui': ['lucide-react', 'yet-another-react-lightbox'],
+        }
+      }
+    }
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
