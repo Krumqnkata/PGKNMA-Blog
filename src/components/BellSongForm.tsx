@@ -1,5 +1,5 @@
 import { Controller, useForm } from "react-hook-form";
-import { Music2, Send } from "lucide-react";
+import { Music2, Send, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 import { submitBellSongSuggestion, BellSongSuggestionData } from '@/lib/api';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 
 type BellSongFormValues = {
@@ -76,6 +77,28 @@ const BellSongForm = () => {
           <p className="mt-3 text-lg text-muted-foreground">
             Споделете любимата си песен за междучасието. Ще я разгледаме и ще ви уведомим при одобрение.
           </p>
+          <div className="mt-8">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="default" size="lg" className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300 font-semibold px-8 py-6 rounded-full">
+                  <FileText className="h-5 w-5" />
+                  Регламент за избор на звънец
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl w-[95vw] h-[90vh] flex flex-col p-0 overflow-hidden">
+                <DialogHeader className="p-6 border-b">
+                  <DialogTitle>Регламент за избор на звънец</DialogTitle>
+                </DialogHeader>
+                <div className="flex-grow w-full h-full bg-muted">
+                  <iframe 
+                    src="/bell.pdf" 
+                    className="w-full h-full border-none"
+                    title="Регламент за избор на звънец"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
 
         {!isAuthenticated ? (
