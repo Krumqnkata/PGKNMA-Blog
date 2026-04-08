@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet">
 
-    <link rel="icon" href="favicon.ico"/>
+    <link rel="icon" id="favicon" href="favicon.ico"/>
     <meta property="og:title" content="ПГКНМА Блог" />
     <meta property="og:description" content="ПГКНМА Блог" />
     <meta property="og:type" content="website" />
@@ -18,6 +18,60 @@
 
   <body>
     <div id="root"></div>
+
+    <script>
+      const titles = [
+        "ПГКНМА Блог", 
+        "📰 Новини", 
+        "🚀 Проекти", 
+        "🤔 Какво ново?", 
+        "💻 Код за успех", 
+        "👥 За ученици", 
+        "🌍 ИТ Общност"
+      ];
+      
+      let index = 0;
+      let interval;
+      const favicon = document.getElementById('favicon');
+
+      // 1. Функция за опресняване на фавиконата (против кеширане)
+      const refreshFavicon = () => {
+        if (favicon) {
+          favicon.href = `favicon.ico?v=${new Date().getTime()}`;
+        }
+      };
+
+      // 2. Логика за въртене на заглавията
+      const startTitleCycle = () => {
+        interval = setInterval(() => {
+          index = (index + 1) % titles.length;
+          document.title = titles[index];
+        }, 3000);
+      };
+
+      const stopTitleCycle = () => {
+        clearInterval(interval);
+      };
+
+      // --- ИНИЦИАЛИЗАЦИЯ ---
+      
+      refreshFavicon(); // Опреснява иконата веднага
+      startTitleCycle(); // Започва въртенето
+
+      // Когато потребителят напусне таба
+      window.onblur = () => {
+        stopTitleCycle(); // Спира цикъла
+        document.title = "👋 Върни се! 👋"; // Заглавието остава така до връщане
+      };
+
+      // Когато потребителят се върне в таба
+      window.onfocus = () => {
+        document.title = titles[index]; // Връща актуалното заглавие от цикъла
+        startTitleCycle(); // Рестартира въртенето
+        refreshFavicon(); // Опреснява иконата пак за всеки случай
+      };
+    </script>
+
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
