@@ -8,11 +8,12 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileJson, FileWarning } from "lucide-react";
+import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
 import Lightbox from "yet-another-react-lightbox";
+import PDFViewerDialog from "@/components/PDFViewerDialog";
 import "yet-another-react-lightbox/styles.css";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
@@ -28,6 +29,8 @@ const Post = () => {
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [scrollProgress, setScrollProgress] = useState(0);
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+    const [pdfOpen, setPdfOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -90,7 +93,7 @@ const Post = () => {
         const extension = fileName.split('.').pop()?.toLowerCase();
         switch (extension) {
             case 'pdf':
-                return <FileJson className="h-6 w-6 text-red-500" />;
+                return <FileText className="h-6 w-6 text-red-500" />;
             case 'docx':
             case 'doc':
                 return <FileText className="h-6 w-6 text-blue-500" />;
@@ -101,6 +104,16 @@ const Post = () => {
                 return <FileArchive className="h-6 w-6 text-gray-500" />;
             default:
                 return <FileWarning className="h-6 w-6 text-gray-500" />;
+        }
+    };
+
+    const handleFileClick = (doc: { file_url: string }) => {
+        const isPdf = doc.file_url.toLowerCase().endsWith('.pdf');
+        if (isPdf) {
+            setPdfUrl(doc.file_url);
+            setPdfOpen(true);
+        } else {
+            window.open(doc.file_url, '_blank', 'noopener,noreferrer');
         }
     };
 
@@ -164,7 +177,13 @@ const Post = () => {
                                     />
                                 )}
 
-                                <MarkdownRenderer content={post.content} />
+                                <MarkdownRenderer 
+                                    content={post.content} 
+                                    onPdfClick={(url) => {
+                                        setPdfUrl(url);
+                                        setPdfOpen(true);
+                                    }}
+                                />
 
                                 {/* Image Gallery Section */}
                                 {post.images && post.images.length > 0 && (
@@ -197,12 +216,10 @@ const Post = () => {
                                         <h2 className="text-2xl font-bold mb-4">Прикачени файлове</h2>
                                         <div className="space-y-3">
                                             {post.documents.map((doc, index) => (
-                                                <a 
+                                                <button 
                                                     key={doc.id || index} 
-                                                    href={doc.file_url} 
-                                                    target="_blank" 
-                                                    rel="noopener noreferrer" 
-                                                    className="flex items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors w-full min-w-0"
+                                                    onClick={() => handleFileClick(doc)}
+                                                    className="flex items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors w-full min-w-0 text-left"
                                                 >
                                                     <div className="shrink-0 flex items-center">
                                                         {getFileIcon(doc.file_url)}
@@ -215,7 +232,7 @@ const Post = () => {
                                                             Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
                                                         </span>
                                                     </div>
-                                                </a>
+                                                </button>
                                             ))}
                                         </div>
                                     </div>
@@ -251,6 +268,13 @@ const Post = () => {
                     className="z-50"
                 />
             )}
+
+            <PDFViewerDialog 
+                fileUrl={pdfUrl}
+                isOpen={pdfOpen}
+                onOpenChange={setPdfOpen}
+                title={pdfUrl ? decodeURIComponent(pdfUrl.split('/').pop() || '') : "Преглед на документ"}
+            />
         </div>
     );
 };

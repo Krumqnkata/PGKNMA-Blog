@@ -8,15 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
-import { submitBellSongSuggestion, BellSongSuggestionData } from '@/lib/api';
+import { submitBellSongSuggestion } from '@/lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Viewer, Worker } from '@react-pdf-viewer/core';
-import { defaultLayoutPlugin } from '@react-pdf-viewer/default-layout';
-
-// Import styles
-import '@react-pdf-viewer/core/lib/styles/index.css';
-import '@react-pdf-viewer/default-layout/lib/styles/index.css';
-
+import PDFViewer from "./PDFViewer";
 
 type BellSongFormValues = {
   title: string;
@@ -27,14 +21,12 @@ type BellSongFormValues = {
 
 const BellSongForm = () => {
   const { isAuthenticated, openLoginDialog } = useAuth(); // Use AuthContext
-  const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const {
     register,
     handleSubmit,
     control,
     reset,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<BellSongFormValues>({
     defaultValues: {
@@ -105,13 +97,8 @@ const BellSongForm = () => {
                 <DialogHeader className="p-6 border-b">
                   <DialogTitle>Регламент за избор на звънец</DialogTitle>
                 </DialogHeader>
-                <div className="flex-grow w-full h-full bg-muted overflow-auto">
-                  <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js">
-                    <Viewer
-                      fileUrl="/bell.pdf"
-                      plugins={[defaultLayoutPluginInstance]}
-                    />
-                  </Worker>
+                <div className="flex-grow w-full h-full overflow-hidden">
+                  <PDFViewer fileUrl="/bell.pdf" />
                 </div>
               </DialogContent>
             </Dialog>
