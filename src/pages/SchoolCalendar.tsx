@@ -10,6 +10,7 @@ import CookieConsent from "@/components/CookieConsent";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents, Event } from "@/lib/api";
 import { format, parseISO } from "date-fns";
+import { bg } from "date-fns/locale";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetClose } from "@/components/ui/sheet";
@@ -166,7 +167,7 @@ const SchoolCalendar = () => {
                   <CardContent className="p-3 sm:p-4 md:p-6">
                     <div className="mb-4">
                       <h2 className="text-base font-semibold sm:text-lg md:text-xl">
-                        Събития за {selectedDate ? format(selectedDate, "dd.MM.yyyy") : "—"}
+                        Събития за {selectedDate ? format(selectedDate, "dd.MM.yyyy", { locale: bg }) : "—"}
                       </h2>
                       <p className="text-xs text-muted-foreground sm:text-sm">
                         {selectedDateEvents.length} {selectedDateEvents.length === 1 ? "събитие" : selectedDateEvents.length < 5 ? "събития" : "събития"}
@@ -270,10 +271,10 @@ const EventCard = ({ event, isMobile }: { event: Event; isMobile: boolean }) => 
           <div className="flex gap-2 sm:gap-3">
             <div className="flex h-12 w-12 flex-shrink-0 flex-col items-center justify-center rounded-lg bg-primary/10 sm:h-14 sm:w-14">
               <span className="text-base font-bold text-primary sm:text-lg">
-                {format(startDate, "d")}
+                {format(startDate, "d", { locale: bg })}
               </span>
               <span className="text-[10px] text-muted-foreground sm:text-xs">
-                {format(startDate, "MMM")}
+                {format(startDate, "MMM", { locale: bg })}
               </span>
             </div>
             <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
@@ -289,15 +290,15 @@ const EventCard = ({ event, isMobile }: { event: Event; isMobile: boolean }) => 
                 <div className="flex items-center gap-1 min-w-0">
                   <Calendar className="h-3 w-3 flex-shrink-0 sm:h-3.5 sm:w-3.5" />
                   <span className="truncate">
-                    {format(startDate, "dd.MM.yyyy")}
-                    {endDate && ` - ${format(endDate, "dd.MM.yyyy")}`}
+                    {format(startDate, "dd.MM.yyyy", { locale: bg })}
+                    {endDate && ` - ${format(endDate, "dd.MM.yyyy", { locale: bg })}`}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 min-w-0">
                   <Clock className="h-3 w-3 flex-shrink-0 sm:h-3.5 sm:w-3.5" />
                   <span className="truncate">
-                    {format(startDate, "HH:mm")}
-                    {endDate && ` - ${format(endDate, "HH:mm")}`}
+                    {format(startDate, "HH:mm", { locale: bg })}
+                    {endDate && ` - ${format(endDate, "HH:mm", { locale: bg })}`}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 min-w-0">
@@ -322,7 +323,7 @@ const EventCard = ({ event, isMobile }: { event: Event; isMobile: boolean }) => 
             <SheetHeader>
               <SheetTitle className="pr-8">{event.title}</SheetTitle>
               <SheetDescription>
-                {format(parseISO(event.start_datetime), "dd.MM.yyyy")} • {format(parseISO(event.start_datetime), "HH:mm")}
+                {format(parseISO(event.start_datetime), "dd.MM.yyyy", { locale: bg })} • {format(parseISO(event.start_datetime), "HH:mm", { locale: bg })}
               </SheetDescription>
             </SheetHeader>
             <EventDetails event={event} />
@@ -335,7 +336,7 @@ const EventCard = ({ event, isMobile }: { event: Event; isMobile: boolean }) => 
             <DialogHeader>
               <DialogTitle>{event.title}</DialogTitle>
               <DialogDescription>
-                {format(parseISO(event.start_datetime), "dd.MM.yyyy")} • {format(parseISO(event.start_datetime), "HH:mm")}
+                {format(parseISO(event.start_datetime), "dd.MM.yyyy", { locale: bg })} • {format(parseISO(event.start_datetime), "HH:mm", { locale: bg })}
               </DialogDescription>
             </DialogHeader>
             <EventDetails event={event} />
@@ -370,15 +371,15 @@ const EventDetails = ({ event }: { event: Event }) => {
         <div className="flex items-center gap-2 min-w-0">
           <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
           <span className="truncate">
-            {format(parseISO(event.start_datetime), "dd.MM.yyyy")}
-            {event.end_datetime && ` - ${format(parseISO(event.end_datetime), "dd.MM.yyyy")}`}
+            {format(parseISO(event.start_datetime), "dd.MM.yyyy", { locale: bg })}
+            {event.end_datetime && ` - ${format(parseISO(event.end_datetime), "dd.MM.yyyy", { locale: bg })}`}
           </span>
         </div>
         <div className="flex items-center gap-2 min-w-0">
           <Clock className="h-4 w-4 text-primary flex-shrink-0" />
           <span className="truncate">
-            {format(parseISO(event.start_datetime), "HH:mm")}
-            {event.end_datetime && ` - ${format(parseISO(event.end_datetime), "HH:mm")}`}
+            {format(parseISO(event.start_datetime), "HH:mm", { locale: bg })}
+            {event.end_datetime && ` - ${format(parseISO(event.end_datetime), "HH:mm", { locale: bg })}`}
           </span>
         </div>
         <div className="flex items-center gap-2 min-w-0">
@@ -440,10 +441,10 @@ const EventCardCompact = ({ event }: { event: Event }) => {
           <div className="flex gap-2 sm:gap-3">
             <div className="flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center rounded-lg bg-primary/10">
               <span className="text-lg font-bold text-primary">
-                {format(startDate, "d")}
+                {format(startDate, "d", { locale: bg })}
               </span>
               <span className="text-xs text-muted-foreground">
-                {format(startDate, "MMM")}
+                {format(startDate, "MMM", { locale: bg })}
               </span>
             </div>
             <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
@@ -455,15 +456,15 @@ const EventCardCompact = ({ event }: { event: Event }) => {
                 <div className="flex items-center gap-1 min-w-0">
                   <Calendar className="h-3 w-3 flex-shrink-0" />
                   <span className="truncate">
-                    {format(startDate, "dd.MM.yyyy")}
-                    {endDate && ` - ${format(endDate, "dd.MM.yyyy")}`}
+                    {format(startDate, "dd.MM.yyyy", { locale: bg })}
+                    {endDate && ` - ${format(endDate, "dd.MM.yyyy", { locale: bg })}`}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 min-w-0">
                   <Clock className="h-3 w-3 flex-shrink-0" />
                   <span className="truncate">
-                    {format(startDate, "HH:mm")}
-                    {endDate && ` - ${format(endDate, "HH:mm")}`}
+                    {format(startDate, "HH:mm", { locale: bg })}
+                    {endDate && ` - ${format(endDate, "HH:mm", { locale: bg })}`}
                   </span>
                 </div>
               </div>
@@ -482,7 +483,7 @@ const EventCardCompact = ({ event }: { event: Event }) => {
             <SheetHeader>
               <SheetTitle className="pr-8">{event.title}</SheetTitle>
               <SheetDescription>
-                {format(startDate, "dd.MM.yyyy")} • {format(startDate, "HH:mm")}
+                {format(startDate, "dd.MM.yyyy", { locale: bg })} • {format(startDate, "HH:mm", { locale: bg })}
               </SheetDescription>
             </SheetHeader>
             <EventDetails event={event} />
@@ -495,7 +496,7 @@ const EventCardCompact = ({ event }: { event: Event }) => {
             <DialogHeader>
               <DialogTitle>{event.title}</DialogTitle>
               <DialogDescription>
-                {format(startDate, "dd.MM.yyyy")} • {format(startDate, "HH:mm")}
+                {format(startDate, "dd.MM.yyyy", { locale: bg })} • {format(startDate, "HH:mm", { locale: bg })}
               </DialogDescription>
             </DialogHeader>
             <EventDetails event={event} />
