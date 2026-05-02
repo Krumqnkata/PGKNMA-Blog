@@ -56,11 +56,11 @@ const TermsOfService = () => {
     <div className="min-h-screen w-full">
       <Header />
       <main className="py-12 px-4 md:px-6">
-        <div className="container mx-auto prose prose-lg max-w-4xl">
-          <h1 className="text-3xl font-bold text-center mb-8">Условия за ползване</h1>
+        <div className="container mx-auto prose prose-lg max-w-4xl dark:prose-invert">
+          <h1 className="text-3xl font-bold text-center mb-8 text-foreground">Условия за ползване</h1>
 
           {terms && (
-            <p className="text-center text-gray-600">Последна актуализация: {formatDate(terms.date)}</p>
+            <p className="text-center text-muted-foreground">Последна актуализация: {formatDate(terms.date)}</p>
           )}
 
           {terms ? (
