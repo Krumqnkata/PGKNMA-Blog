@@ -10,6 +10,15 @@ import { Calendar, User, Loader2, Tag, Search } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { Link } from "react-router-dom";
 import { getPosts, Post } from '@/lib/api';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 // Debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -33,6 +42,10 @@ const News = () => {
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState(''); // State for search input
     const debouncedSearch = useDebounce(searchQuery, 500); // Debounced search query
+    
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const ITEMS_PER_PAGE = 9;
 
     useEffect(() => {
         // Fetch all posts just once when the component mounts
@@ -68,6 +81,7 @@ const News = () => {
         }
 
         setFilteredPosts(tempPosts);
+        setCurrentPage(1); // Reset to first page on filter change
     }, [posts, debouncedSearch, selectedCategory]);
 
     return (
@@ -128,46 +142,107 @@ const News = () => {
                                 <p className="text-lg text-muted-foreground">Няма намерени публикации, съответстващи на вашето търсене.</p>
                             </div>
                         ) : (
-                            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                                {filteredPosts.map((article) => (
-                                    <Link to={`/post/${article.id}`} key={article.id} className="group block">
-                                        <Card
-                                            className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full"
-                                        >
-                                            <div className="aspect-video w-full overflow-hidden bg-muted">
-                                                <img
-                                                    src={article.banner || "/logo-light.png"} 
-                                                    //alt={article.title}
-                                                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                />
-                                            </div>
+                            <>
+                                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                    {filteredPosts
+                                        .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
+                                        .map((article) => (
+                                            <Link to={`/post/${article.id}`} key={article.id} className="group block">
+                                                <Card
+                                                    className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full"
+                                                >
+                                                    <div className="aspect-video w-full overflow-hidden bg-muted">
+                                                        <img
+                                                            src={article.banner || "/logo-light.png"} 
+                                                            //alt={article.title}
+                                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                            loading="lazy"
+                                                        />
+                                                    </div>
 
-                                            <div className="p-6">
-                                                <Badge variant="secondary" className="mb-3 text-sm font-medium">
-                                                    <Tag className="h-3 w-3 mr-1.5" />
-                                                    {article.category_name || "Uncategorized"}
-                                                </Badge>
-                                                <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary">
-                                                    {article.title}
-                                                </h3>
-                                                <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
-                                                    {article.hook}
-                                                </p>
-                                                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                                    <div className="flex items-center gap-1">
-                                                        <User className="h-3 w-3" />
-                                                        <span>{article.author_username || `User ID: ${article.author}`}</span>
+                                                    <div className="p-6">
+                                                        <Badge variant="secondary" className="mb-3 text-sm font-medium">
+                                                            <Tag className="h-3 w-3 mr-1.5" />
+                                                            {article.category_name || "Uncategorized"}
+                                                        </Badge>
+                                                        <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary">
+                                                            {article.title}
+                                                        </h3>
+                                                        <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
+                                                            {article.hook}
+                                                        </p>
+                                                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                                                            <div className="flex items-center gap-1">
+                                                                <User className="h-3 w-3" />
+                                                                <span>{article.author_username || `User ID: ${article.author}`}</span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1">
+                                                                <Calendar className="h-3 w-3" />
+                                                                <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
+                                                            </div>
+                                                        </div>
                                                     </div>
-                                                    <div className="flex items-center gap-1">
-                                                        <Calendar className="h-3 w-3" />
-                                                        <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </Card>
-                                    </Link>
-                                ))}
-                            </div>
+                                                </Card>
+                                            </Link>
+                                        ))}
+                                </div>
+
+                                {filteredPosts.length > ITEMS_PER_PAGE && (
+                                    <div className="mt-12">
+                                        <Pagination>
+                                            <PaginationContent>
+                                                <PaginationItem>
+                                                    <PaginationPrevious 
+                                                        href="#" 
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            if (currentPage > 1) {
+                                                                setCurrentPage(currentPage - 1);
+                                                                window.scrollTo({ top: 400, behavior: 'smooth' });
+                                                            }
+                                                        }}
+                                                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                                    >
+                                                        Предишна
+                                                    </PaginationPrevious>
+                                                </PaginationItem>
+                                                
+                                                {Array.from({ length: Math.ceil(filteredPosts.length / ITEMS_PER_PAGE) }).map((_, i) => (
+                                                    <PaginationItem key={i + 1}>
+                                                        <PaginationLink 
+                                                            href="#" 
+                                                            isActive={currentPage === i + 1}
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                setCurrentPage(i + 1);
+                                                                window.scrollTo({ top: 400, behavior: 'smooth' });
+                                                            }}
+                                                        >
+                                                            {i + 1}
+                                                        </PaginationLink>
+                                                    </PaginationItem>
+                                                ))}
+
+                                                <PaginationItem>
+                                                    <PaginationNext 
+                                                        href="#" 
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            if (currentPage < Math.ceil(filteredPosts.length / ITEMS_PER_PAGE)) {
+                                                                setCurrentPage(currentPage + 1);
+                                                                window.scrollTo({ top: 400, behavior: 'smooth' });
+                                                            }
+                                                        }}
+                                                        className={currentPage === Math.ceil(filteredPosts.length / ITEMS_PER_PAGE) ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                                                    >
+                                                        Следваща
+                                                    </PaginationNext>
+                                                </PaginationItem>
+                                            </PaginationContent>
+                                        </Pagination>
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </section>
