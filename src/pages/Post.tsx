@@ -174,6 +174,7 @@ const Post = () => {
                                         src={post.banner}
                                         alt={`Банер за ${post.title}`}
                                         className="w-full max-h-96 object-contain rounded-3xl mb-8"
+                                        loading="lazy"
                                     />
                                 )}
 
@@ -203,6 +204,7 @@ const Post = () => {
                                                         src={image}
                                                         alt={`Image ${index + 1} for post ${post.title}`}
                                                         className="w-full h-auto rounded-lg object-cover aspect-square transition-transform hover:scale-105"
+                                                        loading="lazy"
                                                     />
                                                 </div>
                                             ))}

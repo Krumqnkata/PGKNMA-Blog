@@ -122,7 +122,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             return <a className="text-primary hover:underline underline-offset-4" href={href} {...props}>{children}</a>;
           },
           img({ node, children, ...props }) {
-            return <img className="my-4 max-w-full rounded-lg border border-border" {...props} />;
+            return <img className="my-4 max-w-full rounded-lg border border-border" loading="lazy" {...props} />;
           },
           hr({ node, ...props }) {
             return <hr className="my-8 border-0 h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" {...props} />;
