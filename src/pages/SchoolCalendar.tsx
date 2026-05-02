@@ -140,7 +140,7 @@ const SchoolCalendar = () => {
                           nav_button: "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
                           table: "w-full border-collapse space-y-1",
                           head_row: "flex",
-                          head_cell: "text-muted-foreground rounded-md w-8 font-normal text-[0.7rem] sm:w-9 sm:text-[0.75rem]",
+                          head_cell: "text-muted-foreground rounded-md w-10 font-normal text-[0.7rem] sm:w-12 sm:text-[0.75rem]",
                           row: "flex w-full mt-2",
                           cell: "h-10 w-10 text-center text-sm p-0 relative [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20 sm:h-12 sm:w-12",
                           day: "h-10 w-10 p-0 font-normal aria-selected:opacity-100 sm:h-12 sm:w-12",
