@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Dialog,
   DialogContent,
@@ -348,6 +349,18 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
             </div>
 
             {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+
+            <p className="text-xs text-muted-foreground text-center mb-2">
+              С натискането на бутона „Регистрация“, Вие се съгласявате с нашите{" "}
+              <Link to="/terms-of-service" target="_blank" className="text-primary hover:underline font-medium">
+                Общи условия
+              </Link>{" "}
+              и{" "}
+              <Link to="/privacy-policy" target="_blank" className="text-primary hover:underline font-medium">
+                Политика за поверителност
+              </Link>
+              .
+            </p>
 
             <Button className="w-full mt-1" onClick={handleRegister} disabled={!canSubmit}>
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}

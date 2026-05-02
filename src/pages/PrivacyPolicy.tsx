@@ -56,11 +56,11 @@ const PrivacyPolicy = () => {
     <div className="min-h-screen w-full">
       <Header />
       <main className="py-12 px-4 md:px-6">
-        <div className="container mx-auto prose prose-lg max-w-4xl">
-          <h1 className="text-3xl font-bold text-center mb-8">Политика за поверителност</h1>
+        <div className="container mx-auto prose prose-lg max-w-4xl dark:prose-invert">
+          <h1 className="text-3xl font-bold text-center mb-8 text-foreground">Политика за поверителност</h1>
 
           {policy && (
-            <p className="text-center text-gray-600">Последна актуализация: {formatDate(policy.date)}</p>
+            <p className="text-center text-muted-foreground">Последна актуализация: {formatDate(policy.date)}</p>
           )}
 
           {policy ? (
