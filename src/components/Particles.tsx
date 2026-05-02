@@ -19,7 +19,7 @@ const isDark = props.theme === "dark";
 const options: ISourceOptions = useMemo(
   () => ({
     background: { color: { value: "transparent" } },
-    fpsLimit: 60,
+    fpsLimit: 30,
     interactivity: {
       events: {
         onHover: { enable: false },
@@ -44,7 +44,7 @@ const options: ISourceOptions = useMemo(
         straight: false,
       },
       number: {
-        value: 35,          // само 35 частици
+        value: 50,          // само 35 частици
         density: { enable: false },
       },
       opacity: {
