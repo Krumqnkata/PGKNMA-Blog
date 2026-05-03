@@ -19,58 +19,70 @@
   <body>
     <div id="root"></div>
 
-    <script>
-      const titles = [
-        "ПГКНМА Блог", 
-        "📰 Новини", 
-        "🚀 Проекти", 
-        "🤔 Какво ново?", 
-        "💻 Код за успех", 
-        "👥 За ученици", 
-        "🌍 ИТ Общност"
-      ];
+<script>
+  const titles = [
+    "ПГКНМА Блог",
+    "📰 Виж последните новини",
+    "🚀 Нови проекти се раждат",
+    "💻 Кодът говори повече от думи",
+    "👥 Това е твоето място",
+    "🌍 Част от ИТ света",
+    "🤔 Какво изпусна днес?"
+  ];
+
+  let index = 0;
+  let interval = null;
+  const favicon = document.getElementById('favicon');
+
+  // Опресняване на favicon
+  const refreshFavicon = () => {
+    if (favicon) {
+      favicon.href = `favicon.ico?v=${Date.now()}`;
+    }
+  };
+
+  // Смяна на заглавията (по-плавно)
+  const changeTitle = () => {
+    index = (index + 1) % titles.length;
+    document.title = titles[index];
+  };
+
+  const startTitleCycle = () => {
+    if (interval) return; // защита от дублиране
+
+    interval = setInterval(changeTitle, 3500);
+  };
+
+  const stopTitleCycle = () => {
+    clearInterval(interval);
+    interval = null;
+  };
+
+  // --- СТАРТ ---
+  document.title = titles[0];
+  refreshFavicon();
+  startTitleCycle();
+
+  // По-надеждно следене дали табът е активен
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      stopTitleCycle();
+
+      // малко по-човешко послание
+      document.title = "👀 Къде изчезна?";
+    } else {
+      // лек ефект при връщане
+      document.title = "✨ Добре дошъл обратно!";
       
-      let index = 0;
-      let interval;
-      const favicon = document.getElementById('favicon');
+      setTimeout(() => {
+        document.title = titles[index];
+        startTitleCycle();
+      }, 1500);
 
-      // 1. Функция за опресняване на фавиконата (против кеширане)
-      const refreshFavicon = () => {
-        if (favicon) {
-          favicon.href = `favicon.ico?v=${new Date().getTime()}`;
-        }
-      };
-
-      // 2. Логика за въртене на заглавията
-      const startTitleCycle = () => {
-        interval = setInterval(() => {
-          index = (index + 1) % titles.length;
-          document.title = titles[index];
-        }, 3000);
-      };
-
-      const stopTitleCycle = () => {
-        clearInterval(interval);
-      };
-
-      // --- ИНИЦИАЛИЗАЦИЯ ---
-      
-      refreshFavicon(); // Опреснява иконата веднага
-      startTitleCycle(); // Започва въртенето
-
-      // Когато потребителят напусне таба
-      window.onblur = () => {
-        stopTitleCycle(); // Спира цикъла
-        document.title = "👋 Върни се! 👋"; // Заглавието остава така до връщане
-      };
-
-      // Когато потребителят се върне в таба
-      window.onfocus = () => {
-        document.title = titles[index]; // Връща актуалното заглавие от цикъла
-        startTitleCycle(); // Рестартира въртенето
-        refreshFavicon(); // Опреснява иконата пак за всеки случай
-      };
-    </script>
+      refreshFavicon();
+    }
+  });
+</script>
 
     <script type="module" src="/src/main.tsx"></script>
   </body>
