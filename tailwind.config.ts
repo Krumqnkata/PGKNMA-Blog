@@ -19,7 +19,7 @@ export default {
         'lg': '900px',
       },
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
+        sans: ['Sofia Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
