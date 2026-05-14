@@ -35,6 +35,7 @@ import { GlobalStateProvider } from "./contexts/GlobalStateContext"; // Import g
 import EasterEgg from "./pages/EasterEgg";
 import CustomCursor from "./components/CustomCursor";
 import { useDisableInspect } from "./hooks/use-disable-inspect";
+import ScrollToTop from "./components/ScrollToTop";
 
 const AppContent = () => {
   // Disable inspect tools (right click, F12, etc.)
@@ -88,6 +89,7 @@ const AppContent = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
+                <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/news" element={<News />} />
