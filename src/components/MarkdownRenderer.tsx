@@ -95,7 +95,13 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             return <em className="italic" {...props}>{children}</em>;
           },
           table({ node, children, ...props }) {
-            return <table className="my-4 border-collapse" {...props}>{children}</table>;
+            return (
+              <div className="my-6 w-full overflow-x-auto border rounded-lg shadow-sm">
+                <table className="w-full border-collapse" {...props}>
+                  {children}
+                </table>
+              </div>
+            );
           },
           th({ node, children, ...props }) {
             return <th className="border border-border px-3 py-2 font-semibold bg-muted" {...props}>{children}</th>;
