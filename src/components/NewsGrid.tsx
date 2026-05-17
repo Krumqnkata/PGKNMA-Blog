@@ -151,21 +151,6 @@ const NewsGrid = () => {
                   </Link>
                 ))}
 
-                {/* Promotional Card or Call to Action in the sidebar */}
-                <div className="mt-4 flex-1 rounded-3xl bg-primary/10 p-8 border border-primary/20 overflow-hidden relative group">
-                   <div className="absolute -right-8 -bottom-8 h-32 w-32 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors" />
-                   <h5 className="text-xl font-black mb-4 relative z-10">Искате да споделите нещо?</h5>
-                   <p className="text-sm text-muted-foreground mb-6 relative z-10 leading-relaxed">
-                     Станете автор в нашия блог и споделете вашите истории и проекти с цялото училище.
-                   </p>
-                   <Button 
-                     variant="outline" 
-                     className="w-full border-primary/40 bg-transparent hover:bg-primary hover:text-white transition-all font-bold tracking-widest uppercase text-xs h-10"
-                     onClick={() => navigate("/contact")}
-                   >
-                     Свържете се с нас
-                   </Button>
-                </div>
               </div>
             </>
           ) : (
