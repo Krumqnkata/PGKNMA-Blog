@@ -44,54 +44,91 @@ const Hero = () => {
   }, [text, isDeleting, loopNum, typingSpeed, phrases]);
 
   return (
-    <section className="relative overflow-hidden border-b border-border">
-      {/* Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
+    <section className="relative overflow-hidden border-b border-border bg-background">
+      {/* Background Textures/Gradients */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--primary-foreground)_0%,transparent_40%)] opacity-20" />
+      <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
       
-      <div className="container relative mx-auto px-4 py-20 sm:py-28 lg:py-36">
-        <div className="mx-auto max-w-3xl text-center">
-          {/* Badge */}
-          <div className="mb-6 inline-flex items-center rounded-full border border-border bg-card px-4 py-1.5 text-sm font-medium text-muted-foreground">
-            <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
-            Добре дошли в ПГКНМА Блог!
+      <div className="container relative mx-auto px-4 py-16 sm:py-32 lg:py-40">
+        <div className="grid items-center gap-12 lg:grid-cols-12">
+          {/* Content Column */}
+          <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left xl:col-span-6">
+            {/* Badge */}
+            <div className="mb-8 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
+              Добре дошли в ПГКНМА Блог!
+            </div>
+
+            {/* Headline */}
+            <h1 className="mb-8 text-3xl font-extrabold tracking-tight sm:text-6xl xl:text-7xl leading-[1.1]">
+              Бъдете в крак с всичко за{" "}
+              <span className="block text-primary italic">
+                {text}
+                <span className="ml-1 inline-block h-[0.9em] w-1.5 animate-pulse bg-primary align-middle" />
+              </span>
+            </h1>
+
+            {/* Subheadline */}
+            <p className="mb-10 max-w-xl text-base text-muted-foreground sm:text-xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000">
+             Твоят информационен център: актуални новини и предстоящи събития за гимназията.
+             Създадено с внимание за ученици, родители и учители.
+            </p>
+
+            {/* CTAs */}
+            <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row animate-in fade-in slide-in-from-bottom-12 duration-1000">
+              <Button size="lg" className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px] hover:shadow-2xl hover:shadow-primary/30" onClick={() => navigate("/news")}>
+                <Newspaper className="h-5 w-5" />
+                Последни Новини
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg backdrop-blur-sm transition-all hover:bg-primary/5 hover:translate-y-[-2px]"
+                onClick={() => navigate("/events")}
+              >
+                <Calendar className="h-5 w-5" />
+                Училищен Календар
+              </Button>
+            </div>
           </div>
 
-          {/* Headline */}
-          <h1 className="mb-6 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl min-h-[3em] sm:min-h-[2.5em] lg:min-h-0">
-            Бъдете в крак с всичко за{" "}
-            <span className="block text-primary">
-              {text}
-              <span className="ml-1 inline-block h-[0.9em] w-1 animate-pulse bg-primary align-middle" />
-            </span>
-          </h1>
+          {/* Visual Column - The "Grid Breaker" */}
+          <div className="relative hidden lg:block lg:col-span-5 xl:col-span-6">
+            <div className="relative mx-auto aspect-square max-w-[500px]">
+              {/* Decorative behind elements */}
+              <div className="absolute -inset-4 rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent" />
+              <div className="absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
+              
+              {/* Main Visual Composition */}
+              <div className="relative h-full w-full overflow-hidden rounded-2xl border border-border bg-card shadow-2xl group/image">
+                <img 
+                  src="pgknma.jpg" 
+                  alt="School Life" 
+                  className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover/image:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
 
-          {/* Subheadline */}
-          <p className="mb-10 text-lg text-muted-foreground sm:text-xl">
-           Твоят информационен център: актуални новини и предстоящи събития за гимназията.
-           Създадено за ученици, родители и учители.
-          </p>
-
-          {/* CTAs */}
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button size="lg" className="gap-2 px-8 shadow-lg transition-transform hover:scale-105" onClick={() => navigate("/news")}>
-              <Newspaper className="h-5 w-5" />
-              Последни Новини
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="gap-2 px-8 transition-transform hover:scale-105"
-              onClick={() => navigate("/events")}
-            >
-              <Calendar className="h-5 w-5" />
-              Училищен Календар
-            </Button>
+                {/* Floating UI Element 2 */}
+                <div className="absolute bottom-10 right-10 animate-pulse">
+                  <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-md shadow-lg">
+                    <div className="text-3xl font-black text-primary">450+</div>
+                    <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Усмихнати лица в нашата гимназия</div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Out-of-bounds accent - Precisely on top-right corner */}
+              <div className="absolute right-0 top-0 h-24 w-24 -translate-y-1/2 translate-x-1/2 rounded-full border-4 border-primary/20 animate-spin [animation-duration:10s]" />
+              
+              {/* Pinging dot - Precisely on bottom-left corner */}
+              <div className="absolute bottom-0 left-0 h-4 w-4 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary animate-ping" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Decorative Elements */}
-      <div className="absolute -bottom-1 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+      {/* Modern Section Divider */}
+      <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-background to-transparent" />
     </section>
   );
 };
