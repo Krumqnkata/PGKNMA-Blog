@@ -18,8 +18,8 @@ const NewsGrid = () => {
         setLoading(true);
         const allPosts = await getPosts();
         if (allPosts && allPosts.length > 0) {
-          // Get the 4 most recent posts
-          setPosts(allPosts.slice(0, 4));
+          // Get the 6 most recent posts (1 featured + 5 secondary)
+          setPosts(allPosts.slice(0, 6));
         }
         setError(null);
       } catch (err) {
@@ -76,42 +76,37 @@ const NewsGrid = () => {
             <>
               {/* Featured Post (1st item) */}
               <div className="col-span-12 lg:col-span-8">
-                <Link to={`/post/${posts[0].id}`} className="group block lg:h-full">
-                  <article className="relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 lg:h-full">
-                    <div className="relative aspect-[16/9] w-full overflow-hidden">
+                <Link to={`/post/${posts[0].id}`} className="group block">
+                  <article className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden flex flex-col justify-end p-5 sm:p-8 lg:p-12">
+
                       <img
                         src={posts[0].banner || '/logo-light.png'}
                         alt={posts[0].title}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                       
-                      {/* Category Overlap */}
-                      <div className="absolute left-4 top-4 sm:left-6 sm:top-6 translate-y-0 opacity-100 transition-all group-hover:-translate-y-1">
-                        <Badge className="bg-primary px-3 py-1 sm:px-4 sm:py-1.5 text-[10px] sm:text-sm font-bold uppercase tracking-widest text-primary-foreground shadow-lg">
-                          {posts[0].category_name}
-                        </Badge>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col p-5 sm:p-8 lg:p-12 items-center text-center lg:items-start lg:text-left">
-                      <div className="mb-3 sm:mb-4 flex items-center gap-3 sm:gap-4 text-[10px] sm:text-sm font-bold uppercase tracking-wider text-primary/60">
-                        <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                        <span>{new Date(posts[0].created_at).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
-                      </div>
-                      
-                      <h3 className="mb-3 sm:mb-4 text-xl font-black leading-tight tracking-tighter sm:text-4xl lg:text-5xl group-hover:text-primary transition-colors">
-                        {posts[0].title}
-                      </h3>
-                      
-                      <p className="mb-5 sm:mb-6 line-clamp-3 text-xs sm:text-lg text-muted-foreground leading-relaxed max-w-2xl">
-                        {posts[0].hook}
-                      </p>
-
-                      <div className="mt-auto inline-flex items-center gap-2 sm:gap-3 text-sm sm:text-lg font-black uppercase tracking-widest text-primary transition-all group-hover:gap-5">
-                        Прочети статията
-                        <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
+                      {/* Overlay Content */}
+                      <div className="relative z-10 flex flex-col items-center text-center lg:items-start lg:text-left text-white w-full">
+                        <div className="mb-3 flex flex-wrap justify-center lg:justify-start items-center gap-2 sm:gap-4 text-[9px] sm:text-sm font-bold uppercase tracking-wider w-full">
+                          <Badge className="bg-primary px-2 py-0.5 sm:px-4 sm:py-1.5 text-[9px] sm:text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-lg shrink-0">
+                            {posts[0].category_name}
+                          </Badge>
+                          <span className="flex items-center gap-1 opacity-80 whitespace-nowrap">
+                            <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
+                            {new Date(posts[0].created_at).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
+                          </span>
+                        </div>
+                        
+                        <h3 className="mb-2 sm:mb-4 text-xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tighter group-hover:text-primary transition-colors">
+                          {posts[0].title}
+                        </h3>
+                        
+                        <p className="line-clamp-2 text-xs sm:text-lg opacity-90 leading-relaxed max-w-2xl">
+                          {posts[0].hook}
+                        </p>
                       </div>
                     </div>
                   </article>
@@ -120,7 +115,7 @@ const NewsGrid = () => {
 
               {/* Side Column (Items 2-4) */}
               <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 sm:gap-8">
-                {posts.slice(1, 4).map((item, idx) => (
+                {posts.slice(1, 3).map((item, idx) => (
                   <Link key={item.id} to={`/post/${item.id}`} className="group block">
                     <article className="relative flex items-center gap-4 sm:gap-6 rounded-2xl border border-transparent p-2 sm:p-4 transition-all duration-300 hover:border-border hover:bg-card hover:shadow-xl overflow-hidden">
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-32 sm:w-32">
