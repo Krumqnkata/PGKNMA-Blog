@@ -15,7 +15,8 @@ const Events = () => {
 
   if (isLoading) {
     return (
-      <section className="relative overflow-hidden border-b border-border py-20 lg:py-32 bg-primary/5">
+      <section className="relative overflow-hidden border-b border-border py-10 lg:py-24 bg-primary/5">
+
         <div className="container mx-auto px-4 text-center">
           <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
           <p className="mt-6 text-xl font-bold text-muted-foreground uppercase tracking-widest">Зареждане на събития...</p>
@@ -26,7 +27,8 @@ const Events = () => {
 
   if (isError) {
     return (
-      <section className="relative overflow-hidden border-b border-border py-20 lg:py-32 bg-primary/5">
+      <section className="relative overflow-hidden border-b border-border py-10 lg:py-24 bg-primary/5">
+
         <div className="container mx-auto px-4 text-center text-destructive">
           <p className="text-xl font-bold uppercase tracking-widest">Грешка при зареждане на събития</p>
           <p className="mt-2 text-sm opacity-70">{error?.message}</p>
@@ -42,7 +44,8 @@ const Events = () => {
 
   if (!upcomingEvents || upcomingEvents.length === 0) {
     return (
-      <section className="relative overflow-hidden border-b border-border py-20 lg:py-32 bg-primary/5">
+      <section className="relative overflow-hidden border-b border-border py-10 lg:py-24 bg-primary/5">
+
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-6 text-4xl font-black tracking-tighter sm:text-5xl lg:text-6xl uppercase">Календар на <span className="text-primary italic">училището</span></h2>
           <p className="text-xl font-medium text-muted-foreground uppercase tracking-widest">
@@ -54,7 +57,7 @@ const Events = () => {
   }
 
   return (
-    <section className="relative overflow-hidden border-b border-border py-20 lg:py-32 bg-primary/5">
+    <section className="relative overflow-hidden border-b border-border py-4 lg:py-8 bg-primary/5">
       <div className="absolute top-0 right-0 h-64 w-64 bg-primary/10 rounded-full blur-3xl -mr-32 -mt-32" />
 
       <div className="container relative mx-auto px-4">

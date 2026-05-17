@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Calendar, Newspaper } from "lucide-react";
+import { Calendar, Newspaper, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -49,7 +49,7 @@ const Hero = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--primary-foreground)_0%,transparent_40%)] opacity-20" />
       <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
       
-      <div className="container relative mx-auto px-4 py-16 sm:py-32 lg:py-40">
+      <div className="container relative mx-auto px-4 py-12 sm:py-20 lg:py-24">
         <div className="grid items-center gap-12 lg:grid-cols-12">
           {/* Content Column */}
           <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left xl:col-span-6 order-first">
@@ -95,6 +95,7 @@ const Hero = () => {
                 className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg backdrop-blur-sm transition-all hover:bg-primary/10 hover:translate-y-[-2px]"
                 onClick={() => navigate("/contact")}
               >
+                <Mail className="h-5 w-5" />
                 Свържи се с нас
               </Button>
             </div>
