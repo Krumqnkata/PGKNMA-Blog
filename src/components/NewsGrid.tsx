@@ -34,7 +34,7 @@ const NewsGrid = () => {
   }, []);
 
   return (
-    <section className="relative overflow-hidden border-b border-border py-20 lg:py-32">
+    <section className="relative overflow-hidden border-b border-border py-4 lg:py-8">
       <div className="absolute inset-0 bg-[radial-gradient(45%_45%_at_50%_50%,var(--primary-foreground)_0%,transparent_100%)] opacity-[0.03]" />
       
       <div className="container relative mx-auto px-4">
