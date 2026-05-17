@@ -52,7 +52,7 @@ const Hero = () => {
       <div className="container relative mx-auto px-4 py-16 sm:py-32 lg:py-40">
         <div className="grid items-center gap-12 lg:grid-cols-12">
           {/* Content Column */}
-          <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left xl:col-span-6">
+          <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left xl:col-span-6 order-first">
             {/* Badge */}
             <div className="mb-8 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
               <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
@@ -89,12 +89,20 @@ const Hero = () => {
                 <Calendar className="h-5 w-5" />
                 Училищен Календар
               </Button>
+              <Button
+                size="lg"
+                variant="secondary"
+                className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg backdrop-blur-sm transition-all hover:bg-primary/10 hover:translate-y-[-2px]"
+                onClick={() => navigate("/contact")}
+              >
+                Свържи се с нас
+              </Button>
             </div>
           </div>
 
           {/* Visual Column - The "Grid Breaker" */}
-          <div className="relative hidden lg:block lg:col-span-5 xl:col-span-6">
-            <div className="relative mx-auto aspect-square max-w-[500px]">
+          <div className="relative lg:col-span-5 xl:col-span-6 order-last lg:order-last mb-12 lg:mb-0 w-full">
+            <div className="relative mx-auto aspect-square max-w-[350px] sm:max-w-[500px]">
               {/* Decorative behind elements */}
               <div className="absolute -inset-4 rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent" />
               <div className="absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
@@ -109,10 +117,10 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
 
                 {/* Floating UI Element 2 */}
-                <div className="absolute bottom-10 right-10 animate-pulse">
-                  <div className="rounded-xl border border-white/20 bg-white/10 p-6 backdrop-blur-md shadow-lg">
-                    <div className="text-3xl font-black text-primary">450+</div>
-                    <div className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Усмихнати лица в нашата гимназия</div>
+                <div className="absolute bottom-6 right-6 sm:bottom-10 sm:right-10 animate-pulse">
+                  <div className="rounded-xl border border-border/50 bg-background/80 p-4 sm:p-6 backdrop-blur-md shadow-lg">
+                    <div className="text-xl sm:text-3xl font-black text-primary">450+</div>
+                    <div className="text-[10px] sm:text-xs uppercase tracking-widest text-foreground/70 font-bold">Усмихнати лица в гимназията</div>
                   </div>
                 </div>
               </div>
