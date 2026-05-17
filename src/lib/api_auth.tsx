@@ -14,6 +14,8 @@ let failedQueue: any[] = [];
 export const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY);
 export const getRefreshToken = () => localStorage.getItem(REFRESH_TOKEN_KEY); 
 
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
 /**
  * Запазва Access и Refresh токените в Local Storage.
  * 🎯 Експортиран, за да бъде използван във функцията `login` в `api.ts`.
@@ -108,7 +110,7 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
             if (!refreshToken) throw new Error("Няма наличен токен за опресняване");
 
             // Изпращане на заявка за опресняване
-            const refreshResponse = await originalFetch('/api/auth/token/refresh/', {
+            const refreshResponse = await originalFetch(`${API_BASE_URL}/api/auth/token/refresh/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ refresh: refreshToken }),
@@ -156,5 +158,5 @@ export const authFetch = async (input: RequestInfo, init?: RequestInit): Promise
  */
 export const apiRequest = async (url: string, options: RequestInit = {}) => {
     // Всички пътища в `api.ts` започват с '/api/...'
-    return authFetch(`${url}`, options);
+    return authFetch(`${API_BASE_URL}${url}`, options);
 };

@@ -1,4 +1,4 @@
-import { apiRequest } from './api_auth';
+import { apiRequest, API_BASE_URL } from './api_auth';
 
 export interface PostDocument {
     id: number;
@@ -95,7 +95,7 @@ export interface Comment {
 }
 
 export async function login(credentials: LoginCredentials): Promise<TokenResponse | null> {
-    const API_URL = '/api/auth/token/'; // Standard DRF Simple JWT endpoint
+    const API_URL = `${API_BASE_URL}/api/auth/token/`; // Standard DRF Simple JWT endpoint
 
     try {
         const response = await fetch(API_URL, {
@@ -359,7 +359,7 @@ export interface RegisterCredentials {
 }
 
 export async function register(credentials: RegisterCredentials): Promise<User> {
-    const API_URL = '/api/auth/register/';
+    const API_URL = `${API_BASE_URL}/api/auth/register/`;
 
     try {
         const response = await fetch(API_URL, {
