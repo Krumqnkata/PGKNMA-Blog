@@ -78,7 +78,7 @@ const NewsGrid = () => {
               <div className="col-span-12 lg:col-span-8">
                 <Link to={`/post/${posts[0].id}`} className="group block lg:h-full">
                   <article className="relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 lg:h-full">
-                    <div className="relative aspect-[16/9] overflow-hidden lg:aspect-auto lg:flex-1">
+                    <div className="relative aspect-[16/9] w-full overflow-hidden">
                       <img
                         src={posts[0].banner || '/logo-light.png'}
                         alt={posts[0].title}
@@ -139,6 +139,9 @@ const NewsGrid = () => {
                         <h4 className="line-clamp-2 text-base font-bold leading-tight group-hover:text-primary transition-colors sm:text-xl">
                           {item.title}
                         </h4>
+                        <p className="line-clamp-2 text-xs text-muted-foreground mt-1 mb-1">
+                          {item.hook}
+                        </p>
                         <div className="mt-1 sm:mt-2 flex items-center gap-2 text-[10px] sm:text-xs font-medium text-muted-foreground">
                           <Calendar className="h-3 w-3" />
                           <span>{new Date(item.created_at).toLocaleDateString('bg-BG')}</span>
