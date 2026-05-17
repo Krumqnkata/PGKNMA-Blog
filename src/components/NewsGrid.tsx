@@ -115,7 +115,7 @@ const NewsGrid = () => {
 
               {/* Side Column (Items 2-4) */}
               <div className="col-span-12 lg:col-span-4 flex flex-col gap-6 sm:gap-8">
-                {posts.slice(1, 3).map((item, idx) => (
+                {posts.slice(1, 4).map((item, idx) => (
                   <Link key={item.id} to={`/post/${item.id}`} className="group block">
                     <article className="relative flex items-center gap-4 sm:gap-6 rounded-2xl border border-transparent p-2 sm:p-4 transition-all duration-300 hover:border-border hover:bg-card hover:shadow-xl overflow-hidden">
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-32 sm:w-32">
