@@ -110,9 +110,12 @@ const Hero = () => {
               
               {/* Main Visual Composition */}
               <div className="relative h-full w-full overflow-hidden rounded-2xl border border-border bg-card shadow-2xl group/image">
-                <img 
-                  src="pgknma.jpg" 
-                  alt="School Life" 
+                <video
+                  src="/front-page-loop.webm"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
                   className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover/image:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
