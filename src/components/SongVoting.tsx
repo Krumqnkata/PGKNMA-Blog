@@ -5,7 +5,7 @@ import { getApprovedSongs, voteForSong } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ThumbsUp, Loader2, ServerCrash } from "lucide-react";
+import { ThumbsUp, Loader2, ServerCrash, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SongMediaDisplay from './SongMediaDisplay';
 
@@ -110,7 +110,19 @@ export function SongVoting() {
     }
 
     return (
-        <section className="container mx-auto px-4 py-12">
+        <section className="container mx-auto px-4 py-12 relative">
+            <div className="absolute right-4 top-4 md:right-8 md:top-8">
+                <Button 
+                    onClick={exportToPDF} 
+                    variant="ghost" 
+                    size="icon" 
+                    title="Експортирай в PDF" 
+                    className="text-muted-foreground hover:text-primary transition-colors"
+                >
+                    <Download className="h-5 w-5" />
+                </Button>
+            </div>
+
             <div className="mb-10 text-center">
                 <h2 className="text-3xl font-bold sm:text-4xl">Гласуване за песен на звънеца</h2>
                 <p className="mt-3 text-lg text-muted-foreground">
@@ -165,12 +177,6 @@ export function SongVoting() {
                         </div>
                     </Card>
                 ))}
-            </div>
-
-            <div className="mt-12 text-center">
-                <Button onClick={exportToPDF} variant="outline">
-                    Експортирай в PDF
-                </Button>
             </div>
         </section>
     );

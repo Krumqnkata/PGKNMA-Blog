@@ -23,9 +23,6 @@ export default defineConfig(({ mode }) => ({
     rollupOptions: {
       output: {
         manualChunks: {
-            // React ядро и рутиране
-            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-            
             // Data fetching
             'vendor-query': ['@tanstack/react-query'],
             
