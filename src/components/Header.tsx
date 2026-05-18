@@ -42,12 +42,13 @@ const Header = () => {
   // --- Check session on mount ---
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-[hsl(var(--header-background))] text-[hsl(var(--header-foreground))] shadow-sm ">
+    <header className="sticky top-0 z-50 w-full bg-[#0a2e2e]/90 backdrop-blur-md shadow-sm text-white">
+      <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       <nav className="container mx-auto flex h-16 items-center justify-between px-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <img src={logo} className="h-auto w-14" alt="Logo" />
-          <span className="text-xl font-bold">ПГКНМА Блог</span>
+          <img src={logo} className="h-auto w-10" alt="Logo" />
+          <span className="text-[15px] font-bold uppercase tracking-widest">ПГКНМА Блог</span>
         </NavLink>
 
         {/* Desktop Navigation */}
@@ -56,8 +57,8 @@ const Header = () => {
             <NavLink
               key={link.path}
               to={link.path}
-              className="text-sm font-medium text-[hsl(var(--header-foreground))]/80 transition-colors hover:text-[hsl(var(--header-foreground))]"
-              activeClassName="text-[hsl(var(--header-foreground))]"
+              className="text-sm font-medium text-white/80 transition-colors hover:text-primary"
+              activeClassName="text-primary"
             >
               {link.name}
             </NavLink>
