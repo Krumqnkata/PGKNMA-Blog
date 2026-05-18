@@ -8,7 +8,7 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning } from "lucide-react";
+import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
@@ -117,6 +117,13 @@ const Post = () => {
         }
     };
 
+    const getReadTime = (content: string, hook: string) => {
+        const text = `${content} ${hook}`;
+        const wordsPerMinute = 200;
+        const wordCount = text.split(/\s+/).filter(Boolean).length;
+        return Math.ceil(wordCount / wordsPerMinute);
+    };
+
     return (
         <div className="min-h-screen w-full bg-background">
             <Header />
@@ -167,6 +174,10 @@ const Post = () => {
                                     <div className="flex items-center gap-1.5">
                                         <Tag className="h-4 w-4" />
                                         <Badge variant="secondary">{post.category_name}</Badge>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Clock className="h-4 w-4" />
+                                        <span>{getReadTime(post.content, post.hook)} мин. четене</span>
                                     </div>
                                 </div>
                                 {post.banner && (

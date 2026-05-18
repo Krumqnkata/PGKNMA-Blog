@@ -12,6 +12,13 @@ const NewsGrid = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getReadTime = (content: string, hook: string) => {
+    const text = `${content} ${hook}`;
+    const wordsPerMinute = 200;
+    const wordCount = text.split(/\s+/).filter(Boolean).length;
+    return Math.ceil(wordCount / wordsPerMinute);
+  };
+
   useEffect(() => {
     const fetchRecentPosts = async () => {
       try {
@@ -97,6 +104,8 @@ const NewsGrid = () => {
                           <span className="flex items-center gap-1 opacity-80 whitespace-nowrap">
                             <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
                             {new Date(posts[0].created_at).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            <span className="mx-2">•</span>
+                            {getReadTime(posts[0].content, posts[0].hook)} мин. четене
                           </span>
                         </div>
                         
@@ -140,6 +149,8 @@ const NewsGrid = () => {
                         <div className="mt-1 sm:mt-2 flex items-center gap-2 text-[10px] sm:text-xs font-medium text-muted-foreground">
                           <Calendar className="h-3 w-3" />
                           <span>{new Date(item.created_at).toLocaleDateString('bg-BG')}</span>
+                          <span className="mx-1">•</span>
+                          {getReadTime(item.content, item.hook)} мин. четене
                         </div>
                       </div>
                       
