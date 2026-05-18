@@ -89,17 +89,25 @@ const News = () => {
             <Header />
             <main>
                 {/* Hero Section */}
-                <section className="w-full bg-gradient-to-br from-primary/10 via-transparent to-transparent py-16 md:py-24">
-                    <div className="container mx-auto px-4 text-center">
-                        <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">Последни новини</h1>
-                        <p className="mt-4 text-lg text-muted-foreground md:text-xl">
+                <section className="relative w-full overflow-hidden bg-background pt-8 pb-0 md:pt-12 md:pb-0">
+                    {/* Decorative Background Elements */}
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
+                        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]" />
+                        <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[80px]" />
+                    </div>
+                    
+                    <div className="container relative mx-auto px-4 text-center">
+                        <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-7xl bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60 bg-clip-text text-transparent">
+                            Последни новини
+                        </h1>
+                        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
                             Останете информирани за всичко, което се случва в нашето училище.
                         </p>
                     </div>
                 </section>
                 
                 {/* Filters and News Grid */}
-                <section className="w-full py-12">
+                <section className="w-full pt-4 pb-12">
                     <div className="container mx-auto px-4">
                         {/* Search and Category Filters */}
                         <div className="mb-12 space-y-6">
