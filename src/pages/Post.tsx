@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import hljs from 'highlight.js';
 import '@/styles/atom-one-dark.css';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import AudioReader from '@/components/AudioReader';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
@@ -180,6 +181,9 @@ const Post = () => {
                                         <span>{getReadTime(post.content, post.hook)} мин. четене</span>
                                     </div>
                                 </div>
+
+                                <AudioReader content={post.content} title={post.title} />
+
                                 {post.banner && (
                                     <img
                                         src={post.banner}
