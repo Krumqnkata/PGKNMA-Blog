@@ -97,8 +97,8 @@ const News = () => {
                     </div>
                     
                     <div className="container relative mx-auto px-4 text-center">
-                        <h1 className="text-4xl font-extrabold tracking-tight md:text-5xl lg:text-7xl bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60 bg-clip-text text-transparent">
-                            Последни новини
+                        <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-7xl uppercase">
+                            Последни <span className="text-primary italic">Новини</span> от ПГКНМА
                         </h1>
                         <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
                             Останете информирани за всичко, което се случва в нашето училище.
