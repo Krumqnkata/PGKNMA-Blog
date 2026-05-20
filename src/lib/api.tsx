@@ -82,6 +82,8 @@ export interface TokenResponse {
 export interface User {
     id: number;
     username: string;
+    email?: string;
+    has_password?: boolean;
 }
 
 export interface Comment {
@@ -121,6 +123,39 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
         throw error; // Re-throw the error to be caught by the calling component
     }
 }
+
+export interface GoogleLoginResponse {
+    access: string;
+    refresh: string;
+    user: User;
+}
+
+export async function loginWithGoogle(credential: string): Promise<GoogleLoginResponse | null> {
+    const API_URL = `${API_BASE_URL}/api/auth/google/`;
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ credential }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ detail: 'Неуспешно влизане с Google' }));
+            console.error(`Неуспешно влизане с Google: ${response.status}`, errorData);
+            throw new Error(errorData.detail || 'Неуспешна идентификация с Google');
+        }
+
+        const data: GoogleLoginResponse = await response.json();
+        return data;
+    } catch (error) {
+        console.error('Грешка при извикване на API за влизане с Google:', error);
+        throw error;
+    }
+}
+
 
 export async function getComments(postId: string): Promise<Comment[] | null> {
     try {

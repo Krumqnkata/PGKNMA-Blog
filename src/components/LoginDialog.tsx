@@ -14,9 +14,10 @@ import { useToast } from "@/components/ui/use-toast";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 // 1. Импорт на Turnstile
 import { Turnstile } from '@marsidev/react-turnstile';
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const { settings } = useSettings();
   const { toast } = useToast();
 
@@ -28,6 +29,33 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   
   // 2. Стейт за токена
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setError("");
+    setLoading(true);
+    try {
+      if (credentialResponse.credential) {
+        await loginWithGoogle(credentialResponse.credential);
+        onOpenChange(false);
+        toast({
+          title: "Успешен вход",
+          description: "Добре дошли в платформата!",
+        });
+      } else {
+        throw new Error("Не бе получен токен от Google.");
+      }
+    } catch (err: unknown) {
+      console.error("Неуспешен вход с Google:", err);
+      const errMsg = err instanceof Error ? err.message : "Неуспешно влизане с Google профил";
+      setError(errMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Грешка при влизане с Google акаунт.");
+  };
 
   // Ресет при затваряне
   useEffect(() => {
@@ -56,9 +84,10 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
         captcha_answer: turnstileToken 
       });
       onOpenChange(false);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Неуспешно влизане:", err);
-      setError(err?.message || "Грешно потребителско име или парола");
+      const errMsg = err instanceof Error ? err.message : "Грешно потребителско име или парола";
+      setError(errMsg);
       // Ресетваме токена при грешка, за да се генерира нов за следващия опит
       setTurnstileToken(null);
     } finally {
@@ -147,6 +176,27 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
             {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
             {loading ? "Влизане..." : "Влез"}
           </Button>
+
+          <div className="relative my-2 flex items-center justify-center">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-muted" />
+            </div>
+            <span className="relative bg-background px-3 text-xs text-muted-foreground uppercase">
+              или
+            </span>
+          </div>
+
+          <div className="flex justify-center w-full">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={handleGoogleError}
+              theme="filled_blue"
+              shape="rectangular"
+              text="signin_with"
+              locale="bg"
+              width="384px"
+            />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

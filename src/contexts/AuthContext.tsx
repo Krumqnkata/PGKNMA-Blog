@@ -1,10 +1,11 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { login as apiLogin, register as apiRegister, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
+import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
 
 interface AuthContextType {
     user: User | null;
     isAuthenticated: boolean;
     login: (credentials: LoginCredentials) => Promise<void>;
+    loginWithGoogle: (credential: string) => Promise<void>;
     register: (credentials: RegisterCredentials) => Promise<void>; // Add register function
     logout: () => void;
     loading: boolean;
@@ -51,6 +52,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
+    const loginWithGoogle = async (credential: string) => {
+        setLoading(true);
+        try {
+            const data = await apiLoginWithGoogle(credential);
+            if (data && data.access && data.refresh) {
+                setAccessToken(data.access);
+                setUser(data.user);
+                localStorage.setItem('accessToken', data.access);
+                localStorage.setItem('refreshToken', data.refresh);
+                localStorage.setItem('user', JSON.stringify(data.user));
+                setLoginDialogOpen(false);
+            } else {
+                throw new Error('Google Login failed: No tokens returned');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const register = async (credentials: RegisterCredentials) => {
         setLoading(true);
         try {
@@ -82,6 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             user, 
             isAuthenticated: !!accessToken, 
             login, 
+            loginWithGoogle,
             register, // Add register to context value
             logout, 
             loading,
