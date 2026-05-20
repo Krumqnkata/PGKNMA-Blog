@@ -23,6 +23,7 @@ import {
 import { useSettings } from "@/contexts/SettingsContext";
 // 1. Импорт на Turnstile
 import { Turnstile } from '@marsidev/react-turnstile';
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 
 interface RegisterDialogProps {
   open: boolean;
@@ -31,7 +32,7 @@ interface RegisterDialogProps {
 }
 
 const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps) => {
-  const { register, loading: authLoading } = useAuth();
+  const { register, loginWithGoogle, loading: authLoading } = useAuth();
   const { settings } = useSettings();
   
   const [email, setEmail] = useState("");
@@ -59,6 +60,33 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [passwordsMatch, setPasswordsMatch] = useState<boolean | null>(null);
 
   const isLoading = authLoading || localLoading;
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setError("");
+    setLocalLoading(true);
+    try {
+      if (credentialResponse.credential) {
+        await loginWithGoogle(credentialResponse.credential);
+        onOpenChange(false);
+        toast({
+          title: "Успешна регистрация / вход",
+          description: "Добре дошли в платформата!",
+        });
+      } else {
+        throw new Error("Не бе получен токен от Google.");
+      }
+    } catch (err: unknown) {
+      console.error("Неуспешна регистрация с Google:", err);
+      const errMsg = err instanceof Error ? err.message : "Неуспешно влизане с Google профил";
+      setError(errMsg);
+    } finally {
+      setLocalLoading(false);
+    }
+  };
+
+  const handleGoogleError = () => {
+    setError("Грешка при влизане с Google акаунт.");
+  };
 
   // Ресет на токена при затваряне/отваряне на диалога
   useEffect(() => {
@@ -203,8 +231,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       setFirstName('');
       setLastName('');
       setTurnstileToken(null);
-    } catch (err: any) {
-      const errorMessage = err.message || "Неуспешна регистрация. Моля, опитайте отново.";
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Неуспешна регистрация. Моля, опитайте отново.";
       setError(errorMessage);
       toast({
         title: "Грешка при регистрация",
@@ -366,6 +394,27 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {isLoading ? "Регистрация..." : "Регистрация"}
             </Button>
+
+            <div className="relative my-2 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-muted" />
+              </div>
+              <span className="relative bg-background px-3 text-xs text-muted-foreground uppercase">
+                или
+              </span>
+            </div>
+
+            <div className="flex justify-center w-full">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={handleGoogleError}
+                theme="filled_blue"
+                shape="rectangular"
+                text="signup_with"
+                locale="bg"
+                width="384px"
+              />
+            </div>
             
             <p className="text-sm text-muted-foreground text-center mt-2">
               Вече имаш профил?{" "}
