@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import {
   Dialog,
@@ -47,6 +47,29 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
 
   // 2. Новият стейт за Cloudflare Токена
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  // Responsive Google Button Logic
+  const googleContainerRef = useRef<HTMLDivElement>(null);
+  const [googleButtonWidth, setGoogleButtonWidth] = useState<string>("200");
+
+  useEffect(() => {
+    if (!googleContainerRef.current) return;
+
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        // Ensure it doesn't exceed window width with padding
+        const safeWidth = Math.min(
+          entry.contentRect.width, 
+          window.innerWidth - 48
+        );
+        const width = Math.min(Math.max(safeWidth, 200), 400);
+        setGoogleButtonWidth(Math.floor(width).toString());
+      }
+    });
+
+    observer.observe(googleContainerRef.current);
+    return () => observer.disconnect();
+  }, [open]);
 
   // State for username validation
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -404,15 +427,16 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
               </span>
             </div>
 
-            <div className="flex justify-center w-full">
+            <div className="flex justify-center w-full max-w-full overflow-hidden" ref={googleContainerRef}>
               <GoogleLogin
+                key={googleButtonWidth}
                 onSuccess={handleGoogleSuccess}
                 onError={handleGoogleError}
                 theme="filled_blue"
                 shape="rectangular"
                 text="signup_with"
                 locale="bg"
-                width="384px"
+                width={googleButtonWidth}
               />
             </div>
             
