@@ -37,6 +37,7 @@ import EasterEgg from "./pages/EasterEgg";
 import CustomCursor from "./components/CustomCursor";
 import { useDisableInspect } from "./hooks/use-disable-inspect";
 import ScrollToTop from "./components/ScrollToTop";
+import FloatingFAQ from "./components/FloatingFAQ";
 
 const AppContent = () => {
   // Disable inspect tools (right click, F12, etc.)
@@ -91,6 +92,7 @@ const AppContent = () => {
             <Sonner />
             <BrowserRouter>
                 <ScrollToTop />
+                <FloatingFAQ />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/news" element={<News />} />
