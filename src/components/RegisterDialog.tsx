@@ -389,7 +389,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
             {/* 4. Секцията с Cloudflare Turnstile */}
             <div className="flex justify-center py-2">
               <Turnstile 
-                siteKey="0x4AAAAAACoCbGkI6ACpCd1v" 
+                siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || ""} 
                 onSuccess={(token) => {
                   setTurnstileToken(token);
                   setError("");

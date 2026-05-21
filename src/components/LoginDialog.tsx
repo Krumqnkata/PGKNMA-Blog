@@ -169,7 +169,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
           {/* 4. Turnstile компонент */}
           <div className="flex justify-center py-2">
             <Turnstile 
-              siteKey="0x4AAAAAACoCbGkI6ACpCd1v" 
+              siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || ""} 
               onSuccess={(token) => {
                 setTurnstileToken(token);
                 setError("");
