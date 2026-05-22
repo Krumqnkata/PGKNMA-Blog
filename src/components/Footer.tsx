@@ -109,6 +109,10 @@ const Footer: React.FC = () => {
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
                 <span>info-2400020@edu.mon.bg</span>
               </a>
+              <a href="mailto:support@pgknma.space" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+                <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
+                <span>support@pgknma.space</span>
+              </a>
             </ul>
           </div>
         </div>

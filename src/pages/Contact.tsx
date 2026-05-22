@@ -15,8 +15,7 @@ const Contact = () => {
               <h2 className="text-2xl font-semibold mb-4">Информация за контакт</h2>
               <p className="mb-2"><strong>Адрес:</strong> град Стара Загора, ул. "Стефан Сливков" №7</p>
               <p className="mb-2"><strong>Телефон:</strong> +359 88 499 4500</p>
-              <p className="mb-2"><strong>Имейл:</strong> info-2400020@edu.mon.bg</p>
-              <div className="mt-4 relative rounded-md overflow-hidden">
+              <p className="mb-2"><strong>Имейл:</strong> info-2400020@edu.mon.bg, support@pgknma.space</p>              <div className="mt-4 relative rounded-md overflow-hidden">
                 <iframe
                   width="100%"
                   height="450"
