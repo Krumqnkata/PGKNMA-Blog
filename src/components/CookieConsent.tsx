@@ -27,20 +27,20 @@ const CookieConsent = () => {
     fetchPolicyVersion();
   }, []);
 
-  const handleAccept = async () => {
-    localStorage.setItem("cookieConsent", "accepted");
+  const handleConsent = async (status: 'INFORMED' | 'ACCEPTED' | 'REJECTED') => {
+    localStorage.setItem("cookieConsent", status);
     setIsVisible(false);
-    if (!policyVersion || policyVersion === 'error_fetching_version') { 
+    if (!policyVersion || policyVersion === 'error_fetching_version') {
         console.warn("Версията на политиката не е заредена или е възникнала грешка, съгласието не е записано в бекенда.");
         return;
     }
     try {
         await recordConsent({ 
-            consent_status: 'ACCEPTED', 
+            consent_status: status, 
             policy_version: policyVersion,
         });
     } catch (error) {
-        console.error("Неуспешно записване на съгласие за бисквитки (ПРИЕТИ) в бекенда:", error);
+        console.error(`Неуспешно записване на съгласие (${status}) в бекенда:`, error);
     }
   };
 
@@ -65,17 +65,20 @@ const CookieConsent = () => {
         <div className="flex items-center gap-3">
           <Cookie className="h-6 w-6 text-primary flex-shrink-0" />
           <p className="text-sm text-muted-foreground">
-  В съответствие с изискванията на GDPR, ние използваме само строго необходими бисквитки.
-  Не се използват проследяващи, аналитични или рекламни бисквитки. Потвърдете, че сте информирани, или научете повече в  
-  
-  <Link to='/privacy-policy' className="text-primary hover:underline ml-1">
-      Политиката ни за поверителност.
-  </Link>
-  {/* Уверете се, че в App.js имате Route path="/privacy-policy" */}
-</p>
+            Управлявайте предпочитанията си за бисквитки. Повече информация можете да намерите в
+            <Link to='/privacy-policy' className="text-primary hover:underline ml-1">
+              Политиката ни за поверителност.
+            </Link>
+          </p>
         </div>
         <div className="flex gap-2 flex-shrink-0">
-          <Button size="sm" onClick={handleAccept}>
+          <Button size="sm" variant="outline" onClick={() => handleConsent('INFORMED')}>
+            Само необходими
+          </Button>
+          <Button size="sm" variant="destructive" onClick={() => handleConsent('REJECTED')}>
+            Отказвам
+          </Button>
+          <Button size="sm" onClick={() => handleConsent('ACCEPTED')}>
             Приемам
           </Button>
         </div>
