@@ -7,16 +7,7 @@ import { componentTagger } from "lovable-tagger";
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
-    port: 8080,
-    allowedHosts: ["0c1570379d91.ngrok-free.app"],
-    proxy: {
-      "/leetcode-proxy": {
-        target: "https://leetcode.com",
-        changeOrigin: true,
-        secure: true,
-        rewrite: (path) => path.replace(/^\/leetcode-proxy/, "/graphql"),
-      },
-    },
+    port: 8000,
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   build: {
