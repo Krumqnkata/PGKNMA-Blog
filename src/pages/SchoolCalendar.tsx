@@ -107,21 +107,21 @@ const SchoolCalendar = () => {
       <Header />
       <main>
         {/* Hero Section */}
-        <section className="relative w-full overflow-hidden bg-background pt-8 pb-4 md:pt-12 md:pb-6">
-          {/* Decorative Background Elements */}
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-            <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]" />
-            <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[80px]" />
-          </div>
-
-          <div className="container relative mx-auto px-4">
-            <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl lg:text-6xl bg-gradient-to-r from-foreground via-foreground/80 to-foreground/60 bg-clip-text text-transparent">
-              Училищен календар
-            </h1>
-            <p className="mt-3 text-sm text-muted-foreground md:text-base max-w-2xl leading-relaxed">
-              Изберете дата, за да видите събитията за нея и да планирате графика си.
-            </p>
-          </div>
+        <section className="relative w-full overflow-hidden bg-background pt-8 pb-0 md:pt-12 md:pb-0">
+            {/* Decorative Background Elements */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[80px]" />
+            </div>
+            
+            <div className="container relative mx-auto px-4 text-center">
+                <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-7xl uppercase">
+                    Училищен <span className="text-primary italic">Календар</span>
+                </h1>
+                <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
+                    Изберете дата, за да видите събитията за нея и да планирате графика си.
+                </p>
+            </div>
         </section>
 
         {/* Calendar and Events Section */}
