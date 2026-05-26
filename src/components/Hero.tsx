@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar, Newspaper, Mail } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -10,13 +10,13 @@ const Hero = () => {
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
 
-  const phrases = [
+  const phrases = useMemo(() => [
     "Нашата Гимназия",
     "Училищния Живот",
     "Вашето Бъдеще",
     "Новите Технологии",
     "Нашите Проекти",
-  ];
+  ], []);
 
   useEffect(() => {
     const handleType = () => {

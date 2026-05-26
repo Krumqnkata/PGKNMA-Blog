@@ -1,4 +1,4 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useMemo } from 'react';
 import { useGlobalState } from '@/contexts/GlobalStateContext';
 import { ChevronDown, ChevronUp, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,7 @@ const NotificationBanner: React.FC = () => {
   const firstItemRef = useRef<HTMLDivElement>(null);
   const bannerRef = useRef<HTMLDivElement>(null);
 
-  const enabledNotifications = notifications ? notifications.filter(n => n.enabled) : [];
+  const enabledNotifications = useMemo(() => notifications ? notifications.filter(n => n.enabled) : [], [notifications]);
   const notificationCount = enabledNotifications.length;
 
   useLayoutEffect(() => {

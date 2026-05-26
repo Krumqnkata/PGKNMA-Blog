@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getApprovedSongs, voteForSong } from "@/lib/api";
+import { getApprovedSongs, voteForSong, ApprovedSong } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,7 +22,7 @@ export function SongVoting() {
     const voteMutation = useMutation({
         mutationFn: (songId: number) => voteForSong(songId),
         onSuccess: (updatedSong) => {
-            queryClient.setQueryData(['approvedSongs'], (oldSongs: any[] | undefined) => {
+            queryClient.setQueryData(['approvedSongs'], (oldSongs: ApprovedSong[] | undefined) => {
                 if (!oldSongs) return oldSongs;
                 return oldSongs.map((song) =>
                     song.id === updatedSong.id ? updatedSong : song
@@ -33,11 +33,12 @@ export function SongVoting() {
                 description: `Вие гласувахте за "${updatedSong.title}".`,
             });
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             console.error("Грешка при гласуване за песен:", error);
+            const errorMessage = error instanceof Error ? error.message : "Възникна грешка. Моля, опитайте отново.";
             toast({
                 title: "Грешка при гласуване",
-                description: error.message || "Възникна грешка. Моля, опитайте отново.",
+                description: errorMessage,
                 variant: "destructive",
             });
         },

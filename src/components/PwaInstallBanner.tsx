@@ -3,14 +3,23 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, X, Sparkles } from "lucide-react";
 
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
+
 export const PwaInstallBanner: React.FC = () => {
-  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
     // Check if the app is already installed and running standalone
     const isStandalone = window.matchMedia("(display-mode: standalone)").matches 
-      || (window.navigator as any).standalone;
+      || (window.navigator as Navigator & { standalone?: boolean }).standalone;
 
     if (isStandalone) {
       return;
@@ -20,7 +29,7 @@ export const PwaInstallBanner: React.FC = () => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       // Stash the event so it can be triggered later.
-      setDeferredPrompt(e);
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
       // Show the install banner
       setIsVisible(true);
       console.log("[PWA] beforeinstallprompt event was fired.");

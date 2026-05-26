@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { getComments, addComment, Comment as CommentType } from '@/lib/api';
 import { Button } from '@/components/ui/button';
@@ -40,8 +40,9 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
             setShowReplyForm(false);
             onReplySuccess(); // Trigger refresh of all comments
             toast.success('Отговорът е добавен успешно!');
-        } catch (err: any) {
-            toast.error(err.message || 'Грешка при добавяне на отговора.');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Грешка при добавяне на отговора.';
+            toast.error(errorMessage);
             console.error(err);
         } finally {
             setSubmittingReply(false);
@@ -175,7 +176,7 @@ const Comments = ({ postId }: CommentsProps) => {
     const [submittingMainComment, setSubmittingMainComment] = useState(false);
     const [error, setError] = useState('');
 
-    const fetchAndSetComments = async () => {
+    const fetchAndSetComments = useCallback(async () => {
         // Keep loading state until processing is also complete
         setLoadingComments(true);
         setError('');
@@ -190,11 +191,11 @@ const Comments = ({ postId }: CommentsProps) => {
         } finally {
             // Loading is set to false in the useMemo effect
         }
-    };
+    }, [postId]);
 
     useEffect(() => {
         fetchAndSetComments();
-    }, [postId]);
+    }, [fetchAndSetComments]);
 
     const processedComments = useMemo(() => {
         const commentsById: { [key: number]: CommentType } = {};
@@ -240,8 +241,9 @@ const Comments = ({ postId }: CommentsProps) => {
             setNewCommentContent('');
             fetchAndSetComments();
             toast.success('Коментарът е добавен успешно!');
-        } catch (err: any) {
-            setError(err.message || 'Грешка при добавяне на коментара.');
+        } catch (err: unknown) {
+            const errorMessage = err instanceof Error ? err.message : 'Грешка при добавяне на коментара.';
+            setError(errorMessage);
             console.error(err);
         } finally {
             setSubmittingMainComment(false);
