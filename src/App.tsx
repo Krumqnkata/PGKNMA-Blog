@@ -38,6 +38,8 @@ import CustomCursor from "./components/CustomCursor";
 import { useDisableInspect } from "./hooks/use-disable-inspect";
 import ScrollToTop from "./components/ScrollToTop";
 import FloatingFAQ from "./components/FloatingFAQ";
+import PwaInstallBanner from "@/components/PwaInstallBanner";
+import OfflineStatusToast from "@/components/OfflineStatusToast";
 
 const AppContent = () => {
   // Disable inspect tools (right click, F12, etc.)
@@ -86,6 +88,8 @@ const AppContent = () => {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
       <CustomCursor />
+      <PwaInstallBanner />
+      <OfflineStatusToast />
       <AuthProvider>
           <TooltipProvider>
             <Toaster />

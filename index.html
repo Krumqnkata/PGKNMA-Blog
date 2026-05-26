@@ -11,6 +11,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Sofia+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
 
     <link rel="icon" id="favicon" href="favicon.ico"/>
+    <link rel="manifest" href="/manifest.json" />
+    
+    <!-- iOS meta tags & icons -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="ПГКНМА" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#0f172a" />
+
     <meta property="og:title" content="ПГКНМА Блог" />
     <meta property="og:description" content="ПГКНМА Блог" />
     <meta property="og:type" content="website" />
@@ -85,5 +94,18 @@
 </script>
 
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then((reg) => {
+              console.log('[Service Worker] Registered successfully:', reg.scope);
+            })
+            .catch((err) => {
+              console.error('[Service Worker] Registration failed:', err);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
