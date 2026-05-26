@@ -66,7 +66,7 @@ const options: ISourceOptions = useMemo(
     },
     detectRetina: false,
   }),
-  [props.theme]
+  [isDark]
 );
 
   if (init) {

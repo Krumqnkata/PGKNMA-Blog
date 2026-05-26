@@ -38,7 +38,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
     if (!googleContainerRef.current) return;
 
     const observer = new ResizeObserver((entries) => {
-      for (let entry of entries) {
+      for (const entry of entries) {
         // Ensure it doesn't exceed window width with padding
         const safeWidth = Math.min(
           entry.contentRect.width, 

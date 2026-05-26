@@ -34,12 +34,13 @@ const MemeOfTheWeek: React.FC = () => {
         const fetchedMemes = await getMemes();
         setMemes(fetchedMemes);
         setError(null);
-      } catch (err: any) {
-        setError(err.message || 'Неуспешно зареждане на меметата.');
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Неуспешно зареждане на меметата.';
+        setError(errorMessage);
         console.error(err);
         toast({
           title: "Грешка при зареждане",
-          description: err.message || "Не успяхме да заредим меметата. Моля, опреснете страницата.",
+          description: errorMessage || "Не успяхме да заредим меметата. Моля, опреснете страницата.",
           variant: "destructive",
         });
       } finally {
@@ -76,10 +77,11 @@ const MemeOfTheWeek: React.FC = () => {
       setSelectedFile(null);
       const fileInput = document.getElementById('meme-file') as HTMLInputElement;
       if (fileInput) fileInput.value = "";
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Неуспешно изпращане. Моля, опитайте отново.";
       toast({
         title: "Грешка при качване",
-        description: err.message || "Неуспешно изпращане. Моля, опитайте отново.",
+        description: errorMessage,
         variant: "destructive",
       });
       console.error(err);
@@ -110,10 +112,11 @@ const MemeOfTheWeek: React.FC = () => {
         title: "Успешен глас!",
         description: "Вашият глас беше отчетен.",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : "Вече сте гласували за това меме или възникна друга грешка.";
       toast({
         title: "Грешка при гласуване",
-        description: err.message || "Вече сте гласували за това меме или възникна друга грешка.",
+        description: errorMessage,
         variant: "destructive",
       });
       console.error(err);

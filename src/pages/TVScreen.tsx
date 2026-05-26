@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, Instagram, Clock, Calendar, MapPin, Users } from "lucide-react";
-import { getApprovedSongs, getMemes, getPollStatistics, getEvents } from "../lib/api";
+import { getApprovedSongs, getMemes, getPollStatistics, getEvents, RecentParticipant } from "../lib/api";
 import { format, parseISO } from "date-fns";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 
@@ -37,7 +37,7 @@ interface LeaderboardEntry {
 
 interface PollStatistics {
   leaderboard: LeaderboardEntry[];
-  recent_participants: any[];
+  recent_participants: RecentParticipant[];
 }
 
 interface Event {
