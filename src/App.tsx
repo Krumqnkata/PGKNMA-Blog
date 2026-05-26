@@ -49,7 +49,7 @@ const AppContent = () => {
   const { data: siteStatus, isLoading: isSiteStatusLoading, isError: isSiteStatusError } = useQuery({
     queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
-    refetchInterval: 60000, // Refetch every 60 seconds
+    refetchInterval: 30000, // Refetch every 30 seconds
   });
 
   const maintenanceMode = siteStatus?.maintenance_mode ?? false;
