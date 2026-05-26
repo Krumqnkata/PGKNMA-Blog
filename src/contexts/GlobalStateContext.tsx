@@ -17,7 +17,8 @@ import {
   Notification,
 } from '@/lib/api';
 
-const REFETCH_INTERVAL_MS = 90 * 1000; // 1,5 minute
+const CONTENT_REFETCH_INTERVAL_MS = 5 * 60 * 1000; // 5 minutes
+const STATUS_REFETCH_INTERVAL_MS = 30 * 1000; // 30 seconds
 
 interface GlobalState {
   siteStatus: { data?: SiteStatus; isLoading: boolean; error: Error | null; };
@@ -39,49 +40,49 @@ export const GlobalStateProvider: React.FC<{ children: ReactNode }> = ({ childre
   const siteStatusQuery = useQuery<SiteStatus, Error>({
     queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: STATUS_REFETCH_INTERVAL_MS,
     retry: false,
   });
 
   const eventsQuery = useQuery<Event[], Error>({
     queryKey: ['events'],
     queryFn: getEvents,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: CONTENT_REFETCH_INTERVAL_MS,
     retry: false,
   });
 
   const postsQuery = useQuery<Post[] | null, Error>({
     queryKey: ['posts'],
     queryFn: getPosts,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: CONTENT_REFETCH_INTERVAL_MS,
     retry: false,
   });
 
   const pollStatusQuery = useQuery<UserPollStatus, Error>({
     queryKey: ['weeklyPollStatus'],
     queryFn: getWeeklyPollStatus,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: CONTENT_REFETCH_INTERVAL_MS,
     retry: false,
   });
 
   const approvedSongsQuery = useQuery<ApprovedSong[], Error>({
     queryKey: ['approvedSongs'],
     queryFn: getApprovedSongs,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: CONTENT_REFETCH_INTERVAL_MS,
     retry: false,
   });
 
   const memesQuery = useQuery<Meme[], Error>({
     queryKey: ['memes'],
     queryFn: getMemes,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: CONTENT_REFETCH_INTERVAL_MS,
     retry: false,
   });
   
   const notificationsQuery = useQuery<Notification[], Error>({
     queryKey: ['notifications'],
     queryFn: getNotifications,
-    refetchInterval: REFETCH_INTERVAL_MS,
+    refetchInterval: CONTENT_REFETCH_INTERVAL_MS,
     retry: false,
   });
 
