@@ -3,13 +3,15 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
+import ParticlesComponent from "@/components/Particles";
+import { useTheme } from "next-themes";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle, Info, UserPlus, Music, Calendar, ShieldAlert, Code } from "lucide-react";
+import { HelpCircle, Info, UserPlus, Music, Calendar, ShieldAlert, Code, Zap, Smartphone, MessageSquare, Bug, Globe } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const GoogleIcon = ({ className }: { className?: string }) => (
@@ -38,6 +40,8 @@ const GoogleIcon = ({ className }: { className?: string }) => (
 );
 
 const FAQ = () => {
+  const { theme } = useTheme();
+
   const faqs = [
     {
       question: "Какво е ПГКНМА Блог?",
@@ -64,12 +68,28 @@ const FAQ = () => {
       hover: "group-hover:bg-gray-500/20"
     },
     {
+      question: "Какво е PWA и как да инсталирам сайта като приложение?",
+      answer: "PWA (Progressive Web App) позволява на сайта да работи като мобилно приложение. В Chrome натиснете трите точки и изберете „Install app“, а в Safari използвайте бутона „Share“ и „Add to Home Screen“. Така ще имате бърз достъп от вашия начален екран.",
+      icon: Smartphone,
+      color: "text-cyan-500",
+      bg: "bg-cyan-500/10",
+      hover: "group-hover:bg-cyan-500/20"
+    },
+    {
       question: "Как мога да предложа песен за училищния звънец?",
       answer: "След като влезете в профила си, отидете на страницата \"Предложения за звънец\". Там можете да поставите линк към песен (например от YouTube) и да изберете за кой час се отнася вашето предложение.",
       icon: Music,
       color: "text-pink-500",
       bg: "bg-pink-500/10",
       hover: "group-hover:bg-pink-500/20"
+    },
+    {
+      question: "Колко пъти мога да гласувам за песен?",
+      answer: "Всеки потребител може да предложи до неограничен брой песни на ден. Гласуването за вече предложени песни е неограничено, но системата следи за злоупотреби и автоматизиран вот.",
+      icon: Zap,
+      color: "text-yellow-500",
+      bg: "bg-yellow-500/10",
+      hover: "group-hover:bg-yellow-500/20"
     },
     {
       question: "Къде мога да видя седмичната програма?",
@@ -80,12 +100,36 @@ const FAQ = () => {
       hover: "group-hover:bg-orange-500/20"
     },
     {
+      question: "Кога се сменят меметата в „Меме на седмицата“?",
+      answer: "Нов цикъл започва всеки понеделник сутрин. Гласуването приключва в неделя вечер, след което се обявява победителят и списъкът се нулира за нови предложения.",
+      icon: Calendar,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+      hover: "group-hover:bg-purple-500/20"
+    },
+    {
       question: "Забравих си паролата. Какво да направя?",
       answer: "В момента платформата не поддържа автоматично възстановяване на парола. Моля, свържете се с администратор на сайта или използвайте Google Login, ако сте го активирали при регистрацията.",
       icon: ShieldAlert,
       color: "text-red-500",
       bg: "bg-red-500/10",
       hover: "group-hover:bg-red-500/20"
+    },
+    {
+      question: "Къде да съобщя за забелязан бъг или проблем?",
+      answer: "Можете да използвате формата за контакт или да се свържете директно с екипа разработчици през Discord или в училище. Всяка обратна връзка ни помага да направим сайта по-добър.",
+      icon: Bug,
+      color: "text-red-400",
+      bg: "bg-red-400/10",
+      hover: "group-hover:bg-red-400/20"
+    },
+    {
+      question: "Как работи офлайн режимът?",
+      answer: "Благодарение на Service Workers, веднъж зареден, сайтът запазва основните новини и програмата в кеша на вашия браузър. Можете да преглеждате това съдържание дори без активна интернет връзка.",
+      icon: Globe,
+      color: "text-blue-400",
+      bg: "bg-blue-400/10",
+      hover: "group-hover:bg-blue-400/20"
     },
     {
       question: "Кой поддържа и развива този сайт?",
@@ -96,72 +140,64 @@ const FAQ = () => {
       hover: "group-hover:bg-indigo-500/20"
     },
     {
-      question: "Как мога да публикувам статия в блога?",
-      answer: "Статиите се публикуват от оторизирани автори (ученици и учители). Ако имаш интересна тема или новина, която искаш да споделиш, свържи се с редакционния екип или с някой от вашите преподаватели.",
-      icon: Info,
-      color: "text-cyan-500",
-      bg: "bg-cyan-500/10",
-      hover: "group-hover:bg-cyan-500/20"
+      question: "Как мога да стана автор на статии в блога?",
+      answer: "Търсим активни ученици с интерес към писането! Свържете се с редакционния екип или с преподавател по БЕЛ/ИТ. След кратко одобрение ще получите авторски права в системата.",
+      icon: MessageSquare,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+      hover: "group-hover:bg-green-500/20"
     },
     {
-      question: "Мога ли да редактирам или изтривам моите коментари?",
-      answer: "Да, след като влезете в профила си, можете да управлявате своите коментари през страницата „Моят профил“.",
-      icon: UserPlus,
-      color: "text-teal-500",
-      bg: "bg-teal-500/10",
-      hover: "group-hover:bg-teal-500/20"
+      question: "Как се одобряват коментарите?",
+      answer: "Коментарите се модерират автоматично за спам и нецензурни думи. В определени случаи администратор може да прегледа коментар ръчно, преди той да стане видим за всички.",
+      icon: ShieldAlert,
+      color: "text-orange-400",
+      bg: "bg-orange-400/10",
+      hover: "group-hover:bg-orange-400/20"
+    },
+    {
+      question: "Мога ли да предложа нова функционалност за сайта?",
+      answer: "Да! Отворени сме за идеи. Можете да споделите вашето предложение през страницата за контакт или да участвате в нашите периодични анкети за развитие на сайта.",
+      icon: Zap,
+      color: "text-yellow-600",
+      bg: "bg-yellow-600/10",
+      hover: "group-hover:bg-yellow-600/20"
     },
     {
       question: "Как се избира „Меме на седмицата“?",
-      answer: "Всеки регистриран потребител може да качи свое меме. Победителят се определя чрез гласуване от общността в края на всяка седмица.",
+      answer: "Всеки регистриран потребител може да качи свое меме. Победителят се определя чрез гласуване от общността. Мемето с най-много гласове в края на седмицата се визуализира на началната страница и на телевизорите в училище.",
       icon: Music,
       color: "text-purple-500",
       bg: "bg-purple-500/10",
       hover: "group-hover:bg-purple-500/20"
     },
     {
-      question: "Има ли мобилно приложение за ПГКНМА Блог?",
-      answer: "Сайтът е напълно оптимизиран за мобилни устройства. Можете да го добавите на началния си екран като „пряк път“ през настройките на вашия браузър (Chrome или Safari) за по-бърз достъп.",
-      icon: HelpCircle,
-      color: "text-amber-500",
-      bg: "bg-amber-500/10",
-      hover: "group-hover:bg-amber-500/20"
+      question: "Какво представлява страницата „ТВ Екран“?",
+      answer: "Тази страница е оптимизирана за визуализация на информационните монитори в коридорите на училището. Тя показва актуални новини, предстоящи събития, меме на седмицата и друга важна информация в реално време.",
+      icon: Smartphone,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+      hover: "group-hover:bg-blue-500/20"
     },
     {
       question: "Безопасни ли са данните ми в платформата?",
-      answer: "Да, ние спазваме строги правила за поверителност и сигурност. Използваме съвременни методи за криптиране на данните и защита на потребителските профили.",
+      answer: "Да, ние спазваме строги правила за поверителност. Използваме съвременни методи за защита на потребителските профили и не споделяме лична информация с трети страни.",
       icon: ShieldAlert,
       color: "text-rose-500",
       bg: "bg-rose-500/10",
       hover: "group-hover:bg-rose-500/20"
     },
     {
-      question: "Има ли правила за избор на песни за звънеца?",
-      answer: "Песните не трябва да съдържат нецензурни думи, обидни текстове или неподходящо съдържание. Администраторите преглеждат предложенията и премахват тези, които не съответстват на училищната етика.",
-      icon: Music,
-      color: "text-fuchsia-500",
-      bg: "bg-fuchsia-500/10",
-      hover: "group-hover:bg-fuchsia-500/20"
-    },
-    {
       question: "Какво се случва при нарушение на правилата?",
-      answer: "При обидни коментари или системни нарушения на правилата на общността, потребителят може да получи предупреждение или временна забрана (бан) за достъп до определени функции на сайта.",
+      answer: "При системни нарушения на правилата на общността (обидни коментари, спам и др.), потребителят може да получи предупреждение или временна забрана за достъп до определени функции на сайта.",
       icon: ShieldAlert,
       color: "text-orange-600",
       bg: "bg-orange-600/10",
       hover: "group-hover:bg-orange-600/20"
     },
     {
-      question: "Мога ли да помогна с разработката на този сайт?",
-      answer: "Разбира се! Проектът е с отворен код за учениците на гимназията. Ако се интересувате от програмиране или дизайн, вижте секцията „Разработчици“ и се свържете с екипа.",
-      icon: Code,
-      color: "text-violet-500",
-      bg: "bg-violet-500/10",
-      hover: "group-hover:bg-violet-500/20"
-    },
-    {
       question: "Сайтът официален източник на информация ли е?",
-      answer: "Блогът е ученическа инициатива. Въпреки че се стремим към точност, за официални административни въпроси винаги проверявайте и основния сайт на гимназията: pgknma.com.",
+      answer: "Блогът е ученическа инициатива, подкрепена от училището. Въпреки че се стремим към точност, за официални административни въпроси винаги проверявайте и основния сайт на гимназията.",
       icon: Info,
       color: "text-sky-500",
       bg: "bg-sky-500/10",
@@ -169,65 +205,106 @@ const FAQ = () => {
     },
     {
       question: "Как мога да променя данните в профила си?",
-      answer: "Отидете на страницата „Моят профил“ и изберете „Настройки“. Там можете да промените вашето потребителско име и парола (ако не сте използвали Google Login).",
+      answer: "Отидете на страницата „Моят профил“ и изберете „Настройки“. Там можете да промените вашето потребителско име, парола или аватар.",
       icon: UserPlus,
       color: "text-lime-600",
       bg: "bg-lime-600/10",
       hover: "group-hover:bg-lime-600/20"
     },
+    {
+      question: "Мога ли да редактирам или изтривам моите коментари?",
+      answer: "Да, след като влезете в профила си, можете да управлявате своите коментари през профилната ви страница.",
+      icon: MessageSquare,
+      color: "text-teal-500",
+      bg: "bg-teal-500/10",
+      hover: "group-hover:bg-teal-500/20"
+    },
+    {
+      question: "Има ли правила за избор на песни за звънеца?",
+      answer: "Песните не трябва да съдържат нецензурни думи, политически послания или неподходящо съдържание. Администраторите преглеждат предложенията преди да бъдат пуснати в училищната уредба.",
+      icon: Music,
+      color: "text-fuchsia-500",
+      bg: "bg-fuchsia-500/10",
+      hover: "group-hover:bg-fuchsia-500/20"
+    },
+    {
+      question: "Мога ли да видя историята на промените по сайта?",
+      answer: "Да, в страницата „Changelog“ можете да проследите всички нови функции, подобрения и поправки на бъгове, които сме направили от началото на проекта.",
+      icon: Code,
+      color: "text-slate-500",
+      bg: "bg-slate-500/10",
+      hover: "group-hover:bg-slate-500/20"
+    },
   ];
 
   return (
-    <div className="min-h-screen w-full bg-background">
+    <div className="min-h-screen w-full bg-background relative overflow-hidden">
+      <ParticlesComponent id="faq-particles" key={theme} theme={theme} />
+      
+      {/* Background Blobs for Depth */}
+      <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+
       <Header />
-      <main className="py-16 px-4 md:px-6">
+      
+      <main className="relative z-10 py-16 px-4 md:px-6">
         <div className="container mx-auto max-w-3xl">
           <div className="text-center mb-12 space-y-4">
-            <div className="inline-flex items-center justify-center p-3 rounded-full bg-amber-500/10 mb-2">
+            <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-amber-500/10 mb-2 backdrop-blur-sm border border-amber-500/20 shadow-lg animate-bounce-slow">
               <HelpCircle className="h-8 w-8 text-amber-500" />
             </div>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl drop-shadow-sm">
               Често задавани въпроси
             </h1>
-            <p className="text-xl text-muted-foreground">
-              Всичко, което трябва да знаете за платформата ПГКНМА Блог.
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Всичко, което трябва да знаете за платформата ПГКНМА Блог в един модерен и достъпен формат.
             </p>
           </div>
 
-          <div className="bg-card border border-border rounded-xl shadow-sm p-2 md:p-6">
-            <Accordion type="single" collapsible className="w-full">
-              {faqs.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`} className="border-b last:border-0 border-border/50">
-                  <AccordionTrigger className="hover:no-underline py-4 px-2 text-left group">
-                    <div className="flex items-center gap-3">
-                      <div className={cn("p-2 rounded-lg transition-colors", faq.bg, faq.hover)}>
-                        <faq.icon className={cn("h-5 w-5", faq.color)} />
+          <div className="bg-card/40 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+            <div className="p-2 md:p-8">
+              <Accordion type="single" collapsible className="w-full space-y-2">
+                {faqs.map((faq, index) => (
+                  <AccordionItem 
+                    key={index} 
+                    value={`item-${index}`} 
+                    className="border-none bg-white/5 dark:bg-black/5 rounded-2xl transition-all duration-300 hover:bg-white/10 dark:hover:bg-black/10 px-4"
+                  >
+                    <AccordionTrigger className="hover:no-underline py-5 text-left group">
+                      <div className="flex items-center gap-4">
+                        <div className={cn("p-2.5 rounded-xl transition-all duration-300 shadow-inner", faq.bg, faq.hover)}>
+                          <faq.icon className={cn("h-5 w-5", faq.color)} />
+                        </div>
+                        <span className="text-lg font-semibold text-foreground/90 group-hover:text-primary transition-colors">
+                          {faq.question}
+                        </span>
                       </div>
-                      <span className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {faq.question}
-                      </span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-base leading-relaxed px-12 pb-6">
-                    {faq.answer}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground text-base leading-relaxed pl-14 pr-4 pb-6">
+                      <div className="h-[1px] w-full bg-gradient-to-r from-primary/30 to-transparent mb-4" />
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
           </div>
 
-          <div className="mt-12 p-8 bg-primary/5 rounded-2xl border border-primary/10 text-center space-y-4">
-            <h2 className="text-2xl font-bold">Все още имате въпроси?</h2>
-            <p className="text-muted-foreground">
-              Ако не намирате отговора, който търсите, не се колебайте да се свържете с нас.
-            </p>
-            <div className="pt-2">
-              <a 
-                href="/contact" 
-                className="inline-flex items-center justify-center px-6 py-3 rounded-lg bg-primary text-primary-foreground font-medium transition-transform hover:scale-105 active:scale-95 shadow-lg shadow-primary/20"
-              >
-                Свържете се с нас
-              </a>
+          <div className="mt-16 p-10 bg-primary/10 backdrop-blur-lg rounded-3xl border border-primary/20 text-center space-y-6 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
+            <div className="relative z-10">
+              <h2 className="text-3xl font-bold">Все още имате въпроси?</h2>
+              <p className="text-muted-foreground text-lg">
+                Ако не намирате отговора, който търсите, нашият екип е тук, за да помогне.
+              </p>
+              <div className="pt-6">
+                <a 
+                  href="/contact" 
+                  className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl shadow-primary/30 hover:shadow-primary/40"
+                >
+                  Свържете се с нас
+                </a>
+              </div>
             </div>
           </div>
         </div>
