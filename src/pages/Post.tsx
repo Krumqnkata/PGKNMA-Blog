@@ -9,10 +9,11 @@ import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock } from "lucide-react";
+import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
+import { ShareDropdown } from "@/components/ShareDropdown";
 import Lightbox from "yet-another-react-lightbox";
 import PDFViewerDialog from "@/components/PDFViewerDialog";
 import "yet-another-react-lightbox/styles.css";
@@ -180,6 +181,15 @@ const Post = () => {
                                         <Clock className="h-4 w-4" />
                                         <span>{getReadTime(post.content, post.hook)} мин. четене</span>
                                     </div>
+                                    <ShareDropdown title={post.title} summary={post.hook}>
+                                        <button 
+                                            className="flex items-center justify-start gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-border/50 sm:border-t-0"
+                                            title="Сподели тази статия"
+                                        >
+                                            <Share2 className="h-4 w-4" />
+                                            <span>Сподели</span>
+                                        </button>
+                                    </ShareDropdown>
                                 </div>
 
                                 <AudioReader content={post.content} title={post.title} />
