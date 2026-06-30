@@ -6,7 +6,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Loader2, Tag, Search } from "lucide-react";
+import { Calendar, User, Loader2, Tag, Search, Share2 } from "lucide-react";
+import { toast } from "sonner";
 import CookieConsent from "@/components/CookieConsent";
 import { Link } from "react-router-dom";
 import { getPosts, Post } from '@/lib/api';
@@ -159,13 +160,35 @@ const News = () => {
                                                 <Card
                                                     className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full"
                                                 >
-                                                    <div className="aspect-video w-full overflow-hidden bg-muted">
+                                                    <div className="aspect-video w-full overflow-hidden bg-muted relative">
                                                         <img
                                                             src={article.banner || "/logo-light.png"} 
                                                             //alt={article.title}
                                                             className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                             loading="lazy"
                                                         />
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.preventDefault();
+                                                                e.stopPropagation();
+                                                                const url = `${window.location.origin}/post/${article.id}`;
+                                                                if (navigator.share) {
+                                                                    navigator.share({
+                                                                        title: article.title,
+                                                                        text: article.hook,
+                                                                        url: url
+                                                                    }).catch(() => {});
+                                                                } else {
+                                                                    navigator.clipboard.writeText(url)
+                                                                        .then(() => toast.success('Връзката е копирана успешно!'))
+                                                                        .catch(() => toast.error('Грешка при копиране на връзката.'));
+                                                                }
+                                                            }}
+                                                            className="absolute top-3 right-3 p-2 rounded-xl bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95 border border-white/10 cursor-pointer z-10"
+                                                            title="Сподели"
+                                                        >
+                                                            <Share2 className="h-4 w-4" />
+                                                        </button>
                                                     </div>
 
                                                     <div className="p-6">
