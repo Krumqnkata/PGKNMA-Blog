@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Pause, Square, Volume2 } from 'lucide-react';
+import { Play, Pause, Square, Volume2, AlertTriangle, ChevronDown, ChevronUp, Monitor, Smartphone } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,8 @@ const AudioReader: React.FC<AudioReaderProps> = ({ content, title }) => {
   const [rate, setRate] = useState(1);
   const [voice, setVoice] = useState<SpeechSynthesisVoice | null>(null);
   const [supported, setSupported] = useState(true);
+  const [hasBgVoice, setHasBgVoice] = useState(true);
+  const [showInstructions, setShowInstructions] = useState(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   const cleanMarkdown = (text: string) => {
@@ -50,8 +52,16 @@ const AudioReader: React.FC<AudioReaderProps> = ({ content, title }) => {
 
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      const bgVoice = voices.find(v => v.lang.includes('bg'));
-      setVoice(bgVoice || voices[0] || null);
+      if (voices.length === 0) return;
+
+      const bgVoice = voices.find(v => v.lang.toLowerCase().includes('bg'));
+      if (bgVoice) {
+        setVoice(bgVoice);
+        setHasBgVoice(true);
+      } else {
+        setVoice(voices[0] || null);
+        setHasBgVoice(false);
+      }
     };
 
     loadVoices();
@@ -123,15 +133,15 @@ const AudioReader: React.FC<AudioReaderProps> = ({ content, title }) => {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               {!isPlaying || isPaused ? (
-                <Button size="icon" onClick={handlePlay} className="rounded-full h-10 w-10 shadow-md hover:scale-105 transition-transform" title="Пусни">
+                <Button size="icon" onClick={handlePlay} className="rounded-full h-10 w-10 shadow-md hover:scale-105 transition-transform cursor-pointer" title="Пусни">
                   <Play className="h-5 w-5 fill-current" />
                 </Button>
               ) : (
-                <Button size="icon" variant="outline" onClick={handlePause} className="rounded-full h-10 w-10 border-primary text-primary hover:bg-primary/10 shadow-md hover:scale-105 transition-transform" title="Пауза">
+                <Button size="icon" variant="outline" onClick={handlePause} className="rounded-full h-10 w-10 border-primary text-primary hover:bg-primary/10 shadow-md hover:scale-105 transition-transform cursor-pointer" title="Пауза">
                   <Pause className="h-5 w-5 fill-current" />
                 </Button>
               )}
-              <Button size="icon" variant="ghost" onClick={handleStop} className="rounded-full h-10 w-10 text-muted-foreground hover:text-destructive" disabled={!isPlaying && !isPaused} title="Спри">
+              <Button size="icon" variant="ghost" onClick={handleStop} className="rounded-full h-10 w-10 text-muted-foreground hover:text-destructive cursor-pointer" disabled={!isPlaying && !isPaused} title="Спри">
                 <Square className="h-5 w-5 fill-current" />
               </Button>
             </div>
@@ -166,6 +176,61 @@ const AudioReader: React.FC<AudioReaderProps> = ({ content, title }) => {
               </Badge>
             )}
           </div>
+
+          {/* Warning banner when no Bulgarian voice is found */}
+          {!hasBgVoice && (
+            <div className="p-3.5 rounded-xl border border-amber-500/20 bg-amber-500/5 text-amber-600 dark:text-amber-400 animate-in fade-in slide-in-from-top-1 duration-300">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex gap-2">
+                  <AlertTriangle className="h-5 w-5 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-sm">Не е засечен български глас</h4>
+                    <p className="text-xs opacity-90 mt-1 leading-relaxed">
+                      Статията ще бъде прочетена с английски глас (фонетично) и може да звучи неразбираемо. За естествено четене, моля добавете български глас в настройките на устройството си.
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => setShowInstructions(!showInstructions)}
+                  className="h-8 text-xs text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 hover:bg-amber-500/10 gap-1 shrink-0 cursor-pointer"
+                >
+                  <span>{showInstructions ? "Скрий" : "Инструкции"}</span>
+                  {showInstructions ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+                </Button>
+              </div>
+
+              {showInstructions && (
+                <div className="mt-4 pt-3.5 border-t border-amber-500/10 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs animate-in fade-in-0 duration-200">
+                  <div className="space-y-1.5">
+                    <h5 className="font-bold flex items-center gap-1.5 text-foreground">
+                      <Monitor className="h-3.5 w-3.5 text-amber-500" /> Windows
+                    </h5>
+                    <p className="opacity-95 leading-relaxed">
+                      Настройки → Час и език → Говор → "Добавяне на гласове" → Инсталирайте <strong>Български</strong>.
+                    </p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <h5 className="font-bold flex items-center gap-1.5 text-foreground">
+                      <Smartphone className="h-3.5 w-3.5 text-amber-500" /> Android
+                    </h5>
+                    <p className="opacity-95 leading-relaxed">
+                      Настройки → Език и въвеждане → Текст към говор → Изберете <strong>Google TTS</strong> като предпочитан модул и изтеглете български гласови данни.
+                    </p>
+                  </div>
+                  <div className="space-y-1.5">
+                    <h5 className="font-bold flex items-center gap-1.5 text-foreground">
+                      <Smartphone className="h-3.5 w-3.5 text-amber-500" /> iOS (iPhone)
+                    </h5>
+                    <p className="opacity-95 leading-relaxed">
+                      Настройки → Достъпност → Четене на екрана → Гласове → <strong>Български</strong> → Свалете гласа Гергана.
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
