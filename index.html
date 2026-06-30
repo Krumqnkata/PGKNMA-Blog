@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="bg">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,78 +19,24 @@
     <meta name="apple-mobile-web-app-title" content="ПГКНМА" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#0f172a" />
+    <meta name="robots" content="index, follow" />
 
     <meta property="og:title" content="ПГКНМА Блог" />
-    <meta property="og:description" content="ПГКНМА Блог" />
+    <meta property="og:description" content="Научете най-новите новини свързани с гимназията и интересни събития." />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ПГКНМА Блог" />
+    <meta property="og:locale" content="bg_BG" />
   </head>
 
   <body>
     <div id="root"></div>
 
 <script>
-  const titles = [
-    "ПГКНМА Блог",
-    "📰 Виж последните новини",
-    "🚀 Нови проекти се раждат",
-    "💻 Кодът говори повече от думи",
-    "👥 Това е твоето място",
-    "🌍 Част от ИТ света",
-    "🤔 Какво изпусна днес?"
-  ];
-
-  let index = 0;
-  let interval = null;
+  // Опресняване на favicon за избягване на кеширане
   const favicon = document.getElementById('favicon');
-
-  // Опресняване на favicon
-  const refreshFavicon = () => {
-    if (favicon) {
-      favicon.href = `favicon.ico?v=${Date.now()}`;
-    }
-  };
-
-  // Смяна на заглавията (по-плавно)
-  const changeTitle = () => {
-    index = (index + 1) % titles.length;
-    document.title = titles[index];
-  };
-
-  const startTitleCycle = () => {
-    if (interval) return; // защита от дублиране
-
-    interval = setInterval(changeTitle, 3500);
-  };
-
-  const stopTitleCycle = () => {
-    clearInterval(interval);
-    interval = null;
-  };
-
-  // --- СТАРТ ---
-  document.title = titles[0];
-  refreshFavicon();
-  startTitleCycle();
-
-  // По-надеждно следене дали табът е активен
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-      stopTitleCycle();
-
-      // малко по-човешко послание
-      document.title = "👀 Къде изчезна?";
-    } else {
-      // лек ефект при връщане
-      document.title = "✨ Добре дошъл обратно!";
-      
-      setTimeout(() => {
-        document.title = titles[index];
-        startTitleCycle();
-      }, 1500);
-
-      refreshFavicon();
-    }
-  });
+  if (favicon) {
+    favicon.href = `/favicon.ico?v=${Date.now()}`;
+  }
 </script>
 
     <script type="module" src="/src/main.tsx"></script>

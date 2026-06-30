@@ -40,6 +40,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import FloatingFAQ from "./components/FloatingFAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import OfflineStatusToast from "@/components/OfflineStatusToast";
+import SEOManager from "@/components/SEOManager";
 
 const AppContent = () => {
   // Disable inspect tools (right click, F12, etc.)
@@ -97,6 +98,7 @@ const AppContent = () => {
             <BrowserRouter>
                 <ScrollToTop />
                 <FloatingFAQ />
+                <SEOManager />
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/news" element={<News />} />
