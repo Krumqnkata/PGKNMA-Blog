@@ -14,6 +14,7 @@ import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
 import { ShareDropdown } from "@/components/ShareDropdown";
+import { useSEO } from "@/hooks/use-seo";
 import Lightbox from "yet-another-react-lightbox";
 import PDFViewerDialog from "@/components/PDFViewerDialog";
 import "yet-another-react-lightbox/styles.css";
@@ -34,6 +35,13 @@ const Post = () => {
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [pdfOpen, setPdfOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+
+    useSEO({
+        title: post ? post.title : "Зареждане...",
+        description: post ? post.hook : "Зареждане на публикация...",
+        ogImage: post?.banner || undefined,
+        ogType: "article",
+    });
 
     useEffect(() => {
         const handleScroll = () => {
