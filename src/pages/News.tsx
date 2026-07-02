@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, User, Loader2, Tag, Search, Share2 } from "lucide-react";
+import { Calendar, Loader2, Tag, Search, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import CookieConsent from "@/components/CookieConsent";
 import { Link } from "react-router-dom";
@@ -196,22 +196,18 @@ const News = () => {
                                                             <Tag className="h-3 w-3 mr-1.5" />
                                                             {article.category_name || "Uncategorized"}
                                                         </Badge>
-                                                        <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary">
+                                                        <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary uppercase">
                                                             {article.title}
                                                         </h3>
                                                         <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
                                                             {article.hook}
                                                         </p>
-                                                        <div className="flex items-center justify-between text-xs text-muted-foreground">
-                                                            <div className="flex items-center gap-1">
-                                                                <User className="h-3 w-3" />
-                                                                <span>{article.author_username || `User ID: ${article.author}`}</span>
-                                                            </div>
-                                                            <div className="flex items-center gap-1">
-                                                                <Calendar className="h-3 w-3" />
-                                                                <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
-                                                            </div>
-                                                        </div>
+                                                         <div className="flex items-center text-xs text-muted-foreground">
+                                                             <div className="flex items-center gap-1">
+                                                                 <Calendar className="h-3 w-3 mr-1" />
+                                                                 <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
+                                                             </div>
+                                                         </div>
                                                     </div>
                                                 </Card>
                                             </Link>
