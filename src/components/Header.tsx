@@ -6,7 +6,7 @@ import SearchDialog from "@/components/SearchDialog";
 import LoginDialog from "@/components/LoginDialog";
 import RegisterDialog from "@/components/RegisterDialog";
 import { useTheme } from "next-themes";
-import NotificationBanner from "@/components/NotificationBanner";
+import NotificationBell from "@/components/NotificationBell";
 import logoDark from "/logo-dark.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserDropdown } from "./UserDropdown";
@@ -67,7 +67,7 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-
+          <NotificationBell />
 
           <Button
             variant="ghost"
@@ -100,8 +100,6 @@ const Header = () => {
           </Button>
         </div>
       </nav>
-
-      <NotificationBanner />
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
