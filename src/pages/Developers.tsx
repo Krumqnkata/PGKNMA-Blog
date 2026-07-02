@@ -64,7 +64,7 @@ const Developers = () => {
           {developers.map((dev, index) => (
             <Card 
               key={index} 
-              className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 border-border/50 hover:border-primary/50"
+              className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 border-border/50 hover:border-primary/50 flex flex-col h-full"
             >
               <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity`} />
               
@@ -88,7 +88,7 @@ const Developers = () => {
                 </div>
               </CardHeader>
 
-              <CardContent className="text-center space-y-6">
+              <CardContent className="text-center flex-grow flex flex-col justify-between space-y-6 pt-4">
                 <div className="flex flex-wrap justify-center gap-2">
                   {dev.skills.map((skill, sIndex) => (
                     <Badge 
@@ -101,7 +101,7 @@ const Developers = () => {
                   ))}
                 </div>
                 
-                <div className="pt-4 border-t border-border/50">
+                <div className="pt-4 border-t border-border/50 mt-auto">
                   <Button asChild variant="outline" className="w-full rounded-xl group/btn hover:bg-primary hover:text-primary-foreground transition-all duration-300">
                     <a
                       href={dev.github}
