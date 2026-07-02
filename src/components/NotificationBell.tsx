@@ -109,104 +109,122 @@ const NotificationBell: React.FC = () => {
   }
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          className="relative rounded-full text-white/85 hover:text-white hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
-          aria-label="Известия"
-        >
-          {totalCount > 0 ? (
-            <BellRing className="h-5 w-5 animate-pulse text-white" />
-          ) : (
-            <Bell className="h-5 w-5" />
-          )}
-          {totalCount > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white ring-2 ring-[#0a2e2e] transition-transform animate-in zoom-in">
-              {totalCount}
-            </span>
-          )}
-        </Button>
-      </PopoverTrigger>
-      
-      <PopoverContent ref={popoverContentRef} className="w-80 sm:w-96 p-0 border border-border bg-popover text-popover-foreground shadow-2xl rounded-xl overflow-hidden z-50" align="end">
-        {/* Popover Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
-          <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-sm tracking-wide">Известия</h4>
-            {unreadCount > 0 && (
-              <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/20 text-primary rounded-full">
-                {unreadCount} нови
+    <>
+      <style>{`
+        @keyframes bell-ring {
+          0%, 100% { transform: rotate(0deg); }
+          10% { transform: rotate(-12deg); }
+          20% { transform: rotate(10deg); }
+          30% { transform: rotate(-8deg); }
+          40% { transform: rotate(6deg); }
+          50% { transform: rotate(-4deg); }
+          60% { transform: rotate(2deg); }
+          70%, 100% { transform: rotate(0deg); }
+        }
+        .animate-bell-ring {
+          transform-origin: top center;
+          animation: bell-ring 1.5s ease-in-out infinite;
+        }
+      `}</style>
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative rounded-full text-white/85 hover:text-white hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
+            aria-label="Известия"
+          >
+            {totalCount > 0 ? (
+              <BellRing className="h-5 w-5 animate-bell-ring text-white" />
+            ) : (
+              <Bell className="h-5 w-5" />
+            )}
+            {totalCount > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-bold text-white ring-2 ring-[#0a2e2e] transition-transform animate-in zoom-in">
+                {totalCount}
               </span>
             )}
+          </Button>
+        </PopoverTrigger>
+        
+        <PopoverContent ref={popoverContentRef} className="w-80 sm:w-96 p-0 border border-border bg-popover text-popover-foreground shadow-2xl rounded-xl overflow-hidden z-50" align="end">
+          {/* Popover Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
+            <div className="flex items-center gap-2">
+              <h4 className="font-semibold text-sm tracking-wide">Известия</h4>
+              {unreadCount > 0 && (
+                <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/20 text-primary rounded-full">
+                  {unreadCount} нови
+                </span>
+              )}
+            </div>
+            {unreadCount > 0 && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="h-7 px-2 text-xs text-muted-foreground hover:text-primary gap-1 transition-colors rounded-md"
+                onClick={handleMarkAllAsRead}
+              >
+                <CheckCheck className="h-3.5 w-3.5" />
+                <span>Прочети всички</span>
+              </Button>
+            )}
           </div>
-          {unreadCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-7 px-2 text-xs text-muted-foreground hover:text-primary gap-1 transition-colors rounded-md"
-              onClick={handleMarkAllAsRead}
-            >
-              <CheckCheck className="h-3.5 w-3.5" />
-              <span>Прочети всички</span>
-            </Button>
-          )}
-        </div>
 
-        {/* Popover Body */}
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-10 gap-2">
-            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-            <p className="text-xs text-muted-foreground">Зареждане...</p>
-          </div>
-        ) : error ? (
-          <div className="flex items-center gap-2 px-4 py-6 text-destructive text-sm justify-center">
-            <AlertCircle className="h-4 w-4" />
-            <span>Неуспешно зареждане на известия.</span>
-          </div>
-        ) : enabledNotifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4 text-center gap-2">
-            <div className="p-3 bg-muted rounded-full text-muted-foreground/60">
-              <Inbox className="h-6 w-6" />
+          {/* Popover Body */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-10 gap-2">
+              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+              <p className="text-xs text-muted-foreground">Зареждане...</p>
             </div>
-            <p className="text-sm font-medium text-muted-foreground">Няма известия</p>
-            <p className="text-xs text-muted-foreground/80 max-w-[200px]">Всичко е актуално към момента.</p>
-          </div>
-        ) : (
-          <ScrollArea className="max-h-[350px] overflow-y-auto">
-            <div className="divide-y divide-border/60">
-              {enabledNotifications.map((notification) => {
-                const isUnread = !openedReadIds.includes(notification.id);
-                return (
-                  <div 
-                    key={notification.id} 
-                    className={`relative p-4 flex gap-3 transition-colors duration-200 hover:bg-accent/40 ${isUnread ? 'bg-primary/5' : ''}`}
-                  >
-                    {/* Unread indicator dot */}
-                    {isUnread && (
-                      <span className="absolute left-1.5 top-5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)] animate-pulse" />
-                    )}
-                    
-                    <div className="flex-1 space-y-1 pl-1">
-                      <div 
-                        className="text-sm leading-relaxed prose prose-sm dark:prose-invert break-words max-w-full [&_a]:text-primary [&_a]:underline [&_a]:hover:text-primary/80"
-                        dangerouslySetInnerHTML={{ __html: notification.html_text }}
-                      />
-                      {notification.created_at && (
-                        <p className="text-[10px] text-muted-foreground/80">
-                          {formatDate(notification.created_at)}
-                        </p>
+          ) : error ? (
+            <div className="flex items-center gap-2 px-4 py-6 text-destructive text-sm justify-center">
+              <AlertCircle className="h-4 w-4" />
+              <span>Неуспешно зареждане на известия.</span>
+            </div>
+          ) : enabledNotifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 px-4 text-center gap-2">
+              <div className="p-3 bg-muted rounded-full text-muted-foreground/60">
+                <Inbox className="h-6 w-6" />
+              </div>
+              <p className="text-sm font-medium text-muted-foreground">Няма известия</p>
+              <p className="text-xs text-muted-foreground/80 max-w-[200px]">Всичко е актуално към момента.</p>
+            </div>
+          ) : (
+            <ScrollArea className="max-h-[350px] overflow-y-auto">
+              <div className="divide-y divide-border/60">
+                {enabledNotifications.map((notification) => {
+                  const isUnread = !openedReadIds.includes(notification.id);
+                  return (
+                    <div 
+                      key={notification.id} 
+                      className={`relative p-4 flex gap-3 transition-colors duration-200 hover:bg-accent/40 ${isUnread ? 'bg-primary/5' : ''}`}
+                    >
+                      {/* Unread indicator dot */}
+                      {isUnread && (
+                        <span className="absolute left-1.5 top-5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)] animate-pulse" />
                       )}
+                      
+                      <div className="flex-1 space-y-1 pl-1">
+                        <div 
+                          className="text-sm leading-relaxed prose prose-sm dark:prose-invert break-words max-w-full [&_a]:text-primary [&_a]:underline [&_a]:hover:text-primary/80"
+                          dangerouslySetInnerHTML={{ __html: notification.html_text }}
+                        />
+                        {notification.created_at && (
+                          <p className="text-[10px] text-muted-foreground/80">
+                            {formatDate(notification.created_at)}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </ScrollArea>
-        )}
-      </PopoverContent>
-    </Popover>
+                  );
+                })}
+              </div>
+            </ScrollArea>
+          )}
+        </PopoverContent>
+      </Popover>
+    </>
   );
 };
 
