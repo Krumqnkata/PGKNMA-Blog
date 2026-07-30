@@ -66,9 +66,13 @@ self.addEventListener("fetch", (event) => {
           }
           return response;
         })
-        .catch(() => {
+        .catch(async () => {
           // If offline, try serving from cache
-          return caches.match(request);
+          const cached = await caches.match(request);
+          return cached || new Response(JSON.stringify({ detail: 'Offline' }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' },
+          });
         })
     );
     return;
@@ -86,8 +90,12 @@ self.addEventListener("fetch", (event) => {
           });
           return response;
         })
-        .catch(() => {
-          return caches.match("/index.html") || caches.match("/");
+        .catch(async () => {
+          const cached = await caches.match("/index.html");
+          if (cached) return cached;
+          const root = await caches.match("/");
+          if (root) return root;
+          return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
         })
     );
     return;
@@ -105,7 +113,8 @@ self.addEventListener("fetch", (event) => {
         }
         return networkResponse;
       }).catch(() => {
-        // Silent catch for network failure
+        // Network failed — return cached version if available
+        return cachedResponse ? cachedResponse.clone() : new Response('', { status: 503 });
       });
 
       return cachedResponse || fetchPromise;

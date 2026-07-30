@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, ImageOff, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { AuthenticatedImage } from '@/components/AuthenticatedImage';
 
 const MyMemesList: React.FC = () => {
   const { toast } = useToast();
@@ -101,7 +102,7 @@ const MyMemesList: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <img src={meme.image_url} alt={meme.title} className="rounded-lg max-h-96 w-auto" />
+            <AuthenticatedImage src={meme.image_url} alt={meme.title} className="max-h-96 w-auto rounded-lg" />
           </CardContent>
         </Card>
       ))}

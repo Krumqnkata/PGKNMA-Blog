@@ -8,6 +8,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import MarkdownRenderer from '@/components/MarkdownRenderer';
 
 const STORAGE_KEY = 'read-notifications-v3';
 
@@ -81,7 +82,8 @@ const NotificationBell: React.FC = () => {
   }, []);
 
   const enabledNotifications = useMemo(() => {
-    return notifications ? notifications.filter(n => n.enabled) : [];
+    const notifArray = Array.isArray(notifications) ? notifications : [];
+    return notifArray.filter(n => n.enabled);
   }, [notifications]);
 
   // Известието е непрочетено ако: никога не е било маркирано,
@@ -109,7 +111,7 @@ const NotificationBell: React.FC = () => {
   // в случай че известията идват и си отиват много често с времето.
   const MAX_STORED_ENTRIES = 500;
   useEffect(() => {
-    if (!notifications) return;
+    if (!Array.isArray(notifications)) return;
     const existingIds = new Set(notifications.map(n => String(n.id)));
 
     setReadMap(prev => {
@@ -270,9 +272,9 @@ const NotificationBell: React.FC = () => {
                         <span className="absolute left-1.5 top-5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)] animate-pulse" />
                       )}
                       <div className="flex-1 space-y-1 pl-1">
-                        <div 
-                          className="text-sm leading-relaxed prose prose-sm dark:prose-invert break-words max-w-full [&_a]:text-primary [&_a]:underline [&_a]:hover:text-primary/80"
-                          dangerouslySetInnerHTML={{ __html: notification.html_text }}
+                        <MarkdownRenderer 
+                          content={notification.html_text || notification.text || ''} 
+                          className="text-sm leading-relaxed prose prose-sm dark:prose-invert break-words max-w-full [&_p]:my-1 [&_ul]:my-1 [&_li]:my-0.5 [&_a]:text-primary [&_a]:underline [&_a]:hover:text-primary/80"
                         />
                         {notification.created_at && (
                           <p className="text-[10px] text-muted-foreground/80">

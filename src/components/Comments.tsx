@@ -182,7 +182,7 @@ const Comments = ({ postId }: CommentsProps) => {
         setError('');
         try {
             const fetchedComments = await getComments(postId);
-            if (fetchedComments) {
+            if (Array.isArray(fetchedComments)) {
                 setRawComments(fetchedComments);
             }
         } catch (err) {

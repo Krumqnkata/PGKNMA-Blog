@@ -32,7 +32,7 @@ const MemeOfTheWeek: React.FC = () => {
       try {
         setIsLoading(true);
         const fetchedMemes = await getMemes();
-        setMemes(fetchedMemes);
+        setMemes(Array.isArray(fetchedMemes) ? fetchedMemes : []);
         setError(null);
       } catch (err: unknown) {
         const errorMessage = err instanceof Error ? err.message : 'Неуспешно зареждане на меметата.';

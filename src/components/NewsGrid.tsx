@@ -24,7 +24,7 @@ const NewsGrid = () => {
       try {
         setLoading(true);
         const allPosts = await getPosts();
-        if (allPosts && allPosts.length > 0) {
+        if (Array.isArray(allPosts) && allPosts.length > 0) {
           // Get the 6 most recent posts (1 featured + 5 secondary)
           setPosts(allPosts.slice(0, 6));
         }
