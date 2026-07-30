@@ -302,6 +302,20 @@ export interface PollStatistics {
     }>;
 }
 
+export async function linkGoogleAccount(credential: string, currentPassword: string): Promise<{ detail: string }> {
+    const response = await apiRequest('/api/auth/google/link/', {
+        method: 'POST',
+        body: JSON.stringify({ credential, current_password: currentPassword }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Неуспешно свързване с Google.' }));
+        throw new Error(errorData.error || errorData.detail || 'Неуспешно свързване с Google.');
+    }
+
+    return response.json();
+}
+
 export async function getPollStatistics(): Promise<PollStatistics> {
     const response = await apiRequest(`/api/poll/statistics/`, { method: 'GET' });
 
