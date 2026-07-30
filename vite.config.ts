@@ -1,13 +1,24 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), "");
+  const backendUrl = env.VITE_DEV_BACKEND_URL || "http://127.0.0.1:8000";
+
+  return {
   server: {
     host: "::",
-    port: 8000,
+    // Django uses port 8000 locally. Keeping Vite on a separate port prevents
+    // the frontend dev server from intercepting requests intended for the API.
+    port: 5173,
+    proxy: {
+      "/api": { target: backendUrl, changeOrigin: true },
+      "/files": { target: backendUrl, changeOrigin: true },
+      "/valentines": { target: backendUrl, changeOrigin: true },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   build: {
@@ -45,4 +56,5 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-}));
+  };
+});

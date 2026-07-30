@@ -37,10 +37,12 @@ const Events = () => {
     );
   }
 
-  const upcomingEvents = events
-    ?.filter(event => parseISO(event.start_datetime) >= new Date()) 
-    .sort((a, b) => parseISO(a.start_datetime).getTime() - parseISO(b.start_datetime).getTime()) 
-    .slice(0, 3); 
+  const upcomingEvents = Array.isArray(events)
+    ? events
+        .filter(event => parseISO(event.start_datetime) >= new Date())
+        .sort((a, b) => parseISO(a.start_datetime).getTime() - parseISO(b.start_datetime).getTime())
+        .slice(0, 3)
+    : []; 
 
   if (!upcomingEvents || upcomingEvents.length === 0) {
     return (

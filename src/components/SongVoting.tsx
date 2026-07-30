@@ -102,7 +102,9 @@ export function SongVoting() {
         );
     }
 
-    if (!songs || songs.length === 0) {
+    const safeSongs = Array.isArray(songs) ? songs : [];
+
+    if (safeSongs.length === 0) {
         return (
             <div className="text-center py-8 text-gray-500">
                 <p>Все още няма одобрени песни за гласуване.</p>
@@ -132,7 +134,7 @@ export function SongVoting() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {songs.map((song) => (
+                {safeSongs.map((song) => (
                     <Card key={song.id} className="flex flex-col overflow-hidden shadow-md transition-shadow duration-300 hover:shadow-lg">
                         <SongMediaDisplay link={song.link} title={song.title} />
                         

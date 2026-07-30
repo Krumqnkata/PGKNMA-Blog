@@ -1,4 +1,4 @@
-import { apiRequest, API_BASE_URL } from './api_auth';
+import { apiRequest, API_BASE_URL, resolveApiUrl } from './api_auth';
 
 export interface PostDocument {
     id: number;
@@ -24,6 +24,38 @@ export interface Post {
     images: string[];
     documents: PostDocument[];
 }
+// Helper to safely extract array from DRF paginated response or plain array
+export function normalizeArray<T>(data: unknown): T[] {
+    if (Array.isArray(data)) {
+        return data;
+    }
+    if (data && typeof data === 'object') {
+        const record = data as Record<string, unknown>;
+        if (Array.isArray(record.results)) return record.results as T[];
+        if (Array.isArray(record.data)) return record.data as T[];
+        if (Array.isArray(record.items)) return record.items as T[];
+    }
+    return [];
+}
+
+const withResolvedPostMedia = (post: Post): Post => ({
+    ...post,
+    banner: resolveApiUrl(post.banner) || null,
+    images: post.images.map((image) => resolveApiUrl(image)),
+    documents: post.documents.map((document) => ({ ...document, file_url: resolveApiUrl(document.file_url) })),
+});
+
+const withResolvedPollMedia = (status: UserPollStatus): UserPollStatus => ({
+    ...status,
+    question: status.question ? {
+        ...status.question,
+        image_url: resolveApiUrl(status.question.image_url) || null,
+        options: status.question.options.map((option) => ({ ...option, image_url: resolveApiUrl(option.image_url) || null })),
+    } : null,
+});
+
+const withResolvedMemeImage = (meme: Meme): Meme => ({ ...meme, image_url: resolveApiUrl(meme.image_url) });
+
 /**
  * Взима списък с всички постове от Django API.
  * @returns Promise<Post[] | null>
@@ -37,8 +69,8 @@ export async function getPosts(): Promise<Post[] | null> {
             return null; 
         }
 
-        const data: Post[] = await response.json();
-        return data;
+        const data = await response.json();
+        return normalizeArray<Post>(data).map(withResolvedPostMedia);
 
     } catch (error) {
         console.error('Грешка при комуникация с API за постове:', error);
@@ -61,7 +93,7 @@ export async function getPost(id: string): Promise<Post | null> {
         }
 
         const data: Post = await response.json();
-        return data;
+        return withResolvedPostMedia(data);
 
     } catch (error) {
         console.error(`Грешка при комуникация с API за пост ID ${id}:`, error);
@@ -70,8 +102,9 @@ export async function getPost(id: string): Promise<Post | null> {
 }
 
 export interface LoginCredentials {
-    username?: string;
-    password?: string;
+    username: string;
+    password: string;
+    captcha_answer: string;
 }
 
 export interface TokenResponse {
@@ -159,15 +192,15 @@ export async function loginWithGoogle(credential: string): Promise<GoogleLoginRe
 
 export async function getComments(postId: string): Promise<Comment[] | null> {
     try {
-        const response = await apiRequest(`/api/posts/${postId}/comments`, { method: 'GET' });
+        const response = await apiRequest(`/api/posts/${postId}/comments/`, { method: 'GET' });
 
         if (!response.ok) {
             console.error(`HTTP грешка при извличане на коментари за пост ${postId}: ${response.status}`);
             return null;
         }
 
-        const data: Comment[] = await response.json();
-        return data;
+        const data = await response.json();
+        return normalizeArray<Comment>(data);
 
     } catch (error) {
         console.error(`Грешка при комуникация с API за коментари на пост ${postId}:`, error);
@@ -239,7 +272,7 @@ export async function getWeeklyPollStatus(): Promise<UserPollStatus> {
         throw new Error(errorData.detail || 'Не може да се зареди седмичната анкета.');
     }
 
-    return response.json();
+    return withResolvedPollMedia(await response.json());
 }
 
 export async function submitWeeklyPollAnswer(questionId: number, selectedOptionId: number): Promise<UserPollStatus> {
@@ -254,25 +287,19 @@ export async function submitWeeklyPollAnswer(questionId: number, selectedOptionI
         throw new Error(errorData.detail || 'Не може да се изпрати вашият отговор.');
     }
 
-    return response.json();
+    return withResolvedPollMedia(await response.json());
 }
 
-
-export interface LeaderboardEntry {
-    id: number;
-    username: string;
-    correct_answers: number;
-}
-
-export interface RecentParticipant {
-    id: number;
-    username: string;
-    last_answered: string;
-}
 
 export interface PollStatistics {
-    leaderboard: LeaderboardEntry[];
-    recent_participants: RecentParticipant[];
+    total_participants: number;
+    total_answers: number;
+    correct_answers: number;
+    leaderboard: Array<{
+        id: number;
+        username: string;
+        correct_answers: number;
+    }>;
 }
 
 export async function getPollStatistics(): Promise<PollStatistics> {
@@ -328,7 +355,8 @@ export async function getNotifications(): Promise<Notification[]> {
         throw new Error(errorData.detail || 'Не може да се заредят известията.');
     }
 
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<Notification>(data);
 }
 
 
@@ -354,7 +382,8 @@ export async function getEvents(): Promise<Event[]> {
         throw new Error(errorData.detail || 'Не може да се заредят събитията.');
     }
 
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<Event>(data);
 }
 
 export async function getTermsOfService(): Promise<TermsOfServiceContent | null> {
@@ -388,8 +417,6 @@ export interface RegisterCredentials {
     email: string;
     first_name: string; // Added first_name
     last_name: string;  // Added last_name
-    captcha_num1: number;
-    captcha_num2: number;
     captcha_answer: string;
 }
 
@@ -497,7 +524,8 @@ export async function getApprovedSongs(): Promise<ApprovedSong[]> {
         throw new Error(errorData.detail || 'Не може да се заредят песни за гласуване.');
     }
 
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<ApprovedSong>(data);
 }
 
 export interface Meme {
@@ -525,7 +553,8 @@ export async function getMemes(): Promise<Meme[]> {
         throw new Error(errorData.detail || 'Не може да се заредят мемовете.');
     }
 
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<Meme>(data).map(withResolvedMemeImage);
 }
 
 export async function submitMeme(data: MemeSubmission): Promise<Meme> {
@@ -544,7 +573,7 @@ export async function submitMeme(data: MemeSubmission): Promise<Meme> {
         throw new Error(errorData.detail || 'Не може да се изпрати вашият мемове.');
     }
 
-    return response.json();
+    return withResolvedMemeImage(await response.json());
 }
 
 export async function voteForMeme(memeId: number): Promise<Meme> {
@@ -558,7 +587,7 @@ export async function voteForMeme(memeId: number): Promise<Meme> {
         throw new Error(errorData.detail || 'Не може да се изпрати вашето гласуване.');
     }
 
-    return response.json();
+    return withResolvedMemeImage(await response.json());
 }
 
 export async function voteForSong(songId: number): Promise<ApprovedSong> {
@@ -682,7 +711,8 @@ export async function getChangelog(): Promise<ChangelogEntry[]> {
             throw new Error('Could not fetch changelog');
         }
 
-        return response.json();
+        const data = await response.json();
+        return normalizeArray<ChangelogEntry>(data);
     } catch (error) {
         console.error('API communication error for changelog:', error);
         // In case of a network error, return empty array to not block the UI
@@ -751,7 +781,8 @@ export async function getMySongSuggestions(): Promise<ApprovedSong[]> {
     if (!response.ok) {
         throw new Error('Неуспешно зареждане на вашите предложения за песни.');
     }
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<ApprovedSong>(data);
 }
 
 export async function getMyMemes(): Promise<Meme[]> {
@@ -759,7 +790,8 @@ export async function getMyMemes(): Promise<Meme[]> {
     if (!response.ok) {
         throw new Error('Неуспешно зареждане на вашите мемета.');
     }
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<Meme>(data).map(withResolvedMemeImage);
 }
 
 export async function getMyComments(): Promise<Comment[]> {
@@ -767,7 +799,8 @@ export async function getMyComments(): Promise<Comment[]> {
     if (!response.ok) {
         throw new Error('Неуспешно зареждане на вашите коментари.');
     }
-    return response.json();
+    const data = await response.json();
+    return normalizeArray<Comment>(data);
 }
 
 export async function deleteMyComment(commentId: number): Promise<void> {

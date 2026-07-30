@@ -53,7 +53,7 @@ const News = () => {
         const fetchAllPosts = async () => {
             setLoading(true);
             const data = await getPosts(); // Always fetch all posts
-            if (data) {
+            if (Array.isArray(data)) {
                 setPosts(data);
                 const uniqueCategories = [...new Set(data.map(post => post.category_name))];
                 setCategories(uniqueCategories);
