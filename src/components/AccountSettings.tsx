@@ -8,10 +8,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { useMutation } from '@tanstack/react-query';
-import { updateUserPassword, deactivateMyAccount, PasswordChangeData, changeUsername, UsernameChangeData, checkUsername, validatePassword } from '@/lib/api';
+import { updateUserPassword, deactivateMyAccount, PasswordChangeData, changeUsername, UsernameChangeData, checkUsername, validatePassword, linkGoogleAccount } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
+import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 
 const passwordSchema = z.object({
   current_password: z.string().min(1, "Текущата парола е задължителна."),
@@ -27,8 +28,10 @@ const usernameSchema = z.object({
 const AccountSettings: React.FC = () => {
   const { toast } = useToast();
   const { user, logout } = useAuth();
+  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [googleLinkPassword, setGoogleLinkPassword] = useState('');
 
   // State for username validation
   const [isCheckingUsername, setIsCheckingUsername] = useState(false);
@@ -215,6 +218,17 @@ const AccountSettings: React.FC = () => {
     },
   });
 
+  const googleLinkMutation = useMutation({
+    mutationFn: ({ credential, currentPassword }: { credential: string; currentPassword: string }) => linkGoogleAccount(credential, currentPassword),
+    onSuccess: (data) => {
+      setGoogleLinkPassword('');
+      toast({ title: 'Google е свързан', description: data.detail || 'Вече можете да влизате и с Google.' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Грешка', description: error.message, variant: 'destructive' });
+    },
+  });
+
   const onPasswordSubmit = (values: z.infer<typeof passwordSchema>) => {
     if (canChangePassword) {
         passwordMutation.mutate(values);
@@ -241,6 +255,14 @@ const AccountSettings: React.FC = () => {
 
   const handleDeactivateAccount = () => {
     deactivateAccountMutation.mutate();
+  };
+
+  const handleGoogleLink = (credentialResponse: CredentialResponse) => {
+    if (!credentialResponse.credential) {
+      toast({ title: 'Грешка', description: 'Не бе получен токен от Google.', variant: 'destructive' });
+      return;
+    }
+    googleLinkMutation.mutate({ credential: credentialResponse.credential, currentPassword: googleLinkPassword });
   };
 
   const canChangeUsername = isUsernameAvailable === true && !isCheckingUsername;
@@ -391,6 +413,29 @@ const AccountSettings: React.FC = () => {
             </CardFooter>
           </form>
         </Form>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Вход с Google</CardTitle>
+          <CardDescription>Свържете Google акаунт със същия имейл. При профили с парола се изисква потвърждение с текущата парола.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="max-w-sm space-y-2">
+            <label htmlFor="google-link-password" className="text-sm font-medium leading-none">Текуща парола</label>
+            <Input id="google-link-password" type="password" value={googleLinkPassword} onChange={(event) => setGoogleLinkPassword(event.target.value)} placeholder="••••••••" />
+          </div>
+          {googleClientId ? <GoogleLogin
+              onSuccess={handleGoogleLink}
+              onError={() => toast({ title: 'Грешка', description: 'Неуспешно удостоверяване с Google.', variant: 'destructive' })}
+              theme="filled_blue"
+              shape="rectangular"
+              text="continue_with"
+              locale="bg"
+              width="300"
+            /> : <p className="text-sm text-muted-foreground">Входът с Google още не е конфигуриран за тази версия на сайта.</p>}
+          {googleLinkMutation.isPending && <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Свързване с Google…</p>}
+        </CardContent>
       </Card>
 
       <Card className="border-destructive">
