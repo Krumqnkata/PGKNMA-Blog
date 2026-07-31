@@ -29,8 +29,8 @@ const NewsGrid = () => {
           setPosts(allPosts.slice(0, 6));
         }
         setError(null);
-      } catch (err) {
-        setError("Неуспешно извличане на новини. Моля, опитайте отново по-късно.");
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : "Неуспешно извличане на новини. Моля, опитайте отново по-късно.");
         console.error(err);
       } finally {
         setLoading(false);

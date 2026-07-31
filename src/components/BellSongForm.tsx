@@ -55,11 +55,13 @@ const BellSongForm = () => {
         description: `Вашето предложение за песен "${values.title}" беше изпратено за одобрение.`,
       });
       reset();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Submission error:", error);
       toast({
         title: "Грешка при изпращане!",
-        description: "Неуспешно изпращане на предложението. Моля, опитайте отново.",
+        description: error instanceof Error
+          ? error.message
+          : "Неуспешно изпращане на предложението. Моля, опитайте отново.",
         variant: "destructive",
       });
     }
