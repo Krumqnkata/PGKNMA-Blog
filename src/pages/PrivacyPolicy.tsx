@@ -20,9 +20,9 @@ const PrivacyPolicy = () => {
         } else {
           setError("Политиката за поверителност не беше намерена.");
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Неуспешно извличане на политиката за поверителност:", err);
-        setError("Възникна грешка при зареждане на Политиката за поверителност.");
+        setError(err instanceof Error ? err.message : "Възникна грешка при зареждане на Политиката за поверителност.");
       } finally {
         setLoading(false);
       }

@@ -38,6 +38,38 @@ export function normalizeArray<T>(data: unknown): T[] {
     return [];
 }
 
+type ApiErrorPayload = Record<string, unknown>;
+
+const errorValueToText = (value: unknown): string[] => {
+    if (typeof value === "string") return [value];
+    if (Array.isArray(value)) return value.flatMap(errorValueToText);
+    if (value && typeof value === "object") {
+        return Object.values(value as ApiErrorPayload).flatMap(errorValueToText);
+    }
+    return [];
+};
+
+/** Converts Django/DRF error payloads into clear messages for the interface. */
+export async function getApiErrorMessage(response: Response, fallback: string): Promise<string> {
+    const payload = await response.json().catch(() => null) as unknown;
+    if (typeof payload === "string" && payload.trim()) return payload;
+    if (!payload || typeof payload !== "object") return fallback;
+
+    const data = payload as ApiErrorPayload;
+    for (const key of ["detail", "message", "error"]) {
+        if (typeof data[key] === "string" && data[key].trim()) {
+            return data[key] as string;
+        }
+    }
+
+    const messages = Object.entries(data).flatMap(([field, value]) =>
+        errorValueToText(value).map((message) =>
+            field === "non_field_errors" ? message : `${field.replace(/_/g, " ")}: ${message}`
+        )
+    );
+    return messages.length ? messages.join(" ") : fallback;
+}
+
 const withResolvedPostMedia = (post: Post): Post => ({
     ...post,
     banner: resolveApiUrl(post.banner) || null,
@@ -58,15 +90,14 @@ const withResolvedMemeImage = (meme: Meme): Meme => ({ ...meme, image_url: resol
 
 /**
  * Взима списък с всички постове от Django API.
- * @returns Promise<Post[] | null>
+ * @returns Promise<Post[]>
  */
-export async function getPosts(): Promise<Post[] | null> {
+export async function getPosts(): Promise<Post[]> {
     try {
         const response = await apiRequest('/api/posts/', { method: 'GET' });
 
         if (!response.ok) {
-            console.error(`HTTP грешка при зареждане на постове: ${response.status}`);
-            return null; 
+            throw new Error(await getApiErrorMessage(response, 'Не може да се заредят новините.'));
         }
 
         const data = await response.json();
@@ -74,22 +105,22 @@ export async function getPosts(): Promise<Post[] | null> {
 
     } catch (error) {
         console.error('Грешка при комуникация с API за постове:', error);
-        return null;
+        throw error;
     }
 }
 
 /**
  * Fetches a single post by its ID from the API.
  * @param id - The ID of the post to fetch.
- * @returns A promise that resolves to the post object or null if not found or an error occurs.
+ * @returns A promise that resolves to the post object, or null when it does not exist.
  */
 export async function getPost(id: string): Promise<Post | null> {
     try {
         const response = await apiRequest(`/api/posts/${id}/`, { method: 'GET' });
 
         if (!response.ok) {
-            console.error(`HTTP грешка при извличане на пост с ID ${id}: ${response.status}`);
-            return null;
+            if (response.status === 404) return null;
+            throw new Error(await getApiErrorMessage(response, 'Не може да се зареди публикацията.'));
         }
 
         const data: Post = await response.json();
@@ -97,7 +128,7 @@ export async function getPost(id: string): Promise<Post | null> {
 
     } catch (error) {
         console.error(`Грешка при комуникация с API за пост ID ${id}:`, error);
-        return null;
+        throw error;
     }
 }
 
@@ -143,9 +174,7 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
 
         if (!response.ok) {
             // Log the error response body for more context
-            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
-            console.error(`Неуспешно влизане: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Неуспешна идентификация');
+            throw new Error(await getApiErrorMessage(response, 'Неуспешна идентификация.'));
         }
 
         const data: TokenResponse = await response.json();
@@ -176,9 +205,10 @@ export async function loginWithGoogle(credential: string): Promise<GoogleLoginRe
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Неуспешно влизане с Google' }));
-            console.error(`Неуспешно влизане с Google: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Неуспешна идентификация с Google');
+            throw new Error(await getApiErrorMessage(
+                response,
+                'Неуспешна идентификация с Google.'
+            ));
         }
 
         const data: GoogleLoginResponse = await response.json();
@@ -190,13 +220,12 @@ export async function loginWithGoogle(credential: string): Promise<GoogleLoginRe
 }
 
 
-export async function getComments(postId: string): Promise<Comment[] | null> {
+export async function getComments(postId: string): Promise<Comment[]> {
     try {
         const response = await apiRequest(`/api/posts/${postId}/comments/`, { method: 'GET' });
 
         if (!response.ok) {
-            console.error(`HTTP грешка при извличане на коментари за пост ${postId}: ${response.status}`);
-            return null;
+            throw new Error(await getApiErrorMessage(response, 'Не може да се заредят коментарите.'));
         }
 
         const data = await response.json();
@@ -204,7 +233,7 @@ export async function getComments(postId: string): Promise<Comment[] | null> {
 
     } catch (error) {
         console.error(`Грешка при комуникация с API за коментари на пост ${postId}:`, error);
-        return null;
+        throw error;
     }
 }
 
@@ -221,9 +250,10 @@ export async function addComment(postId: string, content: string, parentId?: num
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Неуспешно добавяне на коментар' }));
-            console.error(`HTTP грешка при добавяне на коментар към пост ${postId}: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Неуспешно изпращане на коментар');
+            throw new Error(await getApiErrorMessage(
+                response,
+                'Неуспешно изпращане на коментар.'
+            ));
         }
 
         const data: Comment = await response.json();
@@ -267,9 +297,7 @@ export async function getWeeklyPollStatus(): Promise<UserPollStatus> {
     const response = await apiRequest(`/api/poll/status/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на статус на анкетата' }));
-        console.error(`HTTP грешка при извличане на статус на анкетата: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се зареди седмичната анкета.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се зареди седмичната анкета.'));
     }
 
     return withResolvedPollMedia(await response.json());
@@ -282,9 +310,7 @@ export async function submitWeeklyPollAnswer(questionId: number, selectedOptionI
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на отговор' }));
-        console.error(`HTTP грешка при изпращане на отговор за анкетата: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се изпрати вашият отговор.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се изпрати вашият отговор.'));
     }
 
     return withResolvedPollMedia(await response.json());
@@ -309,8 +335,7 @@ export async function linkGoogleAccount(credential: string, currentPassword: str
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Неуспешно свързване с Google.' }));
-        throw new Error(errorData.error || errorData.detail || 'Неуспешно свързване с Google.');
+        throw new Error(await getApiErrorMessage(response, 'Неуспешно свързване с Google.'));
     }
 
     return response.json();
@@ -320,9 +345,10 @@ export async function getPollStatistics(): Promise<PollStatistics> {
     const response = await apiRequest(`/api/poll/statistics/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на статистики за анкетата' }));
-        console.error(`HTTP грешка при извличане на статистики за анкетата: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се заредят статистиките на анкетата.');
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Не може да се заредят статистиките на анкетата.'
+        ));
     }
 
     return response.json();
@@ -343,9 +369,7 @@ export async function submitContactForm(data: ContactFormData): Promise<{ detail
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на контактна форма' }));
-        console.error(`HTTP грешка при изпращане на контактна форма: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се изпрати вашето съобщение.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се изпрати вашето съобщение.'));
     }
 
     return response.json();
@@ -364,9 +388,7 @@ export async function getNotifications(): Promise<Notification[]> {
     const response = await apiRequest(`/api/notifications/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на известия' }));
-        console.error(`HTTP грешка при извличане на известия: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се заредят известията.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се заредят известията.'));
     }
 
     const data = await response.json();
@@ -391,9 +413,7 @@ export async function getEvents(): Promise<Event[]> {
     const response = await apiRequest(`/api/events/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на събития' }));
-        console.error(`HTTP грешка при извличане на събития: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се заредят събитията.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се заредят събитията.'));
     }
 
     const data = await response.json();
@@ -409,9 +429,10 @@ export async function getTermsOfService(): Promise<TermsOfServiceContent | null>
                 console.warn('Не са намерени Условия за ползване.');
                 return null;
             }
-            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
-            console.error(`HTTP грешка при извличане на Условия за ползване: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Не може да се заредят Условията за ползване.');
+            throw new Error(await getApiErrorMessage(
+                response,
+                'Не може да се заредят Условията за ползване.'
+            ));
         }
         
 
@@ -420,7 +441,7 @@ export async function getTermsOfService(): Promise<TermsOfServiceContent | null>
 
     } catch (error) {
         console.error('Грешка при комуникация с API за Условия за ползване:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -447,9 +468,7 @@ export async function register(credentials: RegisterCredentials): Promise<User> 
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
-            console.error(`Регистрацията не бе успешна: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Регистрацията не бе успешна');
+            throw new Error(await getApiErrorMessage(response, 'Регистрацията не бе успешна.'));
         }
 
         const data: User = await response.json();
@@ -475,9 +494,10 @@ export async function getPrivacyPolicy(): Promise<PrivacyPolicyContent | null> {
                 console.warn('Не е намерена Политика за поверителност.');
                 return null;
             }
-            const errorData = await response.json().catch(() => ({ detail: 'Неизвестна грешка' }));
-            console.error(`HTTP грешка при извличане на Политика за поверителност: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Не може да се зареди Политиката за поверителност.');
+            throw new Error(await getApiErrorMessage(
+                response,
+                'Не може да се зареди Политиката за поверителност.'
+            ));
         }
 
         const data: PrivacyPolicyContent = await response.json();
@@ -485,7 +505,7 @@ export async function getPrivacyPolicy(): Promise<PrivacyPolicyContent | null> {
 
     } catch (error) {
         console.error('Грешка при комуникация с API за Политика за поверителност:', error);
-        return null;
+        throw error;
     }
 }
 
@@ -504,9 +524,10 @@ export async function submitBellSongSuggestion(data: BellSongSuggestionData): Pr
         });
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на предложение за звънец песен' }));
-            console.error(`HTTP грешка при изпращане на предложение за звънец песен: ${response.status}`, errorData);
-            throw new Error(errorData.detail || 'Не може да се изпрати вашето предложение.');
+            throw new Error(await getApiErrorMessage(
+                response,
+                'Не може да се изпрати вашето предложение.'
+            ));
         }
 
         return response.json();
@@ -533,9 +554,10 @@ export async function getApprovedSongs(): Promise<ApprovedSong[]> {
     const response = await apiRequest(`/api/approved-songs/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на одобрени песни' }));
-        console.error(`HTTP грешка при извличане на одобрени песни: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се заредят песни за гласуване.');
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Не може да се заредят песни за гласуване.'
+        ));
     }
 
     const data = await response.json();
@@ -562,9 +584,7 @@ export async function getMemes(): Promise<Meme[]> {
     const response = await apiRequest(`/api/memes/`, { method: 'GET' });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно извличане на мемове' }));
-        console.error(`HTTP грешка при извличане на мемове: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се заредят мемовете.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се заредят мемовете.'));
     }
 
     const data = await response.json();
@@ -582,9 +602,7 @@ export async function submitMeme(data: MemeSubmission): Promise<Meme> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно изпращане на мемове' }));
-        console.error(`HTTP грешка при изпращане на мемове: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се изпрати вашият мемове.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се изпрати мемето.'));
     }
 
     return withResolvedMemeImage(await response.json());
@@ -596,9 +614,7 @@ export async function voteForMeme(memeId: number): Promise<Meme> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно гласуване за мемове' }));
-        console.error(`HTTP грешка при гласуване за мемове: ${memeId}: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се изпрати вашето гласуване.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се изпрати вашето гласуване.'));
     }
 
     return withResolvedMemeImage(await response.json());
@@ -610,9 +626,7 @@ export async function voteForSong(songId: number): Promise<ApprovedSong> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно гласуване за песен' }));
-        console.error(`HTTP грешка при гласуване за песен ${songId}: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се изпрати вашето гласуване.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се изпрати вашето гласуване.'));
     }
 
     return response.json();
@@ -632,9 +646,7 @@ export async function recordConsent(data: ConsentRecordData): Promise<{ detail?:
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно записване на съгласие' }));
-        console.error(`HTTP грешка при записване на съгласие: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Не може да се запише съгласието.');
+        throw new Error(await getApiErrorMessage(response, 'Не може да се запише съгласието.'));
     }
 
     return response.json();
@@ -654,13 +666,12 @@ export async function checkUsername(username: string): Promise<{ is_available: b
   try {
     const response = await apiRequest(`/api/auth/check-username/?username=${encodeURIComponent(username)}`, { method: 'GET' });
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error(await getApiErrorMessage(response, 'Не може да се провери потребителското име.'));
     }
     return response.json();
   } catch (error) {
     console.error('Грешка при проверка на потребителско име:', error);
-    // In case of error, default to "not available" to be safe
-    return { is_available: false }; 
+    throw error;
   }
 }
 
@@ -670,15 +681,19 @@ export async function validatePassword(password: string): Promise<{ is_valid: bo
       method: 'POST',
       body: JSON.stringify({ password: password }),
     });
-    // For password validation, a 400 status is expected for failure, not a network error
     if (response.ok) {
         return { is_valid: true };
     }
-    const errorData = await response.json();
-    return { is_valid: false, errors: errorData.errors || ['Невалидна парола.'] };
+    // A 400 means that the password does not meet the rules; show those rules inline.
+    if (response.status === 400) {
+        const errorData = await response.json().catch(() => null) as ApiErrorPayload | null;
+        const errors = errorData ? errorValueToText(errorData.errors ?? errorData) : [];
+        return { is_valid: false, errors: errors.length ? errors : ['Невалидна парола.'] };
+    }
+    throw new Error(await getApiErrorMessage(response, 'Не може да се валидира паролата в момента.'));
   } catch (error) {
     console.error('Грешка при валидация на парола:', error);
-    return { is_valid: false, errors: ['Не може да се валидира паролата в момента.'] };
+    throw error;
   }
 }
 
@@ -698,8 +713,10 @@ export async function getSiteStatus(): Promise<SiteStatus> {
         if (!response.ok) {
             console.error(`HTTP грешка при извличане на статуса на сайта: ${response.status}`);
             // Don't return maintenance mode here, let the error be handled by throwing
-            const errorData = await response.json().catch(() => ({ detail: 'HTTP error' }));
-            throw new Error(errorData.detail || `HTTP error: ${response.status}`);
+            throw new Error(await getApiErrorMessage(
+                response,
+                `Грешка при зареждане на статуса на сайта (${response.status}).`
+            ));
         }
 
         return response.json();
@@ -721,16 +738,17 @@ export async function getChangelog(): Promise<ChangelogEntry[]> {
 
         if (!response.ok) {
             if (response.status === 404) return []; // No changelog is not an error
-            console.error(`HTTP error fetching changelog: ${response.status}`);
-            throw new Error('Could not fetch changelog');
+            throw new Error(await getApiErrorMessage(
+                response,
+                'Не може да се зареди дневникът на промените.'
+            ));
         }
 
         const data = await response.json();
         return normalizeArray<ChangelogEntry>(data);
     } catch (error) {
         console.error('API communication error for changelog:', error);
-        // In case of a network error, return empty array to not block the UI
-        return [];
+        throw error;
     }
 }
 
@@ -752,10 +770,10 @@ export async function changeUsername(data: UsernameChangeData): Promise<{ status
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ new_username: ['Неуспешна смяна на потребителско име.'] }));
-        const errorMessage = errorData.new_username ? errorData.new_username[0] : 'Възникна грешка при смяната на потребителското име.';
-        console.error(`HTTP грешка при смяна на потребителско име: ${response.status}`, errorData);
-        throw new Error(errorMessage);
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Възникна грешка при смяната на потребителското име.'
+        ));
     }
 
     return response.json();
@@ -768,9 +786,10 @@ export async function updateUserPassword(data: PasswordChangeData): Promise<{ st
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешна смяна на парола.' }));
-        console.error(`HTTP грешка при смяна на парола: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Възникна грешка при смяната на паролата.');
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Възникна грешка при смяната на паролата.'
+        ));
     }
 
     return response.json();
@@ -782,9 +801,10 @@ export async function deactivateMyAccount(): Promise<{ status: string }> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ detail: 'Неуспешно деактивиране на профила.' }));
-        console.error(`HTTP грешка при деактивиране на профил: ${response.status}`, errorData);
-        throw new Error(errorData.detail || 'Възникна грешка при деактивирането на профила.');
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Възникна грешка при деактивирането на профила.'
+        ));
     }
 
     return response.json();
@@ -793,7 +813,10 @@ export async function deactivateMyAccount(): Promise<{ status: string }> {
 export async function getMySongSuggestions(): Promise<ApprovedSong[]> {
     const response = await apiRequest(`/api/my-content/songs/`, { method: 'GET' });
     if (!response.ok) {
-        throw new Error('Неуспешно зареждане на вашите предложения за песни.');
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Неуспешно зареждане на вашите предложения за песни.'
+        ));
     }
     const data = await response.json();
     return normalizeArray<ApprovedSong>(data);
@@ -802,7 +825,7 @@ export async function getMySongSuggestions(): Promise<ApprovedSong[]> {
 export async function getMyMemes(): Promise<Meme[]> {
     const response = await apiRequest(`/api/my-content/memes/`, { method: 'GET' });
     if (!response.ok) {
-        throw new Error('Неуспешно зареждане на вашите мемета.');
+        throw new Error(await getApiErrorMessage(response, 'Неуспешно зареждане на вашите мемета.'));
     }
     const data = await response.json();
     return normalizeArray<Meme>(data).map(withResolvedMemeImage);
@@ -811,7 +834,7 @@ export async function getMyMemes(): Promise<Meme[]> {
 export async function getMyComments(): Promise<Comment[]> {
     const response = await apiRequest(`/api/my-content/comments/`, { method: 'GET' });
     if (!response.ok) {
-        throw new Error('Неуспешно зареждане на вашите коментари.');
+        throw new Error(await getApiErrorMessage(response, 'Неуспешно зареждане на вашите коментари.'));
     }
     const data = await response.json();
     return normalizeArray<Comment>(data);
@@ -823,7 +846,7 @@ export async function deleteMyComment(commentId: number): Promise<void> {
     });
 
     if (!response.ok) {
-        throw new Error('Неуспешно изтриване на коментара.');
+        throw new Error(await getApiErrorMessage(response, 'Неуспешно изтриване на коментара.'));
     }
     // No content is returned on successful deletion
 }
@@ -834,8 +857,10 @@ export async function deleteMySongSuggestion(songId: number): Promise<void> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Неуспешно изтриване на предложението за песен.');
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Неуспешно изтриване на предложението за песен.'
+        ));
     }
 }
 
@@ -845,7 +870,6 @@ export async function deleteMyMeme(memeId: number): Promise<void> {
     });
 
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || 'Неуспешно изтриване на мемето.');
+        throw new Error(await getApiErrorMessage(response, 'Неуспешно изтриване на мемето.'));
     }
 }

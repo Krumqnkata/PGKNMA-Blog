@@ -20,9 +20,9 @@ const TermsOfService = () => {
         } else {
           setError("Условията за ползване не бяха намерени.");
         }
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Неуспешно извличане на условията за ползване:", err);
-        setError("Възникна грешка при зареждане на Условията за ползване.");
+        setError(err instanceof Error ? err.message : "Възникна грешка при зареждане на Условията за ползване.");
       } finally {
         setLoading(false);
       }

@@ -41,6 +41,7 @@ const News = () => {
     const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState(''); // State for search input
     const debouncedSearch = useDebounce(searchQuery, 500); // Debounced search query
     
@@ -52,13 +53,18 @@ const News = () => {
         // Fetch all posts just once when the component mounts
         const fetchAllPosts = async () => {
             setLoading(true);
-            const data = await getPosts(); // Always fetch all posts
-            if (Array.isArray(data)) {
+            try {
+                const data = await getPosts(); // Always fetch all posts
                 setPosts(data);
                 const uniqueCategories = [...new Set(data.map(post => post.category_name))];
                 setCategories(uniqueCategories);
+                setError(null);
+            } catch (err: unknown) {
+                console.error('Неуспешно извличане на новини:', err);
+                setError(err instanceof Error ? err.message : 'Неуспешно извличане на новини.');
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         fetchAllPosts();
     }, []);
@@ -145,6 +151,10 @@ const News = () => {
                             <div className="py-12 text-center flex justify-center items-center">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 <p className="text-lg text-muted-foreground ml-3">Зареждане на новините...</p>
+                            </div>
+                        ) : error ? (
+                            <div className="py-12 text-center text-destructive">
+                                <p className="text-lg font-semibold">{error}</p>
                             </div>
                         ) : filteredPosts.length === 0 ? (
                             <div className="py-12 text-center">

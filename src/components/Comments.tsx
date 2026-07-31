@@ -185,8 +185,8 @@ const Comments = ({ postId }: CommentsProps) => {
             if (Array.isArray(fetchedComments)) {
                 setRawComments(fetchedComments);
             }
-        } catch (err) {
-            setError('Грешка при зареждане на коментарите.');
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Грешка при зареждане на коментарите.');
             console.error(err);
         } finally {
             // Loading is set to false in the useMemo effect
@@ -299,6 +299,8 @@ const Comments = ({ postId }: CommentsProps) => {
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                     <p className="mt-2 text-muted-foreground">Зареждане на коментари...</p>
                 </div>
+            ) : error ? (
+                <p className="text-red-500 text-sm">{error}</p>
             ) : processedComments.length === 0 ? (
                 <p className="text-muted-foreground">Все още няма коментари.</p>
             ) : (

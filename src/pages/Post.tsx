@@ -29,6 +29,7 @@ const Post = () => {
     const { id } = useParams<{ id: string }>();
     const [post, setPost] = useState<PostType | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [scrollProgress, setScrollProgress] = useState(0);
@@ -85,13 +86,20 @@ const Post = () => {
         const fetchPost = async () => {
             if (id) {
                 setLoading(true);
-                const data = await getPost(id);
-                if (data) {
-                    setPost(data);
-                } else {
-                    console.log('API returned no data for this post.');
+                try {
+                    const data = await getPost(id);
+                    if (data) {
+                        setPost(data);
+                        setError(null);
+                    } else {
+                        setError('Публикацията не беше намерена.');
+                    }
+                } catch (err: unknown) {
+                    console.error('Неуспешно извличане на публикацията:', err);
+                    setError(err instanceof Error ? err.message : 'Не може да се зареди публикацията.');
+                } finally {
+                    setLoading(false);
                 }
-                setLoading(false);
             }
         };
 
@@ -167,6 +175,10 @@ const Post = () => {
                         <div className="text-center">
                             <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
                             <p className="mt-4 text-lg text-muted-foreground">Зареждане на публикацията...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="py-12 text-center text-destructive">
+                            <p className="text-lg font-semibold">{error}</p>
                         </div>
                     ) : post && id ? (
                         <article className="max-w-4xl mx-auto">

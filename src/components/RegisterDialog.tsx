@@ -149,9 +149,9 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
           setIsUsernameAvailable(false);
           setUsernameError('Потребителското име е заето.');
         }
-      } catch (err) {
+      } catch (err: unknown) {
         setIsUsernameAvailable(false);
-        setUsernameError('Грешка при проверката на името.');
+        setUsernameError(err instanceof Error ? err.message : 'Грешка при проверката на името.');
       } finally {
         setIsCheckingUsername(false);
       }
@@ -183,9 +183,9 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
                 setIsPasswordValid(false);
                 setPasswordErrors(response.errors || []);
             }
-        } catch (err) {
+        } catch (err: unknown) {
             setIsPasswordValid(false);
-            setPasswordErrors(['Грешка при валидация на паролата.']);
+            setPasswordErrors([err instanceof Error ? err.message : 'Грешка при валидация на паролата.']);
         } finally {
             setIsCheckingPassword(false);
         }
