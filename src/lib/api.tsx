@@ -19,6 +19,7 @@ export interface Post {
     hook: string; 
     content: string;
     created_at: string;
+    published_at: string | null;
     published: boolean;
     allowed: boolean;
     images: string[];

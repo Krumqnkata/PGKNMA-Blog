@@ -191,7 +191,7 @@ const Post = () => {
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{new Date(post.created_at).toLocaleDateString('bg-BG')}</span>
+                                        <span>{new Date(post.published_at || post.created_at).toLocaleDateString('bg-BG')}</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Tag className="h-4 w-4" />
