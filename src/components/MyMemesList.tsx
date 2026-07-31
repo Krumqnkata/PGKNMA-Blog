@@ -35,11 +35,14 @@ const MyMemesList: React.FC = () => {
     },
   });
 
-  const getStatusBadge = (isApproved: boolean) => {
-    if (isApproved) {
+  const getStatusBadge = (status: Meme['status']) => {
+    if (status === 'approved') {
       return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">Одобрено</span>;
     }
-    return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-yellow-900 text-yellow-300">Чакащо</span>;
+    if (status === 'rejected') {
+      return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-red-900 text-red-300">Отхвърлено</span>;
+    }
+    return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-yellow-900 text-yellow-300">Изчакващо</span>;
   };
 
   if (isLoading) {
@@ -73,8 +76,8 @@ const MyMemesList: React.FC = () => {
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
-                {getStatusBadge(meme.is_approved)}
-                {!meme.is_approved && (
+                {getStatusBadge(meme.status)}
+                {meme.status === 'pending' && (
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">

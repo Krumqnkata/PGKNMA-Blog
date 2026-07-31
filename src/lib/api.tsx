@@ -571,7 +571,7 @@ export interface Meme {
     image_url: string;
     user_username: string;
     created_at: string;
-    is_approved: boolean;
+    status: "pending" | "approved" | "rejected";
     votes: number;
     has_voted: boolean;
 }

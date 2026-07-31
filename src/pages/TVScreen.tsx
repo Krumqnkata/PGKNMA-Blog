@@ -24,7 +24,7 @@ interface Meme {
     image_url: string;
     user_username: string;
     created_at: string;
-    is_approved: boolean;
+    status: "pending" | "approved" | "rejected";
     votes: number;
     has_voted: boolean;
 }
@@ -210,7 +210,7 @@ const TVScreen = () => {
   }
 
   const topSongs = (Array.isArray(songs) ? songs : []).filter(song => song.status === 'approved').sort((a, b) => b.votes - a.votes).slice(0, 3);
-  const topMemes = (Array.isArray(memes) ? memes : []).filter(meme => meme.is_approved).sort((a, b) => b.votes - a.votes).slice(0, 3);
+  const topMemes = (Array.isArray(memes) ? memes : []).filter(meme => meme.status === 'approved').sort((a, b) => b.votes - a.votes).slice(0, 3);
   const topPollUsers = (Array.isArray(pollStats?.leaderboard) ? pollStats.leaderboard : []).sort((a, b) => b.correct_answers - a.correct_answers).slice(0, 3);
   const upcomingEvents = (Array.isArray(events) ? events : []).filter(event => new Date(event.start_datetime) > new Date()).sort((a, b) => new Date(a.start_datetime).getTime() - new Date(b.start_datetime).getTime()).slice(0, 3);
 
