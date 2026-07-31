@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Papa from 'papaparse';
 import { useQuery } from '@tanstack/react-query';
 import {
   Table,
@@ -21,7 +20,7 @@ import { Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 // Import API function and type
-import { getSiteStatus, SiteStatus } from '@/lib/api';
+import { getProgramSchedule, getSiteStatus, SiteStatus } from '@/lib/api';
 
 // Import layout components
 import Header from "@/components/Header";
@@ -45,62 +44,36 @@ const Program: React.FC = () => {
   const [data, setData] = useState<ScheduleRow[]>([]);
   const [classes, setClasses] = useState<string[]>([]);
   const [selectedClass, setSelectedClass] = useState<string>('');
-  const [loadingCsv, setLoadingCsv] = useState<boolean>(true);
-  const [errorCsv, setErrorCsv] = useState<string | null>(null);
+    const [loadingSchedule, setLoadingSchedule] = useState<boolean>(true);
+    const [scheduleError, setScheduleError] = useState<string | null>(null);
 
   const isProgramEnabled = siteStatus?.enable_program_page;
 
   useEffect(() => {
-    // Only fetch CSV data if the feature is enabled
+    // The schedule is imported through Django admin and delivered by the API.
     if (isProgramEnabled === true) {
       const fetchData = async () => {
         try {
-          setLoadingCsv(true);
-          setErrorCsv(null);
-          const response = await fetch('/program.csv');
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const csvText = await response.text();
-
-          Papa.parse(csvText, {
-            header: true,
-            skipEmptyLines: true,
-            complete: (results) => {
-              const parsedData = results.data as ScheduleRow[];
-              if (results.errors.length > 0) {
-                   setErrorCsv(`Грешка при парсиране на CSV: ${results.errors.map(e => e.message).join(', ')}`);
-              } else if (parsedData.length > 0) {
-                const tableHeaders = Object.keys(parsedData[0]).filter(h => h !== 'Клас');
-                setHeaders(tableHeaders);
-                setData(parsedData);
-                const uniqueClasses = [...new Set(parsedData.map(row => row['Клас']).filter(Boolean))];
-                setClasses(uniqueClasses);
-                if (uniqueClasses.length > 0) {
-                  setSelectedClass(uniqueClasses[0]);
-                }
-              }
-              setLoadingCsv(false);
-            },
-            error: (err) => {
-              setErrorCsv(`Грешка при парсиране на CSV: ${err.message}`);
-              setLoadingCsv(false);
-            }
-          });
-        } catch (e) {
-          if (e instanceof Error) {
-              setErrorCsv(`Неуспешно зареждане на файла program.csv: ${e.message}`);
-          } else {
-              setErrorCsv("Възникна неизвестна грешка при зареждане на данните.");
-          }
-          setLoadingCsv(false);
+          setLoadingSchedule(true);
+          setScheduleError(null);
+          const schedule = await getProgramSchedule();
+          setHeaders(schedule.headers);
+          setData(schedule.rows);
+          setClasses(schedule.classes);
+          setSelectedClass(schedule.classes[0] || '');
+        } catch (error: unknown) {
+          setScheduleError(
+            error instanceof Error ? error.message : 'Не може да се зареди учебната програма.'
+          );
+        } finally {
+          setLoadingSchedule(false);
         }
       };
 
       fetchData();
     } else if (isProgramEnabled === false) {
       // If the program is disabled, we don't need to load the CSV.
-      setLoadingCsv(false);
+      setLoadingSchedule(false);
     }
   }, [isProgramEnabled]);
 
@@ -112,7 +85,7 @@ const Program: React.FC = () => {
 
   const renderContent = () => {
     // The loading state now only considers the CSV loading.
-    if (loadingCsv) {
+    if (loadingSchedule) {
       return (
         <div className="py-12 text-center flex justify-center items-center">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -121,8 +94,8 @@ const Program: React.FC = () => {
       );
     }
     
-    if (errorCsv) {
-      return <div className="py-12 text-center text-red-500">Грешка: {errorCsv}</div>;
+    if (scheduleError) {
+      return <div className="py-12 text-center text-red-500">Грешка: {scheduleError}</div>;
     }
 
     return (

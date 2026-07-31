@@ -706,6 +706,20 @@ export interface SiteStatus {
     enable_program_page: boolean;
 }
 
+export interface ProgramScheduleResponse {
+    classes: string[];
+    headers: string[];
+    rows: Array<Record<string, string>>;
+}
+
+export async function getProgramSchedule(): Promise<ProgramScheduleResponse> {
+    const response = await apiRequest('/api/program/', { method: 'GET' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Не може да се зареди учебната програма.'));
+    }
+    return response.json();
+}
+
 export async function getSiteStatus(): Promise<SiteStatus> {
     try {
         const response = await apiRequest(`/api/site-status/`, { method: 'GET' });
