@@ -103,7 +103,7 @@ const NewsGrid = () => {
                           </Badge>
                           <span className="flex items-center gap-1 opacity-80 whitespace-nowrap">
                             <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                            {new Date(posts[0].created_at).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            {new Date(posts[0].published_at || posts[0].created_at).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
                             <span className="mx-2">•</span>
                             {getReadTime(posts[0].content, posts[0].hook)} мин. четене
                           </span>
@@ -148,7 +148,7 @@ const NewsGrid = () => {
                         </p>
                         <div className="mt-1 sm:mt-2 flex items-center gap-2 text-[10px] sm:text-xs font-medium text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          <span>{new Date(item.created_at).toLocaleDateString('bg-BG')}</span>
+                          <span>{new Date(item.published_at || item.created_at).toLocaleDateString('bg-BG')}</span>
                           <span className="mx-1">•</span>
                           {getReadTime(item.content, item.hook)} мин. четене
                         </div>

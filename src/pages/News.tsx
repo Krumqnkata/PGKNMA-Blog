@@ -215,7 +215,7 @@ const News = () => {
                                                          <div className="flex items-center text-xs text-muted-foreground">
                                                              <div className="flex items-center gap-1">
                                                                  <Calendar className="h-3 w-3 mr-1" />
-                                                                 <span>{new Date(article.created_at).toLocaleDateString('bg-BG')}</span> 
+                                                                 <span>{new Date(article.published_at || article.created_at).toLocaleDateString('bg-BG')}</span>
                                                              </div>
                                                          </div>
                                                     </div>
