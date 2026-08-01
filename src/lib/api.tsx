@@ -887,6 +887,44 @@ export async function revokeOtherBlogLoginSessions(): Promise<{ detail: string; 
     return response.json();
 }
 
+export async function downloadMyPersonalData(): Promise<{ filename: string }> {
+    const response = await apiRequest('/api/profile/export/', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Личните данни не могат да бъдат експортирани.'
+        ));
+    }
+
+    const disposition = response.headers.get('Content-Disposition') || '';
+    const encodedMatch = disposition.match(/filename\*=UTF-8''([^;]+)/i);
+    const plainMatch = disposition.match(/filename="?([^";]+)"?/i);
+    let filename = `pgknma-personal-data-${new Date().toISOString().slice(0, 10)}.json`;
+    if (encodedMatch?.[1]) {
+        try {
+            filename = decodeURIComponent(encodedMatch[1]);
+        } catch {
+            filename = encodedMatch[1];
+        }
+    } else if (plainMatch?.[1]) {
+        filename = plainMatch[1];
+    }
+
+    const objectUrl = URL.createObjectURL(await response.blob());
+    const anchor = document.createElement('a');
+    anchor.href = objectUrl;
+    anchor.download = filename;
+    anchor.style.display = 'none';
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    return { filename };
+}
+
 export async function logoutCurrentBlogSession(): Promise<void> {
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) return;
