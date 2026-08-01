@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
+import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
+import { useToast } from '@/components/ui/use-toast';
 
 interface AuthContextType {
     user: User | null;
@@ -7,8 +8,9 @@ interface AuthContextType {
     login: (credentials: LoginCredentials) => Promise<void>;
     loginWithGoogle: (credential: string) => Promise<void>;
     register: (credentials: RegisterCredentials) => Promise<void>; // Add register function
-    logout: () => void;
+    logout: () => Promise<void>;
     loading: boolean;
+    isLoading: boolean;
     loginDialogOpen: boolean;
     openLoginDialog: () => void;
     closeLoginDialog: () => void;
@@ -17,6 +19,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+    const { toast } = useToast();
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -32,13 +35,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setLoading(false);
     }, []);
 
+    useEffect(() => {
+        const handleSessionEnded = (event: Event) => {
+            const detail = (event as CustomEvent<{ message?: string }>).detail;
+            setUser(null);
+            setAccessToken(null);
+            setLoginDialogOpen(true);
+            toast({
+                title: 'Сесията приключи',
+                description: detail?.message || 'Моля, влезте отново.',
+                variant: 'destructive',
+            });
+        };
+        window.addEventListener('auth:session-ended', handleSessionEnded);
+        return () => window.removeEventListener('auth:session-ended', handleSessionEnded);
+    }, [toast]);
+
     const login = async (credentials: LoginCredentials) => {
         setLoading(true);
         try {
             const data = await apiLogin(credentials);
             if (data && data.access && data.refresh) {
                 setAccessToken(data.access);
-                const loggedInUser: User = { id: 0, username: credentials.username || '' }; // User details might be incomplete here, consider fetching full user profile after login
+                const loggedInUser: User = data.user || { id: 0, username: credentials.username || '' };
                 setUser(loggedInUser);
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
@@ -86,12 +105,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     };
 
-    const logout = () => {
-        setUser(null);
-        setAccessToken(null);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+    const logout = async () => {
+        try {
+            await logoutCurrentBlogSession();
+        } catch (error) {
+            console.warn('Неуспешно server-side прекратяване на сесията:', error);
+        } finally {
+            setUser(null);
+            setAccessToken(null);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+        }
     };
 
     const openLoginDialog = () => setLoginDialogOpen(true);
@@ -106,6 +131,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             register, // Add register to context value
             logout, 
             loading,
+            isLoading: loading,
             loginDialogOpen,
             openLoginDialog,
             closeLoginDialog

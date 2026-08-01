@@ -4,36 +4,87 @@ import { Cookie } from "lucide-react";
 import { Link } from "react-router-dom";
 import { recordConsent, getLatestPrivacyPolicyVersion } from '@/lib/api'; // Import getLatestPrivacyPolicyVersion
 
+const CONSENT_COOKIE_NAME = 'cookieConsent';
+const CONSENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
+
+type ConsentStatus = 'INFORMED' | 'ACCEPTED' | 'REJECTED';
+
+interface StoredConsent {
+  status: ConsentStatus;
+  policyVersion: string;
+}
+
+const readConsentCookie = (): StoredConsent | null => {
+  const prefix = `${CONSENT_COOKIE_NAME}=`;
+  const rawValue = document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix))
+    ?.slice(prefix.length);
+  if (!rawValue) return null;
+
+  try {
+    const parsed = JSON.parse(decodeURIComponent(rawValue)) as StoredConsent;
+    if (
+      !['INFORMED', 'ACCEPTED', 'REJECTED'].includes(parsed.status)
+      || typeof parsed.policyVersion !== 'string'
+    ) {
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+};
+
+const writeConsentCookie = (status: ConsentStatus, policyVersion: string) => {
+  const value = encodeURIComponent(JSON.stringify({ status, policyVersion }));
+  const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+  document.cookie = (
+    `${CONSENT_COOKIE_NAME}=${value}; Max-Age=${CONSENT_MAX_AGE_SECONDS}; `
+    + `Path=/; SameSite=Lax${secure}`
+  );
+};
+
+const clearConsentCookie = () => {
+  document.cookie = `${CONSENT_COOKIE_NAME}=; Max-Age=0; Path=/; SameSite=Lax`;
+};
+
 const CookieConsent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [policyVersion, setPolicyVersion] = useState<string | null>(null); // New state for dynamic policy version
 
   useEffect(() => {
-    const consent = localStorage.getItem("cookieConsent");
-    if (!consent) {
-      setIsVisible(true);
-    }
-
-    // Fetch policy version dynamically
     const fetchPolicyVersion = async () => {
       try {
         const latestVersion = await getLatestPrivacyPolicyVersion();
+        if (!latestVersion) {
+          throw new Error('Липсва публикувана версия на политиката.');
+        }
         setPolicyVersion(latestVersion);
+        // Remove the old, non-expiring implementation during migration.
+        localStorage.removeItem(CONSENT_COOKIE_NAME);
+        const consent = readConsentCookie();
+        if (!consent || consent.policyVersion !== latestVersion) {
+          clearConsentCookie();
+          setIsVisible(true);
+        }
       } catch (error) {
         console.error("Неуспешно извличане на последната версия на политиката за поверителност:", error);
         setPolicyVersion('error_fetching_version'); // Fallback in case of error
+        setIsVisible(true);
       }
     };
     fetchPolicyVersion();
   }, []);
 
-  const handleConsent = async (status: 'INFORMED' | 'ACCEPTED' | 'REJECTED') => {
-    localStorage.setItem("cookieConsent", status);
-    setIsVisible(false);
+  const handleConsent = async (status: ConsentStatus) => {
     if (!policyVersion || policyVersion === 'error_fetching_version') {
-        console.warn("Версията на политиката не е заредена или е възникнала грешка, съгласието не е записано в бекенда.");
+        console.warn("Версията на политиката не е заредена или е възникнала грешка, съгласието не е записано.");
         return;
     }
+    writeConsentCookie(status, policyVersion);
+    setIsVisible(false);
     try {
         await recordConsent({ 
             consent_status: status, 

@@ -142,6 +142,7 @@ export interface LoginCredentials {
 export interface TokenResponse {
     access: string;
     refresh: string;
+    user?: User;
 }
 
 export interface User {
@@ -634,7 +635,7 @@ export async function voteForSong(songId: number): Promise<ApprovedSong> {
 }
 
 export interface ConsentRecordData {
-    consent_status: 'INFORMED' | 'ACCEPTED';
+    consent_status: 'INFORMED' | 'ACCEPTED' | 'REJECTED';
     policy_version: string; // e.g., 'v1.0'
     analytical_accepted?: boolean;
     marketing_accepted?: boolean;
@@ -823,6 +824,93 @@ export async function deactivateMyAccount(): Promise<{ status: string }> {
     }
 
     return response.json();
+}
+
+export type BlogSessionStatus = 'active' | 'expired' | 'revoked';
+
+export interface BlogLoginSession {
+    id: string;
+    auth_method: 'password' | 'google';
+    auth_method_display: string;
+    ip_address: string | null;
+    network_operator: string;
+    network_asn: number | null;
+    device_label: string;
+    created_at: string;
+    last_seen_at: string;
+    expires_at: string;
+    revoked_at: string | null;
+    revoked_reason: string;
+    revoked_reason_display: string;
+    status: BlogSessionStatus;
+    is_current: boolean;
+}
+
+export async function getBlogLoginSessions(): Promise<BlogLoginSession[]> {
+    const response = await apiRequest('/api/profile/sessions/', {
+        method: 'GET',
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Историята на входовете не може да бъде заредена.'
+        ));
+    }
+    return normalizeArray<BlogLoginSession>(await response.json());
+}
+
+export async function revokeBlogLoginSession(sessionId: string): Promise<{ detail: string }> {
+    const response = await apiRequest(
+        `/api/profile/sessions/${sessionId}/revoke/`,
+        { method: 'POST' },
+    );
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Сесията не може да бъде прекратена.'
+        ));
+    }
+    return response.json();
+}
+
+export async function revokeOtherBlogLoginSessions(): Promise<{ detail: string; revoked_count: number }> {
+    const response = await apiRequest(
+        '/api/profile/sessions/revoke-others/',
+        { method: 'POST' },
+    );
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Другите сесии не могат да бъдат прекратени.'
+        ));
+    }
+    return response.json();
+}
+
+export async function logoutCurrentBlogSession(): Promise<void> {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) return;
+
+    const logoutRequest = (refresh: string) => apiRequest('/api/auth/logout/', {
+        method: 'POST',
+        body: JSON.stringify({ refresh }),
+    });
+
+    let response = await logoutRequest(refreshToken);
+    const rotatedRefreshToken = localStorage.getItem('refreshToken');
+    if (
+        response.status === 400
+        && rotatedRefreshToken
+        && rotatedRefreshToken !== refreshToken
+    ) {
+        response = await logoutRequest(rotatedRefreshToken);
+    }
+    if (!response.ok && response.status !== 401) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Сесията не можа да бъде прекратена на сървъра.'
+        ));
+    }
 }
 
 export async function getMySongSuggestions(): Promise<ApprovedSong[]> {

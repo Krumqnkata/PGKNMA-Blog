@@ -29,11 +29,13 @@ export const setTokens = (accessToken: string, refreshToken: string) => {
   localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
 };
 
-const clearAuth = () => {
+const clearAuth = (message: string) => {
   localStorage.removeItem(ACCESS_TOKEN_KEY);
   localStorage.removeItem(REFRESH_TOKEN_KEY);
   localStorage.removeItem("user");
-  window.location.href = "/";
+  window.dispatchEvent(new CustomEvent("auth:session-ended", {
+    detail: { message },
+  }));
 };
 
 const processQueue = (error?: unknown) => {
@@ -79,8 +81,9 @@ export const authFetch = async (input: RequestInfo | URL, init?: RequestInit): P
       body: JSON.stringify({ refresh: refreshToken }),
     });
     if (!refreshResponse.ok) {
-      clearAuth();
-      throw new Error("Сесията е изтекла. Моля, влезте отново.");
+      const message = "Сесията е изтекла или е прекратена. Моля, влезте отново.";
+      clearAuth(message);
+      throw new Error(message);
     }
 
     const { access, refresh } = await refreshResponse.json();

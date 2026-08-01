@@ -7,9 +7,10 @@ import MyCommentsList from '@/components/MyCommentsList';
 import MySongSuggestionsList from '@/components/MySongSuggestionsList';
 import MyMemesList from '@/components/MyMemesList';
 import RulesContent from '@/components/RulesContent'; // Import the new component
+import LoginSessions from '@/components/LoginSessions';
 import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { User, Music, MessageSquare, Image as ImageIcon, Shield } from 'lucide-react'; // Import Shield icon
+import { User, Music, MessageSquare, Image as ImageIcon, Shield, History } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import BackToTop from '@/components/BackToTop';
 
@@ -40,6 +41,7 @@ const MyProfilePage: React.FC = () => {
     { value: 'songs', label: 'Моите песни', Icon: Music },
     { value: 'memes', label: 'Моите мемета', Icon: ImageIcon },
     { value: 'comments', label: 'Моите коментари', Icon: MessageSquare },
+    { value: 'sessions', label: 'Сесии', Icon: History },
     { value: 'rules', label: 'Правила', Icon: Shield }, // Add the new tab
   ];
 
@@ -69,7 +71,7 @@ const MyProfilePage: React.FC = () => {
               </SelectContent>
             </Select>
           ) : (
-            <TabsList className="grid w-full grid-cols-5"> 
+            <TabsList className="grid w-full grid-cols-6">
               {tabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value}>
                   <tab.Icon className="mr-2 h-4 w-4" />
@@ -85,6 +87,7 @@ const MyProfilePage: React.FC = () => {
               {tab.value === 'songs' && <MySongSuggestionsList />}
               {tab.value === 'memes' && <MyMemesList />}
               {tab.value === 'comments' && <MyCommentsList />}
+              {tab.value === 'sessions' && <LoginSessions />}
               {tab.value === 'rules' && <RulesContent />} 
             </TabsContent>
           ))}
