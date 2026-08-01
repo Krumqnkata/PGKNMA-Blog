@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
+import PersonalDataExportCard from '@/components/PersonalDataExportCard';
 
 const passwordSchema = z.object({
   current_password: z.string().min(1, "Текущата парола е задължителна."),
@@ -437,6 +438,8 @@ const AccountSettings: React.FC = () => {
           {googleLinkMutation.isPending && <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" />Свързване с Google…</p>}
         </CardContent>
       </Card>
+
+      <PersonalDataExportCard />
 
       <Card className="border-destructive">
         <CardHeader>
