@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Loader2, CheckCircle2, XCircle, Eye, EyeOff } from 'lucide-react';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import PersonalDataExportCard from '@/components/PersonalDataExportCard';
+import ProfileAvatarSettings from '@/components/ProfileAvatarSettings';
 
 const passwordSchema = z.object({
   current_password: z.string().min(1, "Текущата парола е задължителна."),
@@ -271,6 +272,8 @@ const AccountSettings: React.FC = () => {
 
   return (
     <div className="space-y-8">
+        <ProfileAvatarSettings />
+
         <Card>
             <CardHeader>
                 <CardTitle>Смяна на потребителско име</CardTitle>

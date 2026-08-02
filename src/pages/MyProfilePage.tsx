@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield, History } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import BackToTop from '@/components/BackToTop';
+import UserAvatar from '@/components/UserAvatar';
 
 const MyProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -48,9 +49,16 @@ const MyProfilePage: React.FC = () => {
   return (
     <MainLayout>
       <div className="container mx-auto py-10">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Моят профил</h1>
-          <p className="text-lg text-muted-foreground">Добре дошли, {user?.username || 'потребител'}!</p>
+        <div className="mb-8 flex items-center gap-4">
+          <UserAvatar
+            username={user?.username}
+            avatarUrl={user?.avatar_url}
+            className="h-16 w-16 border-2 border-background shadow-md"
+          />
+          <div className="min-w-0">
+            <h1 className="text-3xl font-bold">Моят профил</h1>
+            <p className="truncate text-lg text-muted-foreground">Добре дошли, {user?.username || 'потребител'}!</p>
+          </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="settings" className="w-full">

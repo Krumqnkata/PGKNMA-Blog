@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect, useContext, ReactNode } from 'react';
-import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
+import { createContext, useState, useEffect, useContext, useCallback, ReactNode } from 'react';
+import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, getCurrentProfile, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 
 interface AuthContextType {
@@ -14,6 +14,7 @@ interface AuthContextType {
     loginDialogOpen: boolean;
     openLoginDialog: () => void;
     closeLoginDialog: () => void;
+    updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,13 +27,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [loginDialogOpen, setLoginDialogOpen] = useState(false);
 
     useEffect(() => {
-        const token = localStorage.getItem('accessToken');
-        const storedUser = localStorage.getItem('user');
-        if (token && storedUser) {
+        let cancelled = false;
+
+        const restoreSession = async () => {
+            const token = localStorage.getItem('accessToken');
+            const storedUser = localStorage.getItem('user');
+            if (!token) {
+                if (!cancelled) setLoading(false);
+                return;
+            }
+
             setAccessToken(token);
-            setUser(JSON.parse(storedUser));
-        }
-        setLoading(false);
+            if (storedUser) {
+                try {
+                    setUser(JSON.parse(storedUser));
+                } catch {
+                    localStorage.removeItem('user');
+                }
+            }
+
+            try {
+                const profile = await getCurrentProfile();
+                if (!cancelled) {
+                    setUser(profile.user);
+                    localStorage.setItem('user', JSON.stringify(profile.user));
+                }
+            } catch (error) {
+                console.warn('Профилът не можа да бъде синхронизиран:', error);
+            } finally {
+                if (!cancelled) setLoading(false);
+            }
+        };
+
+        void restoreSession();
+        return () => {
+            cancelled = true;
+        };
     }, []);
 
     useEffect(() => {
@@ -121,6 +151,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     const openLoginDialog = () => setLoginDialogOpen(true);
     const closeLoginDialog = () => setLoginDialogOpen(false);
+    const updateUser = useCallback((updatedUser: User) => {
+        setUser(updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+    }, []);
 
     return (
         <AuthContext.Provider value={{ 
@@ -134,7 +168,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             isLoading: loading,
             loginDialogOpen,
             openLoginDialog,
-            closeLoginDialog
+            closeLoginDialog,
+            updateUser,
         }}>
             {children}
         </AuthContext.Provider>
