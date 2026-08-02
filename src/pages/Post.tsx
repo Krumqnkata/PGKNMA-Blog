@@ -36,6 +36,7 @@ const Post = () => {
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [pdfOpen, setPdfOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
+    const galleryImages = post?.gallery || [];
 
     useSEO({
         title: post ? post.title : "Зареждане...",
@@ -232,26 +233,38 @@ const Post = () => {
                                 />
 
                                 {/* Image Gallery Section */}
-                                {post.images && post.images.length > 0 && (
+                                {galleryImages.length > 0 && (
                                     <div className="mt-12">
                                         <h2 className="text-2xl font-bold mb-4">Галерия</h2>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                                            {post.images.map((image, index) => (
-                                                <div
-                                                    key={index}
-                                                    className="cursor-pointer"
-                                                    onClick={() => {
-                                                        setLightboxIndex(index);
-                                                        setLightboxOpen(true);
-                                                    }}
+                                            {galleryImages.map((image, index) => (
+                                                <figure
+                                                    key={image.id}
+                                                    className={image.is_featured ? "sm:col-span-2" : ""}
                                                 >
-                                                    <img
-                                                        src={image}
-                                                        alt={`Image ${index + 1} for post ${post.title}`}
-                                                        className="w-full h-auto rounded-lg object-cover aspect-square transition-transform hover:scale-105"
-                                                        loading="lazy"
-                                                    />
-                                                </div>
+                                                    <button
+                                                        type="button"
+                                                        className="group block w-full cursor-pointer overflow-hidden rounded-xl bg-muted text-left"
+                                                        onClick={() => {
+                                                            setLightboxIndex(index);
+                                                            setLightboxOpen(true);
+                                                        }}
+                                                        aria-label={`Отвори снимка ${index + 1} от галерията`}
+                                                    >
+                                                        <img
+                                                            src={image.image_url}
+                                                            alt={image.alt_text || image.title || `Снимка ${index + 1} към ${post.title}`}
+                                                            className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${image.is_featured ? "aspect-video" : "aspect-square"}`}
+                                                            style={{ objectPosition: `${image.focus_x}% ${image.focus_y}%` }}
+                                                            loading="lazy"
+                                                        />
+                                                    </button>
+                                                    {image.title && (
+                                                        <figcaption className="mt-2 text-sm text-muted-foreground">
+                                                            {image.title}
+                                                        </figcaption>
+                                                    )}
+                                                </figure>
                                             ))}
                                         </div>
                                     </div>
@@ -300,11 +313,14 @@ const Post = () => {
             <BackToTop />
             <CookieConsent />
 
-            {post && post.images && (
+            {post && galleryImages.length > 0 && (
                 <Lightbox
                     open={lightboxOpen}
                     close={() => setLightboxOpen(false)}
-                    slides={post.images.map(src => ({ src }))}
+                    slides={galleryImages.map((image, index) => ({
+                        src: image.image_url,
+                        alt: image.alt_text || image.title || `Снимка ${index + 1} към ${post.title}`,
+                    }))}
                     index={lightboxIndex}
                     plugins={[Zoom, Fullscreen, Thumbnails, Counter]}
                     styles={{ container: { padding: "env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0)" } }}
