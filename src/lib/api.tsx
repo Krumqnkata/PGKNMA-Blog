@@ -25,6 +25,7 @@ export interface Post {
     category_name: string; // ✅ Очакваме име на категорията от Django
     author: number;
     author_username: string; // ✅ Очакваме потребителско име на автора от Django
+    author_avatar_url: string | null;
     title: string;
     banner: string | null;
     hook: string; 
@@ -110,6 +111,7 @@ const withResolvedPostMedia = (post: Post): Post => {
     return {
         ...post,
         banner: resolveApiUrl(post.banner) || null,
+        author_avatar_url: resolveApiUrl(post.author_avatar_url) || null,
         images: resolvedImages,
         gallery,
         documents: post.documents.map((document) => ({
@@ -191,17 +193,55 @@ export interface User {
     username: string;
     email?: string;
     has_password?: boolean;
+    avatar_url?: string | null;
+    avatar_source?: AvatarSource;
+    avatar_preset?: string;
+}
+
+export type AvatarSource = 'initials' | 'upload' | 'preset' | 'google';
+
+export interface AvatarPreset {
+    id: string;
+    label: string;
+    url: string;
+}
+
+export interface AvatarOptions {
+    max_upload_bytes: number;
+    output_size: number;
+    allowed_mime_types: string[];
+    presets: AvatarPreset[];
+}
+
+export interface CurrentProfileResponse {
+    user: User;
+    avatar_options: AvatarOptions;
+}
+
+export interface AvatarUpdateResponse {
+    user: User;
 }
 
 export interface Comment {
     id: number;
     post_id: number;
     username: string;
+    avatar_url: string | null;
     content: string;
     created_at: string;
     parent?: number | null; // Optional, can be null for top-level comments
     replies?: Comment[];    // Nested replies
 }
+
+const withResolvedUserAvatar = (user: User): User => ({
+    ...user,
+    avatar_url: resolveApiUrl(user.avatar_url) || null,
+});
+
+const withResolvedCommentAvatar = (comment: Comment): Comment => ({
+    ...comment,
+    avatar_url: resolveApiUrl(comment.avatar_url) || null,
+});
 
 export async function login(credentials: LoginCredentials): Promise<TokenResponse | null> {
     const API_URL = `${API_BASE_URL}/api/auth/token/`; // Standard DRF Simple JWT endpoint
@@ -221,6 +261,7 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
         }
 
         const data: TokenResponse = await response.json();
+        if (data.user) data.user = withResolvedUserAvatar(data.user);
         return data;
 
     } catch (error) {
@@ -255,6 +296,7 @@ export async function loginWithGoogle(credential: string): Promise<GoogleLoginRe
         }
 
         const data: GoogleLoginResponse = await response.json();
+        data.user = withResolvedUserAvatar(data.user);
         return data;
     } catch (error) {
         console.error('Грешка при извикване на API за влизане с Google:', error);
@@ -272,7 +314,7 @@ export async function getComments(postId: string): Promise<Comment[]> {
         }
 
         const data = await response.json();
-        return normalizeArray<Comment>(data);
+        return normalizeArray<Comment>(data).map(withResolvedCommentAvatar);
 
     } catch (error) {
         console.error(`Грешка при комуникация с API за коментари на пост ${postId}:`, error);
@@ -300,7 +342,7 @@ export async function addComment(postId: string, content: string, parentId?: num
         }
 
         const data: Comment = await response.json();
-        return data;
+        return withResolvedCommentAvatar(data);
 
     } catch (error) {
         console.error(`Грешка при комуникация с API за добавяне на коментар към пост ${postId}:`, error);
@@ -865,6 +907,75 @@ export async function deactivateMyAccount(): Promise<{ status: string }> {
     }
 
     return response.json();
+}
+
+const resolveCurrentProfile = (data: CurrentProfileResponse): CurrentProfileResponse => ({
+    user: withResolvedUserAvatar(data.user),
+    avatar_options: {
+        ...data.avatar_options,
+        presets: data.avatar_options.presets.map((preset) => ({
+            ...preset,
+            url: resolveApiUrl(preset.url),
+        })),
+    },
+});
+
+const resolveAvatarUpdate = (data: AvatarUpdateResponse): AvatarUpdateResponse => ({
+    user: withResolvedUserAvatar(data.user),
+});
+
+export async function getCurrentProfile(): Promise<CurrentProfileResponse> {
+    const response = await apiRequest('/api/profile/', { method: 'GET' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Профилът не може да бъде зареден.'
+        ));
+    }
+    return resolveCurrentProfile(await response.json());
+}
+
+export async function uploadProfileAvatar(file: File): Promise<AvatarUpdateResponse> {
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const response = await apiRequest('/api/profile/avatar/', {
+        method: 'PUT',
+        body: formData,
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Профилната снимка не може да бъде качена.'
+        ));
+    }
+    return resolveAvatarUpdate(await response.json());
+}
+
+export async function selectProfileAvatarPreset(presetId: string): Promise<AvatarUpdateResponse> {
+    const response = await apiRequest('/api/profile/avatar/', {
+        method: 'PUT',
+        body: JSON.stringify({ preset_id: presetId }),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Готовият аватар не може да бъде избран.'
+        ));
+    }
+    return resolveAvatarUpdate(await response.json());
+}
+
+export async function resetProfileAvatar(): Promise<AvatarUpdateResponse> {
+    const response = await apiRequest('/api/profile/avatar/', {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Профилната снимка не може да бъде премахната.'
+        ));
+    }
+    return resolveAvatarUpdate(await response.json());
 }
 
 export type BlogSessionStatus = 'active' | 'expired' | 'revoked';

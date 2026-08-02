@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import UserAvatar from '@/components/UserAvatar';
 
 // Компоненти от shadcn/ui
 import { Button } from '@/components/ui/button';
@@ -12,20 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-
 // Икони
-import { User as UserIcon, Settings, LogOut, ChevronDown, Shield } from 'lucide-react';
-
-/**
- * Извлича първата буква от потребителското име за аватара.
- * @param name - Потребителското име (string).
- * @returns Голяма първа буква или '?' ако няма име.
- */
-const getAvatarInitial = (name?: string): string => {
-  if (!name) return '?';
-  return name.charAt(0).toUpperCase();
-};
+import { User as UserIcon, Settings, LogOut, Shield } from 'lucide-react';
 
 export const UserDropdown: React.FC = () => {
   const { user, logout } = useAuth();
@@ -41,8 +30,12 @@ export const UserDropdown: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <UserIcon className="h-5 w-5" />
+        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full p-0">
+          <UserAvatar
+            username={user.username}
+            avatarUrl={user.avatar_url}
+            className="h-9 w-9"
+          />
         </Button>
       </DropdownMenuTrigger>
       

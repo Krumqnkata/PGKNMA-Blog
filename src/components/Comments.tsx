@@ -4,7 +4,7 @@ import { getComments, addComment, Comment as CommentType } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, MessageSquare, ReplyIcon, CornerDownRight } from 'lucide-react';
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import UserAvatar from '@/components/UserAvatar';
 import { toast } from 'sonner';
 
 interface CommentItemProps {
@@ -63,9 +63,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
                 <CornerDownRight className="absolute left-4 top-7 h-5 w-5 text-gray-400" />
             )}
             <div className="flex items-start gap-4">
-                <Avatar>
-                    <AvatarFallback>{comment.username ? comment.username.charAt(0).toUpperCase() : 'U'}</AvatarFallback>
-                </Avatar>
+                <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} />
                 <div className="w-full">
                     <div className="flex items-center gap-2 mb-1">
                         <span className="font-semibold">{comment.username}</span>
@@ -96,10 +94,11 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
 
                     {showReplyForm && (
                         <div className="mt-3 flex items-start gap-3">
-                             <Avatar className="h-7 w-7">
-                                <AvatarFallback className="h-7 w-7 text-xs">
-                                    {user?.username?.charAt(0).toUpperCase() || '?'}</AvatarFallback>
-                            </Avatar>
+                            <UserAvatar
+                                username={user?.username}
+                                avatarUrl={user?.avatar_url}
+                                className="h-7 w-7 text-xs"
+                            />
                             <div className="w-full">
                                 <Textarea
                                     ref={replyFormRef}
@@ -260,9 +259,7 @@ const Comments = ({ postId }: CommentsProps) => {
             {isAuthenticated ? (
                 <div className="mb-8">
                     <div className="flex items-start gap-4">
-                        <Avatar>
-                            <AvatarFallback>{user?.username?.charAt(0).toUpperCase() || '?'}</AvatarFallback>
-                        </Avatar>
+                        <UserAvatar username={user?.username} avatarUrl={user?.avatar_url} />
                         <div className="w-full">
                             <p className="text-sm text-muted-foreground mb-2">
                                 Моля, спазвайте добрия тон. Обидно съдържание и спам ще бъдат премахвани.

@@ -7,9 +7,10 @@ import AudioReader from '@/components/AudioReader';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackToTop from "@/components/BackToTop";
+import UserAvatar from '@/components/UserAvatar';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, User, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
+import { Calendar, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
 import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
@@ -187,7 +188,11 @@ const Post = () => {
                                 <h1 className="text-3xl md:text-5xl font-bold mb-4">{post.title}</h1>
                                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
                                     <div className="flex items-center gap-1.5">
-                                        <User className="h-4 w-4" />
+                                        <UserAvatar
+                                            username={post.author_username}
+                                            avatarUrl={post.author_avatar_url}
+                                            className="h-6 w-6 text-xs"
+                                        />
                                         <span>{post.author_username || `User ID: ${post.author}`}</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
