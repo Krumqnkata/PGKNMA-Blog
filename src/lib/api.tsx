@@ -7,6 +7,17 @@ export interface PostDocument {
     uploaded_at: string;
 }
 
+export interface PostGalleryImage {
+    id: number;
+    image_url: string;
+    title: string;
+    alt_text: string;
+    position: number;
+    is_featured: boolean;
+    focus_x: number;
+    focus_y: number;
+}
+
 // ❗ Препоръчително: Дефинирайте типа на един пост, ако използвате TypeScript
 export interface Post {
     id: number;
@@ -23,6 +34,7 @@ export interface Post {
     published: boolean;
     allowed: boolean;
     images: string[];
+    gallery: PostGalleryImage[];
     documents: PostDocument[];
 }
 // Helper to safely extract array from DRF paginated response or plain array
@@ -71,12 +83,41 @@ export async function getApiErrorMessage(response: Response, fallback: string): 
     return messages.length ? messages.join(" ") : fallback;
 }
 
-const withResolvedPostMedia = (post: Post): Post => ({
-    ...post,
-    banner: resolveApiUrl(post.banner) || null,
-    images: post.images.map((image) => resolveApiUrl(image)),
-    documents: post.documents.map((document) => ({ ...document, file_url: resolveApiUrl(document.file_url) })),
-});
+const withResolvedPostMedia = (post: Post): Post => {
+    const resolvedImages = (post.images || []).map((image) => resolveApiUrl(image));
+    const gallery = (
+        post.gallery?.length
+            ? post.gallery.map((image) => ({
+                ...image,
+                image_url: resolveApiUrl(image.image_url),
+            }))
+            : resolvedImages.map((imageUrl, index) => ({
+                id: index,
+                image_url: imageUrl,
+                title: "",
+                alt_text: "",
+                position: index,
+                is_featured: false,
+                focus_x: 50,
+                focus_y: 50,
+            }))
+    ).sort((first, second) => (
+        Number(second.is_featured) - Number(first.is_featured)
+        || first.position - second.position
+        || first.id - second.id
+    ));
+
+    return {
+        ...post,
+        banner: resolveApiUrl(post.banner) || null,
+        images: resolvedImages,
+        gallery,
+        documents: post.documents.map((document) => ({
+            ...document,
+            file_url: resolveApiUrl(document.file_url),
+        })),
+    };
+};
 
 const withResolvedPollMedia = (status: UserPollStatus): UserPollStatus => ({
     ...status,
