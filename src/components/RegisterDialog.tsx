@@ -12,8 +12,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/contexts/AuthContext';
-import { RegisterCredentials, checkUsername, validatePassword } from '@/lib/api';
-import { Loader2, Settings, CheckCircle2, XCircle, Eye, EyeOff } from "lucide-react";
+import { RegistrationResponse, RegisterCredentials, checkUsername, resendVerificationEmail, validatePassword } from '@/lib/api';
+import { Loader2, Settings, CheckCircle2, XCircle, Eye, EyeOff, MailCheck, RefreshCw } from "lucide-react";
 import {
     Tooltip,
     TooltipContent,
@@ -44,6 +44,9 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
   const [localLoading, setLocalLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [registrationResult, setRegistrationResult] = useState<RegistrationResponse | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
 
   // 2. Новият стейт за Cloudflare Токена
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -116,6 +119,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
     if (!open) {
       setTurnstileToken(null);
       setError("");
+      setRegistrationResult(null);
+      setResendMessage("");
     }
   }, [open]);
 
@@ -242,9 +247,13 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
         captcha_answer: turnstileToken, 
       };
 
-      await register(credentials);
-      toast({ title: "Успешна регистрация", description: `Потребител ${username} беше регистриран. Сега можете да влезете в профила си.`, variant: "default" });
-      onOpenChange(false);
+      const result = await register(credentials);
+      setRegistrationResult(result);
+      toast({
+        title: result.verification_required ? "Проверете имейла си" : "Профилът е готов",
+        description: result.detail,
+        variant: "default",
+      });
       
       // Изчистване на формата
       setEmail('');
@@ -269,6 +278,20 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
     }
   };
 
+  const handleResend = async () => {
+    if (!registrationResult?.email) return;
+    setResendLoading(true);
+    setResendMessage("");
+    try {
+      const result = await resendVerificationEmail(registrationResult.email);
+      setResendMessage(result.detail);
+    } catch (err: unknown) {
+      setResendMessage(err instanceof Error ? err.message : "Неуспешно повторно изпращане.");
+    } finally {
+      setResendLoading(false);
+    }
+  };
+
   const canSubmit = !isLoading && isUsernameAvailable === true && isPasswordValid === true && passwordsMatch === true && turnstileToken !== null;
 
   return (
@@ -284,7 +307,36 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
           </DialogDescription>
         </DialogHeader>
 
-        {settings?.enable_user_registration ? (
+        {registrationResult ? (
+          <div className="flex flex-col items-center gap-4 px-2 py-6 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <MailCheck className="h-8 w-8" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">
+                {registrationResult.verification_required ? "Потвърдете имейла си" : "Профилът е потвърден"}
+              </h3>
+              <p className="text-sm text-muted-foreground">{registrationResult.detail}</p>
+              <p className="break-all text-sm font-medium">{registrationResult.email}</p>
+            </div>
+            {registrationResult.verification_required && (
+              <Button variant="outline" className="w-full" onClick={handleResend} disabled={resendLoading}>
+                {resendLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
+                Изпрати имейла отново
+              </Button>
+            )}
+            {resendMessage && <p className="text-sm text-muted-foreground">{resendMessage}</p>}
+            <Button
+              className="w-full"
+              onClick={() => {
+                onOpenChange(false);
+                onOpenLogin?.();
+              }}
+            >
+              Към входа
+            </Button>
+          </div>
+        ) : settings?.enable_user_registration ? (
           <div className="flex flex-col gap-4 mt-2 px-1">
             {/* Добавен px-1 тук */}
             <div className="space-y-1">

@@ -54,6 +54,18 @@ export function normalizeArray<T>(data: unknown): T[] {
 
 type ApiErrorPayload = Record<string, unknown>;
 
+export class ApiResponseError extends Error {
+    code?: string;
+    status: number;
+
+    constructor(message: string, status: number, code?: string) {
+        super(message);
+        this.name = 'ApiResponseError';
+        this.status = status;
+        this.code = code;
+    }
+}
+
 const errorValueToText = (value: unknown): string[] => {
     if (typeof value === "string") return [value];
     if (Array.isArray(value)) return value.flatMap(errorValueToText);
@@ -82,6 +94,18 @@ export async function getApiErrorMessage(response: Response, fallback: string): 
         )
     );
     return messages.length ? messages.join(" ") : fallback;
+}
+
+async function createApiResponseError(response: Response, fallback: string) {
+    const payload = await response.clone().json().catch(() => null) as ApiErrorPayload | null;
+    const message = await getApiErrorMessage(response, fallback);
+    const rawCode = payload?.code;
+    const code = typeof rawCode === 'string'
+        ? rawCode
+        : Array.isArray(rawCode) && typeof rawCode[0] === 'string'
+            ? rawCode[0]
+            : undefined;
+    return new ApiResponseError(message, response.status, code);
 }
 
 const withResolvedPostMedia = (post: Post): Post => {
@@ -196,6 +220,7 @@ export interface User {
     avatar_url?: string | null;
     avatar_source?: AvatarSource;
     avatar_preset?: string;
+    email_verified?: boolean;
 }
 
 export type AvatarSource = 'initials' | 'upload' | 'preset' | 'google';
@@ -256,8 +281,7 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
         });
 
         if (!response.ok) {
-            // Log the error response body for more context
-            throw new Error(await getApiErrorMessage(response, 'Неуспешна идентификация.'));
+            throw await createApiResponseError(response, 'Неуспешна идентификация.');
         }
 
         const data: TokenResponse = await response.json();
@@ -540,7 +564,16 @@ export interface RegisterCredentials {
     captcha_answer: string;
 }
 
-export async function register(credentials: RegisterCredentials): Promise<User> {
+export interface RegistrationResponse {
+    username: string;
+    email: string;
+    verification_required: boolean;
+    email_sent: boolean;
+    auto_verified: boolean;
+    detail: string;
+}
+
+export async function register(credentials: RegisterCredentials): Promise<RegistrationResponse> {
     const API_URL = `${API_BASE_URL}/api/auth/register/`;
 
     try {
@@ -556,13 +589,28 @@ export async function register(credentials: RegisterCredentials): Promise<User> 
             throw new Error(await getApiErrorMessage(response, 'Регистрацията не бе успешна.'));
         }
 
-        const data: User = await response.json();
+        const data: RegistrationResponse = await response.json();
         return data;
 
     } catch (error) {
         console.error('Грешка при извикване на API за регистрация:', error);
         throw error;
     }
+}
+
+export async function resendVerificationEmail(email: string): Promise<{ detail: string }> {
+    const response = await fetch(`${API_BASE_URL}/api/auth/verify-email/resend/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Имейлът за потвърждение не можа да бъде изпратен.',
+        ));
+    }
+    return response.json();
 }
 
 export interface PrivacyPolicyContent {

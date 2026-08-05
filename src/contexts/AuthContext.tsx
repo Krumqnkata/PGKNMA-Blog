@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useContext, useCallback, ReactNode } from 'react';
-import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, getCurrentProfile, LoginCredentials, RegisterCredentials, User } from '@/lib/api';
+import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, getCurrentProfile, LoginCredentials, RegisterCredentials, RegistrationResponse, User } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 
 interface AuthContextType {
@@ -7,7 +7,7 @@ interface AuthContextType {
     isAuthenticated: boolean;
     login: (credentials: LoginCredentials) => Promise<void>;
     loginWithGoogle: (credential: string) => Promise<void>;
-    register: (credentials: RegisterCredentials) => Promise<void>; // Add register function
+    register: (credentials: RegisterCredentials) => Promise<RegistrationResponse>;
     logout: () => Promise<void>;
     loading: boolean;
     isLoading: boolean;
@@ -123,13 +123,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const register = async (credentials: RegisterCredentials) => {
         setLoading(true);
         try {
-            const registeredUser = await apiRegister(credentials);
-            // After successful registration, you might want to automatically log them in
-            // For now, just indicate success, and the user can then use the login dialog
-            // Or you could immediately call login here with credentials.username and credentials.password
-            // For simplicity, we'll just return and let RegisterDialog handle further actions (e.g., closing itself)
-            // If auto-login is desired, implement it here:
-            // await login({ username: credentials.username, password: credentials.password });
+            return await apiRegister(credentials);
         } finally {
             setLoading(false);
         }
