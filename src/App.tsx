@@ -22,6 +22,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Changelog from "./pages/Changelog";
 import TVScreen from "./pages/TVScreen";
 import FAQ from "./pages/FAQ";
+import EmailVerification from "./pages/EmailVerification";
 
 
 // New imports
@@ -116,6 +117,7 @@ const AppContent = () => {
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/developers" element={<Developers />} />
                   <Route path="/faq" element={<FAQ />} />
+                  <Route path="/verify-email" element={<EmailVerification />} />
                   <Route path="/tv" element={<TVScreen />} />
                   <Route path="*" element={<NotFound />} />
                   <Route path="/easter-egg" element={<EasterEgg />} />

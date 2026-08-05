@@ -15,6 +15,7 @@ import { Eye, EyeOff, Loader2 } from "lucide-react";
 // 1. Импорт на Turnstile
 import { Turnstile } from '@marsidev/react-turnstile';
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { ApiResponseError, resendVerificationEmail } from "@/lib/api";
 
 const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const { login, loginWithGoogle } = useAuth();
@@ -26,6 +27,10 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [needsEmailVerification, setNeedsEmailVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMessage, setResendMessage] = useState("");
   
   // 2. Стейт за токена
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
@@ -85,6 +90,9 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
     if (!open) {
       setTurnstileToken(null);
       setError("");
+      setNeedsEmailVerification(false);
+      setVerificationEmail("");
+      setResendMessage("");
     }
   }, [open]);
 
@@ -111,10 +119,30 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
       console.error("Неуспешно влизане:", err);
       const errMsg = err instanceof Error ? err.message : "Грешно потребителско име или парола";
       setError(errMsg);
+      setNeedsEmailVerification(
+        err instanceof ApiResponseError && err.code === "email_not_verified"
+      );
       // Ресетваме токена при грешка, за да се генерира нов за следващия опит
       setTurnstileToken(null);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleVerificationResend = async () => {
+    if (!verificationEmail.trim()) {
+      setResendMessage("Въведете имейл адреса от регистрацията.");
+      return;
+    }
+    setResendLoading(true);
+    setResendMessage("");
+    try {
+      const response = await resendVerificationEmail(verificationEmail.trim());
+      setResendMessage(response.detail);
+    } catch (err: unknown) {
+      setResendMessage(err instanceof Error ? err.message : "Неуспешно повторно изпращане.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -179,6 +207,24 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
           </div>
 
           {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+
+          {needsEmailVerification && (
+            <div className="space-y-2 rounded-lg border border-primary/20 bg-primary/5 p-3">
+              <p className="text-sm text-muted-foreground">Не получихте писмото?</p>
+              <Input
+                type="email"
+                value={verificationEmail}
+                onChange={(event) => setVerificationEmail(event.target.value)}
+                placeholder="Имейлът от регистрацията"
+                disabled={resendLoading}
+              />
+              <Button variant="outline" className="w-full" onClick={handleVerificationResend} disabled={resendLoading}>
+                {resendLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Изпрати линка отново
+              </Button>
+              {resendMessage && <p className="text-xs text-muted-foreground">{resendMessage}</p>}
+            </div>
+          )}
 
           <p className="text-sm text-muted-foreground">
             Нямаш профил?{" "}
