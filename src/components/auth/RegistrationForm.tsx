@@ -153,7 +153,7 @@ export function RegistrationForm({
   };
 
   return (
-    <form className="mt-2 flex flex-col gap-4 px-1" onSubmit={handleRegister}>
+    <form className="mt-1 flex flex-col gap-5 px-0.5" onSubmit={handleRegister}>
       <div className="space-y-1">
         <Label htmlFor="reg-email">Имейл</Label>
         <Input
@@ -183,9 +183,9 @@ export function RegistrationForm({
             disabled={isLoading}
             className={
               usernameValidation.errors.length
-                ? "border-destructive pr-10"
+                ? "pr-10"
                 : usernameValidation.isValid === true
-                  ? "border-green-500 pr-10"
+                  ? "border-emerald-500 pr-10 ring-emerald-500/10"
                   : "pr-10"
             }
             required
@@ -225,7 +225,7 @@ export function RegistrationForm({
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             disabled={isLoading}
-            className={`${passwordValidation.isValid === false ? "border-destructive" : passwordValidation.isValid === true ? "border-green-500" : ""} pr-10`}
+            className={`${passwordValidation.isValid === true ? "border-emerald-500 ring-emerald-500/10" : ""} pr-10`}
             required
             aria-invalid={passwordValidation.isValid === false}
             aria-describedby={passwordValidation.errors.length ? "registration-password-errors" : undefined}
@@ -243,7 +243,7 @@ export function RegistrationForm({
 
       <div className="space-y-1">
         <Label htmlFor="reg-password2">Потвърди паролата</Label>
-        <Input id="reg-password2" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" value={password2} onChange={(event) => setPassword2(event.target.value)} disabled={isLoading} className={passwordsMatch === false ? "border-destructive" : passwordsMatch === true ? "border-green-500" : ""} required aria-invalid={passwordsMatch === false} aria-describedby={passwordsMatch === false ? "registration-password-match-error" : undefined} />
+        <Input id="reg-password2" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" value={password2} onChange={(event) => setPassword2(event.target.value)} disabled={isLoading} className={passwordsMatch === true ? "border-emerald-500 ring-emerald-500/10" : ""} required aria-invalid={passwordsMatch === false} aria-describedby={passwordsMatch === false ? "registration-password-match-error" : undefined} />
         {passwordsMatch === false && <p id="registration-password-match-error" className="mt-1 text-xs text-destructive">Паролите не съвпадат.</p>}
       </div>
 
@@ -256,7 +256,7 @@ export function RegistrationForm({
         />
       </div>
 
-      {error && <div role="alert" className="text-sm font-medium text-destructive">{error}</div>}
+      {error && <div role="alert" className="flex items-start gap-2 rounded-xl border border-destructive/25 bg-destructive/5 p-3 text-sm font-semibold leading-relaxed text-destructive"><XCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{error}</div>}
 
       <p className="mb-2 text-center text-xs text-muted-foreground">
         С натискането на бутона „Регистрация“, Вие се съгласявате с нашите{" "}
@@ -271,7 +271,7 @@ export function RegistrationForm({
 
       <div className="relative my-2 flex items-center justify-center">
         <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-muted" /></div>
-        <span className="relative bg-background px-3 text-xs uppercase text-muted-foreground">или</span>
+        <span className="relative bg-card px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">или</span>
       </div>
 
       <div className="flex w-full max-w-full justify-center overflow-hidden" ref={googleContainerRef}>

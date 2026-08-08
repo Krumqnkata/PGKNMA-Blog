@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Newspaper, Search, SlidersHorizontal } from "lucide-react";
 import { getPosts, Post } from '@/lib/api';
 import NewsCard from "@/components/news/NewsCard";
 import NewsPagination from "@/components/news/NewsPagination";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
+import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -53,80 +54,68 @@ const News = () => {
     };
 
     return (
-        <div className="w-full bg-background">
-            <main>
-                {/* Hero Section */}
-                <section className="relative w-full overflow-hidden bg-background pt-8 pb-0 md:pt-12 md:pb-0">
-                    {/* Decorative Background Elements */}
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-                        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[100px]" />
-                        <div className="absolute bottom-[10%] right-[-5%] w-[30%] h-[30%] bg-blue-500/5 rounded-full blur-[80px]" />
-                    </div>
-                    
-                    <div className="container relative mx-auto px-4 text-center">
-                        <h1 className="text-4xl font-black tracking-tighter md:text-5xl lg:text-7xl uppercase">
-                            Последни <span className="text-primary italic">Новини</span> от ПГКНМА
-                        </h1>
-                        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground md:text-xl leading-relaxed">
-                            Останете информирани за всичко, което се случва в нашето училище.
-                        </p>
-                    </div>
-                </section>
-                
-                {/* Filters and News Grid */}
-                <section className="w-full pt-4 pb-12">
-                    <div className="container mx-auto px-4">
-                        {/* Search and Category Filters */}
-                        <div className="mb-12 space-y-6">
-                            <div className="relative mx-auto w-full max-w-lg">
-                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                <Input
-                                    type="text"
-                                    placeholder="Търсене в публикации..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full pl-10"
-                                />
-                            </div>
-                            <div className="flex flex-wrap items-center justify-center gap-2">
-                                <Button 
-                                    variant={selectedCategory === null ? "default" : "outline"}
-                                    onClick={() => setSelectedCategory(null)}
-                                >
-                                    Всички
-                                </Button>
-                                {categories.map(category => (
-                                    <Button
-                                        key={category}
-                                        variant={selectedCategory === category ? "default" : "outline"}
-                                        onClick={() => setSelectedCategory(category)}
-                                    >
-                                        {category}
-                                    </Button>
-                                ))}
-                            </div>
-                        </div>
+      <InteriorPage>
+        <InteriorPageHero
+          eyebrow="Училищен информационен център"
+          title={<>Последни <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">новини</span></>}
+          description="Събития, успехи и важни моменти от живота на ПГКНМА — подредени ясно и лесни за откриване."
+          icon={Newspaper}
+        >
+          {!isLoading && (
+            <div className="mx-auto mt-8 inline-flex items-center gap-2 rounded-xl border bg-card/70 px-4 py-2 text-sm text-muted-foreground shadow-sm backdrop-blur">
+              <span className="font-black text-foreground">{posts.length}</span> публикации в <span className="font-black text-foreground">{categories.length || 1}</span> категории
+            </div>
+          )}
+        </InteriorPageHero>
 
-                        <div id="news-results" className="scroll-mt-24" />
-                        {isLoading ? (
-                            <ContentSkeleton count={6} label="Зареждане на новините" />
-                        ) : error ? (
-                            <QueryErrorState message={error.message} onRetry={() => void refetch()} />
-                        ) : filteredPosts.length === 0 ? (
-                            <QueryEmptyState title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
-                        ) : (
-                            <>
-                                <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                                    {visiblePosts.map((article) => <NewsCard article={article} key={article.id} />)}
-                                </div>
+        <InteriorSection>
+          <div className="mb-10 rounded-2xl border border-border/70 bg-card/80 p-4 shadow-lg shadow-black/5 backdrop-blur sm:p-6">
+            <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
+              <div className="relative min-w-0 flex-1">
+                <Search className="absolute left-3.5 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+                <Input
+                  type="search"
+                  placeholder="Търсене по заглавие, съдържание или автор..."
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  className="h-12 pl-11"
+                  aria-label="Търсене в публикациите"
+                />
+              </div>
+              <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground lg:self-start lg:pt-3">
+                <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden="true" />Категории
+              </div>
+              <div className="flex flex-wrap gap-2 lg:max-w-[52%]">
+                <Button size="sm" variant={selectedCategory === null ? "default" : "outline"} aria-pressed={selectedCategory === null} onClick={() => setSelectedCategory(null)}>Всички</Button>
+                {categories.map((category) => (
+                  <Button key={category} size="sm" variant={selectedCategory === category ? "default" : "outline"} aria-pressed={selectedCategory === category} onClick={() => setSelectedCategory(category)}>{category}</Button>
+                ))}
+              </div>
+            </div>
+          </div>
 
-                                <NewsPagination currentPage={currentPage} pageCount={pageCount} onPageChange={handlePageChange} />
-                            </>
-                        )}
-                    </div>
-                </section>
-            </main>
-        </div>
+          <div id="news-results" className="scroll-mt-24" />
+          <SectionHeading
+            eyebrow="Архив"
+            title={debouncedSearch || selectedCategory ? "Резултати от филтрирането" : "Всички публикации"}
+            description={`${filteredPosts.length} ${filteredPosts.length === 1 ? "намерена публикация" : "намерени публикации"}`}
+          />
+          {isLoading ? (
+            <ContentSkeleton count={6} label="Зареждане на новините" />
+          ) : error ? (
+            <QueryErrorState message={error.message} onRetry={() => void refetch()} />
+          ) : filteredPosts.length === 0 ? (
+            <QueryEmptyState title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
+          ) : (
+            <>
+              <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                {visiblePosts.map((article) => <NewsCard article={article} key={article.id} />)}
+              </div>
+              <NewsPagination currentPage={currentPage} pageCount={pageCount} onPageChange={handlePageChange} />
+            </>
+          )}
+        </InteriorSection>
+      </InteriorPage>
     );
 };
 

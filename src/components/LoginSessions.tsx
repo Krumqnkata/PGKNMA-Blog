@@ -128,8 +128,8 @@ const LoginSessions = () => {
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader className="gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <Card className="overflow-hidden">
+        <CardHeader className="gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent sm:flex-row sm:items-start sm:justify-between">
           <div className="space-y-1.5">
             <CardTitle>Сесии и входове</CardTitle>
             <CardDescription>
@@ -157,7 +157,7 @@ const LoginSessions = () => {
       ) : (
         <div className="grid gap-4">
           {sessions.map((session) => (
-            <Card key={session.id} className={session.is_current ? 'border-primary/60' : ''}>
+            <Card key={session.id} className={`transition-[box-shadow,border-color] duration-300 hover:shadow-md ${session.is_current ? 'border-primary/60 bg-primary/[0.02]' : 'hover:border-primary/25'}`}>
               <CardHeader className="gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div className="min-w-0 space-y-1">
                   <CardTitle className="flex flex-wrap items-center gap-2 text-lg">

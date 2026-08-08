@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { CheckCircle2, Eye, EyeOff, Loader2, XCircle } from "lucide-react";
+import { CheckCircle2, Eye, EyeOff, KeyRound, Loader2, UserRoundPen, XCircle } from "lucide-react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -71,8 +71,9 @@ const AccountCredentialSettings = () => {
 
   return (
     <div className="grid gap-6 xl:grid-cols-2">
-      <Card className="h-fit transition-shadow duration-200 hover:shadow-md">
-        <CardHeader>
+      <Card className="h-fit overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-primary/25 hover:shadow-lg">
+        <CardHeader className="border-b border-border/60 bg-gradient-to-r from-blue-500/10 to-transparent">
+          <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-300"><UserRoundPen className="h-5 w-5" aria-hidden="true" /></div>
           <CardTitle>Смяна на потребителско име</CardTitle>
           <CardDescription>След успешна промяна ще бъдете отписани с цел сигурност.</CardDescription>
         </CardHeader>
@@ -84,7 +85,7 @@ const AccountCredentialSettings = () => {
                   <FormLabel>Ново потребителско име</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input {...field} autoComplete="username" className={usernameValidation.isValid === false ? "border-destructive pr-10" : usernameValidation.isValid === true ? "border-emerald-500 pr-10" : "pr-10"} />
+                      <Input {...field} autoComplete="username" aria-invalid={usernameValidation.isValid === false} className={usernameValidation.isValid === true ? "border-emerald-500 pr-10 ring-emerald-500/10" : "pr-10"} />
                       <ValidationIcon isChecking={usernameValidation.isChecking} isValid={usernameValidation.isValid} />
                     </div>
                   </FormControl>
@@ -108,8 +109,9 @@ const AccountCredentialSettings = () => {
         </Form>
       </Card>
 
-      <Card className="h-fit transition-shadow duration-200 hover:shadow-md">
-        <CardHeader>
+      <Card className="h-fit overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-primary/25 hover:shadow-lg">
+        <CardHeader className="border-b border-border/60 bg-gradient-to-r from-violet-500/10 to-transparent">
+          <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-300"><KeyRound className="h-5 w-5" aria-hidden="true" /></div>
           <CardTitle>Смяна на парола</CardTitle>
           <CardDescription>Изберете силна нова парола. След промяната ще бъдете отписани.</CardDescription>
         </CardHeader>
@@ -128,7 +130,7 @@ const AccountCredentialSettings = () => {
                   <FormLabel>Нова парола</FormLabel>
                   <FormControl>
                     <div className="relative">
-                      <Input type={showNewPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" className="pr-20" {...field} />
+                      <Input type={showNewPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" aria-invalid={passwordValidation.isValid === false} className={passwordValidation.isValid === true ? "border-emerald-500 pr-20 ring-emerald-500/10" : "pr-20"} {...field} />
                       <ValidationIcon isChecking={passwordValidation.isChecking} isValid={passwordValidation.isValid} className="right-10" />
                       <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-8 w-8 -translate-y-1/2" onClick={() => setShowNewPassword((visible) => !visible)} aria-label={showNewPassword ? "Скрий паролата" : "Покажи паролата"}>
                         {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -141,7 +143,7 @@ const AccountCredentialSettings = () => {
               <FormField control={passwordForm.control} name="new_password_confirm" render={({ field }) => (
                 <FormItem>
                   <FormLabel>Потвърди новата парола</FormLabel>
-                  <FormControl><Input type={showNewPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" {...field} /></FormControl>
+                  <FormControl><Input type={showNewPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" aria-invalid={passwordsMatch === false} className={passwordsMatch === true ? "border-emerald-500 ring-emerald-500/10" : undefined} {...field} /></FormControl>
                   <FormMessage>{passwordsMatch === false ? "Паролите не съвпадат." : undefined}</FormMessage>
                 </FormItem>
               )} />

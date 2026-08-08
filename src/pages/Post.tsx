@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
@@ -21,6 +20,7 @@ import Counter from "yet-another-react-lightbox/plugins/counter";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/plugins/counter.css";
+import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
 
 const getReadTime = (content: string, hook: string) => {
     const wordCount = `${content} ${hook}`.split(/\s+/).filter(Boolean).length;
@@ -131,42 +131,39 @@ const Post = () => {
     };
 
     return (
-        <div className="w-full bg-background">
-            {/* RGB Reading Progress Bar */}
+        <InteriorPage>
+            {/* Reading Progress Bar */}
             <style>
                 {`
-                @keyframes rainbow-progress {
-                    0% { background-position: 0% 50%; }
-                    50% { background-position: 100% 50%; }
-                    100% { background-position: 0% 50%; }
+                @keyframes reading-progress-shimmer {
+                    from { background-position: 0% 50%; }
+                    to { background-position: 200% 50%; }
                 }
-                .animate-rgb-bar {
-                    background: linear-gradient(
-                        90deg, 
-                        #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff, #ff0000
-                    );
-                    background-size: 400% 100%;
-                    animation: rainbow-progress 5s linear infinite;
+                .reading-progress-bar {
+                    background: linear-gradient(90deg, hsl(var(--primary)), #3b82f6, hsl(var(--primary)));
+                    background-size: 200% 100%;
+                    animation: reading-progress-shimmer 3s linear infinite;
                 }
                 `}
             </style>
-            <div className="fixed top-16 left-0 w-full h-1.5 z-50 pointer-events-none">
+            <div className="pointer-events-none fixed left-0 top-16 z-50 h-1 w-full bg-background/30">
                 <div 
-                    className="h-full animate-rgb-bar transition-all duration-150 ease-out shadow-[0_0_10px_rgba(255,255,255,0.3)]"
+                    className="reading-progress-bar h-full rounded-r-full shadow-[0_0_12px_hsl(var(--primary)/0.45)] transition-all duration-150 ease-out motion-reduce:animate-none"
                     style={{ width: `${scrollProgress}%` }}
                 />
             </div>
-            <main className="py-12 md:py-16">
-                <div className="container mx-auto px-4">
+            <InteriorSection className="py-8 sm:py-12 lg:py-16">
                     {loading ? (
                         <ContentSkeleton variant="detail" label="Зареждане на публикацията" />
                     ) : error ? (
                         <QueryErrorState className="mx-auto max-w-2xl" message={error} onRetry={id ? () => void refetch() : undefined} />
                     ) : post && id ? (
-                        <article className="max-w-4xl mx-auto">
-                            <div ref={contentRef}>
-                                <h1 className="text-3xl md:text-5xl font-bold mb-4">{post.title}</h1>
-                                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-8">
+                        <article className="mx-auto max-w-4xl">
+                            <div ref={contentRef} className="overflow-hidden rounded-3xl border border-border/70 bg-card p-5 shadow-xl shadow-primary/5 sm:p-8 lg:p-10">
+                                <Badge variant="secondary" className="mb-4"><Tag className="h-3.5 w-3.5" aria-hidden="true" />{post.category_name}</Badge>
+                                <h1 className="text-balance text-3xl font-black leading-[1.08] tracking-[-0.035em] sm:text-4xl md:text-5xl">{post.title}</h1>
+                                <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">{post.hook}</p>
+                                <div className="mb-8 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-border/60 py-4 text-sm text-muted-foreground">
                                     <div className="flex items-center gap-1.5">
                                         <UserAvatar
                                             username={post.author_username}
@@ -178,10 +175,6 @@ const Post = () => {
                                     <div className="flex items-center gap-1.5">
                                         <Calendar className="h-4 w-4" />
                                         <span>{new Date(post.published_at || post.created_at).toLocaleDateString('bg-BG')}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                        <Tag className="h-4 w-4" />
-                                        <Badge variant="secondary">{post.category_name}</Badge>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Clock className="h-4 w-4" />
@@ -204,7 +197,7 @@ const Post = () => {
                                     <img
                                         src={post.banner}
                                         alt={`Банер за ${post.title}`}
-                                        className="w-full max-h-96 object-contain rounded-3xl mb-8"
+                                        className="mb-8 max-h-[32rem] w-full rounded-2xl border border-border/60 object-cover shadow-lg"
                                         loading="lazy"
                                     />
                                 )}
@@ -220,8 +213,8 @@ const Post = () => {
                                 {/* Image Gallery Section */}
                                 {galleryImages.length > 0 && (
                                     <div className="mt-12">
-                                        <h2 className="text-2xl font-bold mb-4">Галерия</h2>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                                        <h2 className="mb-5 text-2xl font-black tracking-tight sm:text-3xl">Галерия</h2>
+                                        <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
                                             {galleryImages.map((image, index) => (
                                                 <figure
                                                     key={image.id}
@@ -229,7 +222,7 @@ const Post = () => {
                                                 >
                                                     <button
                                                         type="button"
-                                                        className="group block w-full cursor-pointer overflow-hidden rounded-xl bg-muted text-left"
+                                                        className="group block w-full cursor-pointer overflow-hidden rounded-2xl border border-border/60 bg-muted text-left shadow-sm transition-shadow hover:shadow-lg"
                                                         onClick={() => {
                                                             setLightboxIndex(index);
                                                             setLightboxOpen(true);
@@ -258,13 +251,13 @@ const Post = () => {
                                 {/* Document Section */}
                                 {post.documents && post.documents.length > 0 && (
                                     <div className="mt-12">
-                                        <h2 className="text-2xl font-bold mb-4">Прикачени файлове</h2>
+                                        <h2 className="mb-5 text-2xl font-black tracking-tight sm:text-3xl">Прикачени файлове</h2>
                                         <div className="space-y-3">
                                             {post.documents.map((doc, index) => (
                                                 <button 
                                                     key={doc.id || index} 
                                                     onClick={() => handleFileClick(doc)}
-                                                    className="flex items-center gap-3 p-3 border rounded-lg bg-card hover:bg-muted transition-colors w-full min-w-0 text-left"
+                                                    className="flex w-full min-w-0 items-center gap-3 rounded-2xl border border-border/70 bg-background/70 p-4 text-left shadow-sm transition-[background-color,border-color,box-shadow,transform] hover:-translate-y-0.5 hover:border-primary/30 hover:bg-muted/50 hover:shadow-md motion-reduce:hover:translate-y-0"
                                                 >
                                                     <div className="shrink-0 flex items-center">
                                                         {getFileIcon(doc.file_url)}
@@ -292,8 +285,7 @@ const Post = () => {
                             <p className="text-lg text-muted-foreground">Публикацията не е намерена.</p>
                         </div>
                     )}
-                </div>
-            </main>
+            </InteriorSection>
 
             {post && galleryImages.length > 0 && (
                 <Lightbox
@@ -317,7 +309,7 @@ const Post = () => {
                 onOpenChange={setPdfOpen}
                 title={pdfUrl ? decodeURIComponent(pdfUrl.split('/').pop() || '') : "Преглед на документ"}
             />
-        </div>
+        </InteriorPage>
     );
 };
 

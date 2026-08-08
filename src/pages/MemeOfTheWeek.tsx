@@ -9,6 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from '@/hooks/use-auth';
 import LoginDialog from '@/components/LoginDialog';
 import RegisterDialog from '@/components/RegisterDialog';
+import { Heart, Images, Laugh, UploadCloud } from 'lucide-react';
+import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from '@/components/InteriorPage';
 
 
 const MemeOfTheWeek: React.FC = () => {
@@ -120,17 +122,14 @@ const MemeOfTheWeek: React.FC = () => {
   };
 
   return (
-    <div className="w-full">
-      <main>
-        <div className="container mx-auto py-8 px-4">
-          <h1 className="text-3xl font-bold mb-4 text-center">Меме на седмицата</h1>
-          <p className="text-muted-foreground text-center mb-8">
-            Изпратете анонимно "вътрешни" мемета, свързани с училищния живот. Най-доброто ще бъде "Меме на седмицата"!
-          </p>
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Забавната страна на училището" title={<>Меме на <span className="text-primary">седмицата</span></>} description="Споделете забавен момент от училищния живот и подкрепете любимите предложения." icon={Laugh} />
+      <InteriorSection>
 
           {isAuthenticated ? (
-            <Card className="mb-8 max-w-lg mx-auto">
-              <CardHeader>
+            <Card className="mx-auto mb-12 max-w-2xl overflow-hidden shadow-xl shadow-primary/5">
+              <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent">
+                <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><UploadCloud className="h-5 w-5" aria-hidden="true" /></div>
                 <CardTitle>Качи твоето меме</CardTitle>
                 <CardDescription>Попълни формата, за да изпратиш меме за одобрение.</CardDescription>
               </CardHeader>
@@ -151,7 +150,7 @@ const MemeOfTheWeek: React.FC = () => {
               </CardContent>
             </Card>
           ) : (
-            <Card className="mb-8 max-w-lg mx-auto text-center p-6">
+            <Card className="mx-auto mb-12 max-w-2xl p-7 text-center shadow-lg">
                 <CardTitle className="mb-4">Влезте, за да качите меме</CardTitle>
                 <CardDescription className="mb-6">
                     За да участвате в състезанието "Меме на седмицата" и да качвате свои мемета, моля, влезте в системата.
@@ -161,12 +160,12 @@ const MemeOfTheWeek: React.FC = () => {
           )}
 
           <div>
-            <h2 className="text-2xl font-bold mb-6 text-center">Галерия</h2>
+            <SectionHeading eyebrow="Общността избира" title="Галерия" description="Разгледайте одобрените предложения и гласувайте за своя фаворит." />
             {isLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {[...Array(3)].map((_, i) => (
                   <Card key={i}>
-                    <Skeleton className="w-full h-[250px] rounded-t-lg" />
+                    <Skeleton className="aspect-square w-full rounded-t-2xl" />
                     <div className="p-4 space-y-2">
                       <Skeleton className="h-6 w-3/4" />
                       <Skeleton className="h-4 w-1/2" />
@@ -185,18 +184,19 @@ const MemeOfTheWeek: React.FC = () => {
                 {memes.length === 0 ? (
                   <p className="text-center text-muted-foreground mt-8">Все още няма одобрени мемета. Бъди първият!</p>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                  <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {memes.map((meme) => (
-                      <Card key={meme.id}>
+                      <Card key={meme.id} className="group overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-xl motion-reduce:hover:translate-y-0">
                         <CardContent className="p-0">
-                          <img src={meme.image_url} alt={meme.title} className="w-full h-auto rounded-t-lg object-cover" />
+                          <div className="aspect-square overflow-hidden bg-muted"><img src={meme.image_url} alt={meme.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100" /></div>
                         </CardContent>
-                        <div className="p-4">
+                        <div className="p-5">
                           <CardTitle className="text-lg">{meme.title}</CardTitle>
                           <CardDescription>Качено от: {meme.user_username} на {new Date(meme.created_at).toLocaleDateString('bg-BG')}</CardDescription>
                           <div className="flex items-center justify-between mt-4">
-                            <div className="flex items-center gap-2">
-                                <span className="font-bold text-lg">{meme.votes}</span>
+                            <div className="flex items-center gap-2 text-muted-foreground">
+                                <Heart className="h-4 w-4 text-rose-500" aria-hidden="true" />
+                                <span className="text-lg font-black text-foreground">{meme.votes}</span>
                                 <span>гласа</span>
                             </div>
                             <Button
@@ -215,8 +215,7 @@ const MemeOfTheWeek: React.FC = () => {
               </>
             )}
           </div>
-        </div>
-      </main>
+      </InteriorSection>
       <LoginDialog 
         open={loginDialogOpen} 
         onOpenChange={(isOpen) => !isOpen && closeLoginDialog()} 
@@ -225,8 +224,8 @@ const MemeOfTheWeek: React.FC = () => {
           setRegisterOpen(true);
         }}
       />
-      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
-    </div>
+      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onOpenLogin={() => { setRegisterOpen(false); openLoginDialog(); }} />
+    </InteriorPage>
   );
 };
 

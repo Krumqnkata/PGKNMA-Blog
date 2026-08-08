@@ -46,7 +46,7 @@ const MyCommentsList: React.FC = () => {
 
   if (!comments || comments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-lg">
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center">
         <MessageSquareOff className="h-12 w-12 text-muted-foreground" />
         <h3 className="mt-4 text-lg font-semibold">Нямате написани коментари</h3>
         <p className="mt-1 text-sm text-muted-foreground">Все още не сте коментирали нито една публикация.</p>
@@ -57,8 +57,8 @@ const MyCommentsList: React.FC = () => {
   return (
     <div className="space-y-4">
       {comments.map((comment) => (
-        <Card key={comment.id}>
-          <CardContent className="p-4 flex justify-between items-center">
+        <Card key={comment.id} className="transition-[box-shadow,border-color] hover:border-primary/25 hover:shadow-md">
+          <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex-grow">
               <p className="text-sm text-muted-foreground">
                 Публикуван на: {new Date(comment.created_at).toLocaleDateString('bg-BG')}

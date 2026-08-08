@@ -1,11 +1,10 @@
-import ParticlesComponent from "@/components/Particles";
-import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Github, Code2, Rocket, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
+import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
 
 const developers = [
   {
@@ -35,31 +34,16 @@ const developers = [
 ];
 
 const Developers = () => {
-  const { theme } = useTheme();
-  
   return (
-    <div className="relative flex w-full flex-col bg-background font-sofia">
-      <ParticlesComponent id="tsparticles" theme={theme} />
-      
-      <main className="flex-grow container mx-auto px-4 py-16 relative z-10">
-        <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
-          <div className="inline-flex items-center justify-center p-2 px-4 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-2">
-            <Code2 className="w-4 h-4 mr-2" />
-            Технологичен Екип
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground">
-            Хората зад <span className="text-primary">ПГКНМА Блог</span>
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Ние сме екип от ентусиасти, отдадени на идеята да създадем най-добрата дигитална среда за нашето училище.
-          </p>
-        </div>
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Технологичен екип" title={<>Хората зад <span className="text-primary">ПГКНМА Блог</span></>} description="Ученици и ментори, които изграждат по-добра дигитална среда за училищната общност." icon={Code2} />
+      <InteriorSection>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+        <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {developers.map((dev, index) => (
             <Card 
               key={index} 
-              className="group relative overflow-hidden transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:shadow-primary/10 border-border/50 hover:border-primary/50 flex flex-col h-full"
+              className="group relative flex h-full flex-col overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0"
             >
               <div className={`absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity`} />
               
@@ -115,7 +99,7 @@ const Developers = () => {
         </div>
 
         {/* Join Us Section - Rectangular Horizontal Bar */}
-        <div className="max-w-5xl mx-auto mb-16 px-2">
+        <div className="mx-auto mb-16 max-w-5xl px-0 sm:px-2">
           <Card className="relative overflow-hidden border-2 border-dashed border-primary/30 bg-primary/5 p-6 md:p-10 transition-all duration-300 hover:border-primary hover:bg-primary/10 group">
             <div className="flex flex-col md:flex-row items-center gap-6 md:gap-10">
               <div className="w-24 h-24 shrink-0 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-500 shadow-inner">
@@ -145,9 +129,8 @@ const Developers = () => {
         <div className="text-center text-muted-foreground text-sm opacity-60 italic">
           * Проектът е разработен с образователна цел и е с отворен код.
         </div>
-      </main>
-
-    </div>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 

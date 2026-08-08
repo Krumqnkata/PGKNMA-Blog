@@ -16,8 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2 } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { Clock3 } from "lucide-react";
 
 // Import API function and type
 import { getProgramSchedule, getSiteStatus, SiteStatus } from '@/lib/api';
@@ -25,6 +24,7 @@ import { getProgramSchedule, getSiteStatus, SiteStatus } from '@/lib/api';
 // Import layout components
 import FeatureDisabledPage from './FeatureDisabledPage'; // Import the new component
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 
 // Define the structure of a schedule row
 interface ScheduleRow {
@@ -84,10 +84,7 @@ const Program: React.FC = () => {
     // The loading state now only considers the CSV loading.
     if (loadingSchedule) {
       return (
-        <div className="py-12 text-center flex justify-center items-center">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-lg text-muted-foreground ml-3">Зареждане на програмата...</p>
-        </div>
+        <ContentSkeleton variant="detail" label="Зареждане на програмата" />
       );
     }
     
@@ -96,10 +93,10 @@ const Program: React.FC = () => {
     }
 
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <span>Програма за : {selectedClass}</span>
+      <Card className="overflow-hidden">
+        <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent">
+          <CardTitle className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
+            <span>Програма за <span className="text-primary">{selectedClass}</span></span>
             {classes.length > 0 && (
               <Select onValueChange={handleClassChange} value={selectedClass}>
                 <SelectTrigger className="w-full md:w-[200px]">
@@ -116,7 +113,7 @@ const Program: React.FC = () => {
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-5 sm:pt-6">
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -167,27 +164,10 @@ const Program: React.FC = () => {
   }
 
   return (
-    <div className="w-full bg-background">
-      <main>
-        {/* Hero Section */}
-        <section className="w-full bg-gradient-to-br from-primary/10 via-transparent to-transparent pt-16 pb-12 md:pt-24">
-            <div className="container mx-auto px-4 text-center">
-                <h1 className="text-4xl font-bold tracking-tight md:text-5xl lg:text-6xl">Учебна програма</h1>
-                <p className="mt-4 text-lg text-muted-foreground md:text-xl">
-                    Вижте седмичната програма за различните класове.
-                </p>
-            </div>
-        </section>
-
-        {/* Schedule Section */}
-        <section className="w-full pb-12">
-            <div className="container mx-auto px-4">
-                <Separator className="mb-8" />
-                {renderContent()}
-            </div>
-        </section>
-      </main>
-    </div>
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Организирай учебната седмица" title={<>Учебна <span className="text-primary">програма</span></>} description="Изберете клас и проверете часовете в ясен, удобен за мобилни устройства формат." icon={Clock3} />
+      <InteriorSection>{renderContent()}</InteriorSection>
+    </InteriorPage>
   );
 };
 

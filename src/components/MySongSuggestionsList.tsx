@@ -39,12 +39,12 @@ const MySongSuggestionsList: React.FC = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'approved':
-        return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">Одобрено</span>;
+        return <span className="mr-2 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">Одобрено</span>;
       case 'rejected':
-        return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-red-900 text-red-300">Отхвърлено</span>;
+        return <span className="mr-2 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-bold text-destructive">Отхвърлено</span>;
       case 'pending':
       default:
-        return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-yellow-900 text-yellow-300">Чакащо</span>;
+        return <span className="mr-2 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-300">Чакащо</span>;
     }
   };
 
@@ -58,7 +58,7 @@ const MySongSuggestionsList: React.FC = () => {
 
   if (!songs || songs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-lg">
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center">
         <MicOff className="h-12 w-12 text-muted-foreground" />
         <h3 className="mt-4 text-lg font-semibold">Нямате предложения</h3>
         <p className="mt-1 text-sm text-muted-foreground">Все още не сте предложили песен за училищния звънец.</p>
@@ -69,7 +69,7 @@ const MySongSuggestionsList: React.FC = () => {
   return (
     <div className="space-y-4">
       {songs.map((song) => (
-        <Card key={song.id}>
+        <Card key={song.id} className="transition-[box-shadow,border-color] hover:border-primary/25 hover:shadow-md">
           <CardHeader>
             <div className="flex justify-between items-start">
               <div>

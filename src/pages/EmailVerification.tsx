@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { resendVerificationEmail } from "@/lib/api";
+import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
 
 const EmailVerification = () => {
   const [searchParams] = useSearchParams();
@@ -45,14 +46,16 @@ const EmailVerification = () => {
   };
 
   return (
-    <div className="flex min-h-[65vh] flex-col bg-background">
-      <main className="flex flex-1 items-center justify-center px-4 py-16">
-        <section className="w-full max-w-lg rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-10">
-          <div className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full ${successful ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}`}>
+    <InteriorPage>
+      <InteriorSection className="flex min-h-[70vh] items-center">
+        <section className="relative mx-auto w-full max-w-lg overflow-hidden rounded-3xl border border-border/70 bg-card p-6 text-center shadow-2xl shadow-primary/5 sm:p-10">
+          <div className={`absolute inset-x-0 top-0 h-1.5 ${successful ? "bg-emerald-500" : "bg-amber-500"}`} aria-hidden="true" />
+          <div className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl shadow-sm ${successful ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}`}>
             {successful ? <CheckCircle2 className="h-9 w-9" /> : <CircleAlert className="h-9 w-9" />}
           </div>
-          <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-          <p className="mt-3 text-muted-foreground">{description}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">Потвърждение на профил</p>
+          <h1 className="mt-2 text-2xl font-black tracking-tight sm:text-3xl">{title}</h1>
+          <p className="mt-3 leading-relaxed text-muted-foreground">{description}</p>
 
           {successful ? (
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
@@ -77,12 +80,12 @@ const EmailVerification = () => {
                 {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
                 Изпрати нов линк
               </Button>
-              {message && <p className="text-center text-sm text-muted-foreground">{message}</p>}
+              {message && <p role="status" className="rounded-xl bg-muted/60 p-3 text-center text-sm text-muted-foreground">{message}</p>}
             </div>
           )}
         </section>
-      </main>
-    </div>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 

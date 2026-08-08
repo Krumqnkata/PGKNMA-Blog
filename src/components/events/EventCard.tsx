@@ -73,17 +73,17 @@ const EventCard = ({ event, isMobile, compact = false }: EventCardProps) => {
   const formattedSummary = `${format(startDate, "dd.MM.yyyy", { locale: bg })} • ${format(startDate, "HH:mm", { locale: bg })}`;
 
   const trigger = (
-    <Card className="h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md motion-reduce:hover:translate-y-0">
+    <Card className="group h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
       <button type="button" onClick={() => setOpen(true)} className="h-full w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" aria-haspopup="dialog">
         <CardContent className="p-3 sm:p-4">
           <div className="flex gap-3">
-            <div className="flex h-14 w-14 flex-shrink-0 flex-col items-center justify-center rounded-xl bg-primary/10">
-              <span className="text-lg font-bold text-primary">{format(startDate, "d", { locale: bg })}</span>
-              <span className="text-xs text-muted-foreground">{format(startDate, "MMM", { locale: bg })}</span>
+            <div className="flex h-16 w-16 flex-shrink-0 flex-col items-center justify-center rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 ring-1 ring-primary/15 transition-transform duration-300 group-hover:scale-105">
+              <span className="text-xl font-black text-primary">{format(startDate, "d", { locale: bg })}</span>
+              <span className="text-xs font-bold uppercase text-muted-foreground">{format(startDate, "MMM", { locale: bg })}</span>
             </div>
             <div className="min-w-0 flex-1 space-y-2">
               <div className="flex items-start justify-between gap-2">
-                <h3 className="line-clamp-2 text-sm font-semibold sm:text-base">{event.title}</h3>
+                <h3 className="line-clamp-2 text-base font-bold leading-snug sm:text-lg">{event.title}</h3>
                 {!compact && <Badge className={`flex-shrink-0 text-[10px] sm:text-xs ${getCategoryStyle(event.category)}`}>{event.category}</Badge>}
               </div>
               {compact && <Badge className={`text-[10px] sm:text-xs ${getCategoryStyle(event.category)}`}>{event.category}</Badge>}

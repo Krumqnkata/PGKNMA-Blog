@@ -68,14 +68,15 @@ const BellSongForm = () => {
   };
 
   return (
-    <section id="bell-song" className="border-b border-border bg-secondary/40 py-16 sm:py-20">
+    <section id="bell-song" className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-primary/10 via-background to-background py-12 sm:py-16">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/15 text-primary">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary shadow-sm">
             <Music2 className="h-6 w-6" />
           </div>
-          <h2 className="text-3xl font-bold sm:text-4xl">Формуляр за предложение на песни за звънеца</h2>
-          <p className="mt-3 text-lg text-muted-foreground">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Твоят избор в междучасието</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-5xl">Предложи песен за звънеца</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
             Споделете любимата си песен за междучасието. Ще я разгледаме и ще ви уведомим при одобрение.
           </p>
           <div className="mt-8">
@@ -87,7 +88,7 @@ const BellSongForm = () => {
               }
             }}>
               <DialogTrigger asChild>
-                <Button variant="default" size="lg" className="gap-2 shadow-lg hover:shadow-xl transition-all duration-300 font-semibold px-8 py-6 rounded-full">
+                <Button variant="outline" size="lg" className="gap-2 bg-background/70 px-8 backdrop-blur">
                   <FileText className="h-5 w-5" />
                   Регламент за избор на звънец
                 </Button>

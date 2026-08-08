@@ -11,6 +11,8 @@ import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/
 import { Link } from "react-router-dom";
 import { PollStatistics } from "@/components/PollStatistics";
 import hljs from '@/lib/syntax-highlighter';
+import { BrainCircuit } from 'lucide-react';
+import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 
 type AnswerKey = "a" | "b" | "c" | "d";
 
@@ -78,7 +80,7 @@ const WeeklyPollContent = () => {
 
   const getOptionStyles = useCallback(
     (opt: PollOption) => {
-      const base = "flex cursor-pointer items-start gap-3 rounded-lg border px-4 py-3 transition-colors"; // Changed items-center to items-start
+      const base = "flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-4 transition-[background-color,border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:shadow-md motion-reduce:hover:translate-y-0";
       if (!lastResult || lastResult.questionId !== currentQuestion?.id) {
         return `${base} border-border hover:bg-muted/50`;
       }
@@ -107,8 +109,8 @@ const WeeklyPollContent = () => {
   }
 
   return (
-    <Card className="mx-auto max-w-3xl border-border bg-card/90 shadow-lg">
-      <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <Card className="mx-auto max-w-3xl overflow-hidden bg-card/90 shadow-xl shadow-primary/5">
+      <CardHeader className="flex flex-col gap-3 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent sm:flex-row sm:items-start sm:justify-between">
         <div>
           <CardTitle className="text-2xl">{currentQuestion.title}</CardTitle>
           <CardDescription>{currentQuestion.subtitle}</CardDescription>
@@ -127,13 +129,13 @@ const WeeklyPollContent = () => {
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-border/60 bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-border/60 bg-muted/30 px-4 py-3 text-sm leading-relaxed text-muted-foreground">
             Можете да отговорите само веднъж на всяка активна анкета. Успех!
           </div>
         )}
 
         {/* Question Image and Code/Description */}
-        <div className="space-y-4 rounded-lg border bg-muted/40 p-4">
+        <div className="space-y-4 rounded-2xl border border-border/60 bg-muted/35 p-4 sm:p-5">
           {currentQuestion.image_url && (
             <img 
               src={`${currentQuestion.image_url}`} 
@@ -201,16 +203,9 @@ const WeeklyPoll = () => {
     const { isAuthenticated, isLoading, openLoginDialog } = useAuth();
   
     return (
-      <div className="w-full bg-background text-foreground">
-        <main className="container mx-auto px-4 py-12">
-          <div className="mb-10 text-center">
-            <Badge variant="secondary" className="mb-3">Седмична анкета</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Задача на седмицата</h1>
-            <p className="mt-3 text-lg text-muted-foreground">
-              Получавайте малко предизвикателство по разни теми всяка седмица.
-            </p>
-          </div>
-  
+      <InteriorPage>
+        <InteriorPageHero eyebrow="Седмично предизвикателство" title={<>Задача на <span className="text-primary">седмицата</span></>} description="Проверете знанията си, изберете отговор и сравнете резултата си с общността." icon={BrainCircuit} />
+        <InteriorSection>
           {isLoading ? (
              <ContentSkeleton variant="detail" label="Проверка на потребителската сесия" />
           ): isAuthenticated ? (
@@ -224,11 +219,11 @@ const WeeklyPoll = () => {
             </div>
           )}
           
-          <div className="mt-8">
+          <div className="mt-10">
             <PollStatistics />
           </div>
-        </main>
-      </div>
+        </InteriorSection>
+      </InteriorPage>
     );
   };
   

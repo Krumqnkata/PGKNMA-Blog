@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useSettings } from "@/hooks/use-settings";
 import { useToast } from "@/components/ui/use-toast";
-import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { AlertCircle, Eye, EyeOff, Loader2, LogIn, ShieldCheck } from "lucide-react";
 // 1. Импорт на Turnstile
 import { Turnstile } from '@marsidev/react-turnstile';
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
@@ -153,18 +153,21 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain p-4 sm:max-h-[calc(100dvh-2rem)] sm:max-w-md sm:p-6">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">Вход</DialogTitle>
+      <DialogContent className="max-h-[calc(100dvh-1rem)] overflow-y-auto overscroll-contain p-0 sm:max-h-[calc(100dvh-2rem)] sm:max-w-md">
+        <DialogHeader className="border-b border-border/60 bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-5 pr-14 text-left sm:p-6 sm:pr-14">
+          <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/25"><LogIn className="h-5 w-5" aria-hidden="true" /></div>
+          <DialogTitle className="text-2xl font-black">Добре дошли</DialogTitle>
           <DialogDescription>
             Въведете данните си, за да влезете в профила.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-4 mt-2">
+        <div className="flex flex-col gap-5 p-5 pt-0 sm:p-6 sm:pt-0">
+          <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2 text-xs text-muted-foreground"><ShieldCheck className="h-4 w-4 text-primary" aria-hidden="true" />Защитен вход към ученическия портал</div>
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">Потребителско име</label>
+            <label htmlFor="login-username" className="text-sm font-semibold">Потребителско име</label>
             <Input
+              id="login-username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Вашето име..."
@@ -173,14 +176,17 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
           </div>
 
           <div className="relative flex flex-col gap-1">
-            <label className="text-sm font-medium">Парола</label>
+            <label htmlFor="login-password" className="text-sm font-semibold">Парола</label>
             <div className="relative">
               <Input
+                id="login-password"
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Вашата парола..."
                 disabled={loading}
+                aria-invalid={Boolean(error)}
+                className="pr-11"
               />
               <Button
                 type="button"
@@ -188,6 +194,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
                 size="icon"
                 className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
                 onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Скрий паролата" : "Покажи паролата"}
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </Button>
@@ -206,7 +213,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
             />
           </div>
 
-          {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+          {error && <div role="alert" className="flex items-start gap-2 rounded-xl border border-destructive/25 bg-destructive/5 p-3 text-sm font-semibold leading-relaxed text-destructive"><AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />{error}</div>}
 
           {needsEmailVerification && (
             <div className="space-y-2 rounded-lg border border-primary/20 bg-primary/5 p-3">
@@ -238,7 +245,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
           </p>
 
           <Button 
-            className="w-full mt-2" 
+            className="mt-1 w-full"
             onClick={handleLogin} 
             disabled={loading || !turnstileToken}
           >
@@ -250,7 +257,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
             <div className="absolute inset-0 flex items-center">
               <span className="w-full border-t border-muted" />
             </div>
-            <span className="relative bg-background px-3 text-xs text-muted-foreground uppercase">
+            <span className="relative bg-card px-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               или
             </span>
           </div>
