@@ -71,20 +71,20 @@ const CustomCursor: React.FC = () => {
       <div
         ref={cursorRef}
         className={cn(
-          "fixed top-0 left-0 pointer-events-none z-[99999] transition-opacity duration-300 ease-in-out",
+          "accessibility-custom-cursor fixed top-0 left-0 pointer-events-none z-[99999] transition-opacity duration-300 ease-in-out",
           isVisible ? "opacity-100" : "opacity-0"
         )}
         style={{ left: 0, top: 0 }}
       >
         <div
           className={cn(
-            "relative -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary transition-all duration-300 ease-out",
+            "accessibility-custom-cursor-ring relative -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-primary transition-all duration-300 ease-out",
             isHovering 
               ? "w-12 h-12 bg-primary/10 border-primary/40 scale-125 shadow-[0_0_20px_rgba(var(--primary),0.2)]" 
               : "w-6 h-6 bg-transparent border-primary/60"
           )}
         >
-          <div className="absolute top-1/2 left-1/2 w-1 h-1 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2" />
+          <div className="accessibility-custom-cursor-dot absolute top-1/2 left-1/2 w-1 h-1 bg-primary rounded-full -translate-x-1/2 -translate-y-1/2" />
         </div>
       </div>
     </>

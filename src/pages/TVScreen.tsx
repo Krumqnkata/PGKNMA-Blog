@@ -79,7 +79,7 @@ const TVScreen = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gray-900">
+    <div id="main-content" tabIndex={-1} className="relative min-h-screen overflow-hidden bg-gray-900 outline-none">
       <TVBackground />
       <div className="relative z-10">
         <TVScreenHeader />

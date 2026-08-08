@@ -21,6 +21,10 @@ import SiteLayout from "@/components/SiteLayout";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AccessibilityProvider } from "@/contexts/AccessibilityProvider";
+import AccessibilityColorFilters from "@/components/accessibility/AccessibilityColorFilters";
+import ReadingGuide from "@/components/accessibility/ReadingGuide";
+import SelectionReader from "@/components/accessibility/SelectionReader";
+import SkipToContent from "@/components/accessibility/SkipToContent";
 
 const Index = lazy(() => import("@/pages/Index"));
 const News = lazy(() => import("@/pages/News"));
@@ -44,7 +48,7 @@ const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
 const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
 
 const AppLoadingScreen = () => (
-  <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-foreground" role="status" aria-live="polite">
+  <div id="main-content" tabIndex={-1} className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-foreground outline-none" role="status" aria-live="polite">
     <div className="relative">
       <LoaderPinwheel className="h-14 w-14 animate-spin text-primary motion-reduce:animate-none" />
       <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping-slow motion-reduce:animate-none" />
@@ -75,7 +79,7 @@ const AppContent = () => {
 
   // Show maintenance page if in maintenance mode or a critical error occurred
   if (!isTVRoute && (settingsData?.maintenance_mode || error)) {
-    return <MaintenancePage isBackendError={Boolean(error)} />;
+    return <div id="main-content" tabIndex={-1} className="outline-none"><MaintenancePage isBackendError={Boolean(error)} /></div>;
   }
 
   return (
@@ -128,6 +132,10 @@ const App = () => {
   return (
     <SettingsProvider>
       <AccessibilityProvider>
+        <SkipToContent />
+        <AccessibilityColorFilters />
+        <ReadingGuide />
+        <SelectionReader />
         <AppContent />
       </AccessibilityProvider>
     </SettingsProvider>

@@ -2,7 +2,7 @@ import { useCallback, useLayoutEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
 import { AccessibilityContext } from "@/contexts/accessibility-context";
-import type { AccessibilityContextValue, AccessibilityPreferences } from "@/contexts/accessibility-context";
+import type { AccessibilityContextValue, AccessibilityPreferences, ColorVisionMode } from "@/contexts/accessibility-context";
 
 const STORAGE_KEY = "pgknma-accessibility-v1";
 const DEFAULT_PREFERENCES: AccessibilityPreferences = {
@@ -10,7 +10,15 @@ const DEFAULT_PREFERENCES: AccessibilityPreferences = {
   highContrast: false,
   monochrome: false,
   reduceMotion: false,
+  dyslexiaFont: false,
+  highlightLinks: false,
+  enhancedFocus: false,
+  readingGuide: false,
+  largeCursor: false,
+  colorVisionMode: "none",
 };
+
+const COLOR_VISION_MODES: ColorVisionMode[] = ["none", "protanopia", "deuteranopia", "tritanopia"];
 
 function readPreferences(): AccessibilityPreferences {
   try {
@@ -19,11 +27,20 @@ function readPreferences(): AccessibilityPreferences {
       ...DEFAULT_PREFERENCES,
       reduceMotion: window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     };
+    const colorVisionMode = COLOR_VISION_MODES.includes(saved.colorVisionMode ?? "none")
+      ? saved.colorVisionMode ?? "none"
+      : "none";
     return {
       fontScale: [90, 100, 110, 120].includes(saved.fontScale ?? 100) ? saved.fontScale ?? 100 : 100,
       highContrast: Boolean(saved.highContrast),
-      monochrome: Boolean(saved.monochrome),
+      monochrome: Boolean(saved.monochrome) && colorVisionMode === "none",
       reduceMotion: Boolean(saved.reduceMotion),
+      dyslexiaFont: Boolean(saved.dyslexiaFont),
+      highlightLinks: Boolean(saved.highlightLinks),
+      enhancedFocus: Boolean(saved.enhancedFocus),
+      readingGuide: Boolean(saved.readingGuide),
+      largeCursor: Boolean(saved.largeCursor),
+      colorVisionMode,
     };
   } catch {
     return DEFAULT_PREFERENCES;
@@ -39,6 +56,12 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     root.dataset.accessibilityContrast = preferences.highContrast ? "high" : "default";
     root.dataset.accessibilityMonochrome = String(preferences.monochrome);
     root.dataset.accessibilityMotion = preferences.reduceMotion ? "reduce" : "default";
+    root.dataset.accessibilityDyslexia = String(preferences.dyslexiaFont);
+    root.dataset.accessibilityLinks = preferences.highlightLinks ? "highlight" : "default";
+    root.dataset.accessibilityFocus = preferences.enhancedFocus ? "enhanced" : "default";
+    root.dataset.accessibilityReadingGuide = String(preferences.readingGuide);
+    root.dataset.accessibilityCursor = preferences.largeCursor ? "large" : "default";
+    root.dataset.accessibilityColorVision = preferences.colorVisionMode;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
     } catch {
@@ -53,8 +76,22 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
   const decreaseFont = useCallback(() => setPreferences((current) => ({ ...current, fontScale: Math.max(90, current.fontScale - 10) })), []);
   const resetFont = useCallback(() => update({ fontScale: 100 }), [update]);
   const toggleHighContrast = useCallback(() => setPreferences((current) => ({ ...current, highContrast: !current.highContrast })), []);
-  const toggleMonochrome = useCallback(() => setPreferences((current) => ({ ...current, monochrome: !current.monochrome })), []);
+  const toggleMonochrome = useCallback(() => setPreferences((current) => ({
+    ...current,
+    monochrome: !current.monochrome,
+    colorVisionMode: current.monochrome ? current.colorVisionMode : "none",
+  })), []);
   const toggleReduceMotion = useCallback(() => setPreferences((current) => ({ ...current, reduceMotion: !current.reduceMotion })), []);
+  const toggleDyslexiaFont = useCallback(() => setPreferences((current) => ({ ...current, dyslexiaFont: !current.dyslexiaFont })), []);
+  const toggleHighlightLinks = useCallback(() => setPreferences((current) => ({ ...current, highlightLinks: !current.highlightLinks })), []);
+  const toggleEnhancedFocus = useCallback(() => setPreferences((current) => ({ ...current, enhancedFocus: !current.enhancedFocus })), []);
+  const toggleReadingGuide = useCallback(() => setPreferences((current) => ({ ...current, readingGuide: !current.readingGuide })), []);
+  const toggleLargeCursor = useCallback(() => setPreferences((current) => ({ ...current, largeCursor: !current.largeCursor })), []);
+  const setColorVisionMode = useCallback((colorVisionMode: ColorVisionMode) => setPreferences((current) => ({
+    ...current,
+    colorVisionMode,
+    monochrome: colorVisionMode === "none" ? current.monochrome : false,
+  })), []);
   const resetAll = useCallback(() => setPreferences(DEFAULT_PREFERENCES), []);
 
   const value = useMemo<AccessibilityContextValue>(() => ({
@@ -65,8 +102,14 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     toggleHighContrast,
     toggleMonochrome,
     toggleReduceMotion,
+    toggleDyslexiaFont,
+    toggleHighlightLinks,
+    toggleEnhancedFocus,
+    toggleReadingGuide,
+    toggleLargeCursor,
+    setColorVisionMode,
     resetAll,
-  }), [decreaseFont, increaseFont, preferences, resetAll, resetFont, toggleHighContrast, toggleMonochrome, toggleReduceMotion]);
+  }), [decreaseFont, increaseFont, preferences, resetAll, resetFont, setColorVisionMode, toggleDyslexiaFont, toggleEnhancedFocus, toggleHighContrast, toggleHighlightLinks, toggleLargeCursor, toggleMonochrome, toggleReadingGuide, toggleReduceMotion]);
 
   return <AccessibilityContext.Provider value={value}>{children}</AccessibilityContext.Provider>;
 }
