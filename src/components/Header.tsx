@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { Moon, Sun, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { HelpCircle, Moon, Sun, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import { useTheme } from "next-themes";
@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { UserDropdown } from "./UserDropdown";
 import { useLocation } from "react-router-dom";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
+import FloatingFAQ from "@/components/FloatingFAQ";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -54,6 +55,7 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-1 sm:gap-2">
+          <FloatingFAQ />
           <AccessibilityWidget />
           <Suspense fallback={<div className="h-[40px] w-[40px]" aria-hidden="true" />}>
             <div className="[&_button]:h-[40px] [&_button]:w-[40px]"><NotificationBell /></div>
@@ -110,6 +112,16 @@ const Header = () => {
                   {link.name && <span>{link.name}</span>}
                 </NavLink>
             ))}
+
+            <NavLink
+              to="/faq"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 rounded-lg px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+              activeClassName="bg-accent text-primary"
+            >
+              <HelpCircle className="h-4 w-4" aria-hidden="true" />
+              Помощ и въпроси
+            </NavLink>
 
             <div className="border-t border-border/40 pt-4 mt-4 space-y-2">
               {isAuthenticated ? (

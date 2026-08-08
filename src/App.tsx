@@ -13,7 +13,6 @@ import FeatureDisabledPage from "./pages/FeatureDisabledPage";
 import CustomCursor from "./components/CustomCursor";
 import { useDisableInspect } from "./hooks/use-disable-inspect";
 import ScrollToTop from "./components/ScrollToTop";
-import FloatingFAQ from "./components/FloatingFAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import OfflineStatusToast from "@/components/OfflineStatusToast";
 import SEOManager from "@/components/SEOManager";
@@ -93,7 +92,6 @@ const AppContent = () => {
             <Sonner />
             <BrowserRouter>
                 <ScrollToTop />
-                <FloatingFAQ />
                 <SEOManager />
               <Suspense fallback={<AppLoadingScreen />}>
                 <Routes>
