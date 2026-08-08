@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Calendar, Clock, MapPin, Users } from "lucide-react";
+import { AlertTriangle, Calendar, Clock, LoaderCircle, MapPin, RefreshCw, Users } from "lucide-react";
 import { format, parseISO } from "date-fns";
 
 import MarkdownRenderer from "@/components/MarkdownRenderer";
@@ -47,6 +47,31 @@ const CATEGORY_STYLES: Record<string, string> = {
   Community: "bg-orange-500 text-orange-100",
   Holiday: "bg-red-500 text-red-100",
 };
+
+export function TVModulePlaceholder({ title }: { title: string }) {
+  return (
+    <section role="status" className="flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-28 text-center text-white">
+      <LoaderCircle className="h-14 w-14 animate-spin text-blue-300 motion-reduce:animate-none" aria-hidden="true" />
+      <h2 className="mt-6 text-3xl font-bold md:text-5xl">{title}</h2>
+      <p className="mt-3 text-xl text-gray-300">Данните се обновяват във фонов режим…</p>
+    </section>
+  );
+}
+
+export function TVModuleUnavailable({ title }: { title: string }) {
+  return (
+    <section role="status" className="flex min-h-screen flex-col items-center justify-center px-6 pb-20 pt-28 text-center text-white">
+      <div className="rounded-full border border-amber-400/40 bg-amber-400/10 p-5"><AlertTriangle className="h-12 w-12 text-amber-300" aria-hidden="true" /></div>
+      <h2 className="mt-6 text-3xl font-bold md:text-5xl">{title}</h2>
+      <p className="mt-3 max-w-2xl text-xl text-gray-300">Този модул временно не е достъпен. TV екранът ще продължи, а нов опит се прави автоматично.</p>
+      <div className="mt-6 flex items-center gap-2 text-blue-300"><RefreshCw className="h-5 w-5" aria-hidden="true" />Автоматично възстановяване</div>
+    </section>
+  );
+}
+
+export function TVDataNotice({ children }: { children: ReactNode }) {
+  return <div className="fixed right-4 top-28 z-40 rounded-full border border-amber-300/30 bg-gray-950/85 px-4 py-2 text-sm text-amber-100 shadow-lg backdrop-blur" role="status">{children}</div>;
+}
 
 function InfoLink({ children }: { children: ReactNode }) {
   return (
