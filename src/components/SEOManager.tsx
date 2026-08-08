@@ -54,6 +54,8 @@ const SEOManager = () => {
     const description = routeDescriptions[path] || "Интересни новини и съобщения от училищния живот.";
 
     const fullTitle = `${title} | ПГКНМА Блог`;
+    const canonicalUrl = new URL(`${location.pathname}${location.search}`, window.location.origin).toString();
+    const defaultImage = new URL("/social-preview.jpg", window.location.origin).toString();
     document.title = fullTitle;
 
     // Notify visibility change script in index.html
@@ -92,8 +94,15 @@ const SEOManager = () => {
     // Reset OpenGraph Image to default if it's not a post page
     const ogImg = document.querySelector('meta[property="og:image"]');
     if (ogImg) {
-      ogImg.setAttribute("content", "/logo-light.png");
+      ogImg.setAttribute("content", defaultImage);
     }
+
+    document.querySelector('meta[property="og:image:secure_url"]')?.setAttribute("content", defaultImage);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", fullTitle);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
+    document.querySelector('meta[name="twitter:image"]')?.setAttribute("content", defaultImage);
+    document.querySelector<HTMLLinkElement>('link[rel="canonical"]')?.setAttribute("href", canonicalUrl);
   }, [location]);
 
   return null;

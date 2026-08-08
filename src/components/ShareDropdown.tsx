@@ -13,11 +13,10 @@ import { Link2, Check, Share2 } from "lucide-react";
 interface ShareDropdownProps {
   url?: string;
   title: string;
-  summary?: string;
   children: React.ReactNode;
 }
 
-export const ShareDropdown: React.FC<ShareDropdownProps> = ({ url, title, summary = "", children }) => {
+export const ShareDropdown: React.FC<ShareDropdownProps> = ({ url, title, children }) => {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
   const shareUrl = url || window.location.href;
@@ -58,8 +57,6 @@ export const ShareDropdown: React.FC<ShareDropdownProps> = ({ url, title, summar
     if (!isShareApiSupported) return;
     try {
       await navigator.share({
-        title,
-        text: summary,
         url: shareUrl,
       });
     } catch (err) {

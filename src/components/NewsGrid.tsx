@@ -91,7 +91,9 @@ const NewsGrid = () => {
                         src={posts[0].banner || '/logo-light.png'}
                         alt={posts[0].title}
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        loading="lazy"
+                        loading="eager"
+                        fetchPriority="high"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
                       
@@ -132,6 +134,8 @@ const NewsGrid = () => {
                           src={item.banner || '/logo-light.png'}
                           alt={item.title}
                           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          loading="lazy"
+                          decoding="async"
                         />
                         <div className="absolute inset-0 bg-primary/10 opacity-0 transition-opacity group-hover:opacity-100" />
                       </div>

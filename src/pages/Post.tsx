@@ -7,6 +7,7 @@ import UserAvatar from '@/components/UserAvatar';
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
+import { getPostShareUrl } from '@/lib/share';
 import Comments from '@/components/Comments';
 import { ShareDropdown } from "@/components/ShareDropdown";
 import { useSEO } from "@/hooks/use-seo";
@@ -180,7 +181,7 @@ const Post = () => {
                                         <Clock className="h-4 w-4" />
                                         <span>{readTime} мин. четене</span>
                                     </div>
-                                    <ShareDropdown title={post.title} summary={post.hook}>
+                                    <ShareDropdown url={getPostShareUrl(post.id)} title={post.title}>
                                         <button 
                                             className="flex items-center justify-start gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-border/50 sm:border-t-0"
                                             title="Сподели тази статия"
@@ -198,7 +199,9 @@ const Post = () => {
                                         src={post.banner}
                                         alt={`Банер за ${post.title}`}
                                         className="mb-8 max-h-[32rem] w-full rounded-2xl border border-border/60 object-cover shadow-lg"
-                                        loading="lazy"
+                                        loading="eager"
+                                        fetchPriority="high"
+                                        decoding="async"
                                     />
                                 )}
 
@@ -235,6 +238,7 @@ const Post = () => {
                                                             className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${image.is_featured ? "aspect-video" : "aspect-square"}`}
                                                             style={{ objectPosition: `${image.focus_x}% ${image.focus_y}%` }}
                                                             loading="lazy"
+                                                            decoding="async"
                                                         />
                                                     </button>
                                                     {image.title && (
