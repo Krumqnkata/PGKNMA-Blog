@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
 
 import { TVBackground, TVScreenFooter, TVScreenHeader } from "@/components/tv/TVChrome";
 import {
@@ -21,6 +20,9 @@ import {
   getMemes,
   getPollStatistics,
 } from "@/lib/api";
+import { ContentSkeleton } from "@/components/query/QueryStates";
+import { Button } from "@/components/ui/button";
+import { RefreshCw } from "lucide-react";
 
 interface PollStatistics {
   leaderboard: LeaderboardEntry[];
@@ -65,10 +67,10 @@ const TVScreen = () => {
   const isError = songsQuery.isError || memesQuery.isError || pollQuery.isError || eventsQuery.isError;
 
   if (isLoading) {
-    return <div className="flex min-h-screen items-center justify-center bg-gray-900 text-white"><Loader2 className="h-10 w-10 animate-spin" /><span className="ml-4 text-xl">Зареждане на данни за ТВ Екран...</span></div>;
+    return <div className="min-h-screen bg-gray-950 px-8 py-28 text-white"><ContentSkeleton count={3} label="Зареждане на данните за TV екрана" /></div>;
   }
   if (isError) {
-    return <div className="flex min-h-screen items-center justify-center bg-gray-900 px-4 text-center text-red-500"><span className="text-xl">Възникна грешка при зареждане на данни за ТВ Екран.</span></div>;
+    return <div role="alert" className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-950 px-4 text-center text-white"><h1 className="text-2xl font-bold">TV данните не могат да бъдат заредени</h1><p className="text-gray-300">Проверете връзката и опитайте отново.</p><Button onClick={() => { void songsQuery.refetch(); void memesQuery.refetch(); void pollQuery.refetch(); void eventsQuery.refetch(); }}><RefreshCw className="h-4 w-4" />Опитай отново</Button></div>;
   }
 
   const sections = [

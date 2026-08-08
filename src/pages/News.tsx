@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { getPosts, Post } from '@/lib/api';
 import NewsCard from "@/components/news/NewsCard";
 import NewsPagination from "@/components/news/NewsPagination";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 
 const ITEMS_PER_PAGE = 9;
 
@@ -15,7 +16,7 @@ const News = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearch = useDebouncedValue(searchQuery, 300);
     const [currentPage, setCurrentPage] = useState(1);
-    const { data: posts = [], isLoading, error } = useQuery<Post[], Error>({
+    const { data: posts = [], isLoading, error, refetch } = useQuery<Post[], Error>({
       queryKey: ['posts'],
       queryFn: getPosts,
       staleTime: 5 * 60 * 1000,
@@ -108,18 +109,11 @@ const News = () => {
 
                         <div id="news-results" className="scroll-mt-24" />
                         {isLoading ? (
-                            <div className="py-12 text-center flex justify-center items-center">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                <p className="text-lg text-muted-foreground ml-3">Зареждане на новините...</p>
-                            </div>
+                            <ContentSkeleton count={6} label="Зареждане на новините" />
                         ) : error ? (
-                            <div className="py-12 text-center text-destructive">
-                                <p className="text-lg font-semibold">{error.message || 'Неуспешно извличане на новини.'}</p>
-                            </div>
+                            <QueryErrorState message={error.message} onRetry={() => void refetch()} />
                         ) : filteredPosts.length === 0 ? (
-                            <div className="py-12 text-center">
-                                <p className="text-lg text-muted-foreground">Няма намерени публикации, съответстващи на вашето търсене.</p>
-                            </div>
+                            <QueryEmptyState title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
                         ) : (
                             <>
                                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">

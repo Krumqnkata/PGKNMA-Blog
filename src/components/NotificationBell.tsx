@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const STORAGE_KEY = 'read-notifications-v3';
 
@@ -36,7 +37,7 @@ const readMapFromStorage = (): ReadMap => {
 };
 
 const NotificationBell: React.FC = () => {
-  const { data: notifications, isLoading, error } = useQuery<Notification[], Error>({
+  const { data: notifications, isLoading, error, refetch } = useQuery<Notification[], Error>({
     queryKey: ['notifications'],
     queryFn: getNotifications,
     refetchInterval: 5 * 60 * 1000,
@@ -239,14 +240,15 @@ const NotificationBell: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-10 gap-2">
-              <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-              <p className="text-xs text-muted-foreground">Зареждане...</p>
+            <div role="status" aria-label="Зареждане на известията" className="space-y-4 p-4">
+              {[1, 2, 3].map((item) => <div key={item} className="space-y-2"><Skeleton className="h-4 w-3/4" /><Skeleton className="h-3 w-full" /></div>)}
+              <span className="sr-only">Зареждане на известията</span>
             </div>
           ) : error ? (
-            <div className="flex items-center gap-2 px-4 py-6 text-destructive text-sm justify-center">
+            <div role="alert" className="flex flex-col items-center gap-2 px-4 py-6 text-center text-sm text-destructive">
               <AlertCircle className="h-4 w-4" />
               <span>Неуспешно зареждане на известия.</span>
+              <Button type="button" size="sm" variant="outline" onClick={() => void refetch()}>Опитай отново</Button>
             </div>
           ) : enabledNotifications.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 px-4 text-center gap-2">

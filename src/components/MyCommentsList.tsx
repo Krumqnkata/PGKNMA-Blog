@@ -7,12 +7,13 @@ import { Link } from 'react-router-dom';
 import { Trash2, Loader2, MessageSquareOff, ArrowUpRightFromSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 
 const MyCommentsList: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: comments, isLoading, isError, error } = useQuery<Comment[], Error>({
+  const { data: comments, isLoading, isError, error, refetch } = useQuery<Comment[], Error>({
     queryKey: ['my-comments'],
     queryFn: getMyComments,
   });
@@ -36,11 +37,11 @@ const MyCommentsList: React.FC = () => {
   });
 
   if (isLoading) {
-    return <div className="flex justify-center items-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+    return <ContentSkeleton variant="list" count={3} label="Зареждане на вашите коментари" />;
   }
 
   if (isError) {
-    return <div className="text-destructive p-4">Грешка при зареждане на коментарите: {error.message}</div>;
+    return <QueryErrorState message={error.message} onRetry={() => void refetch()} />;
   }
 
   if (!comments || comments.length === 0) {

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import { useTheme } from "next-themes";
 import logoDark from "/logo-dark.png";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
 import { UserDropdown } from "./UserDropdown";
 import { useLocation } from "react-router-dom";
 

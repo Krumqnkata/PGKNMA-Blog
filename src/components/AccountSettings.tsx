@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
@@ -20,7 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
 import { deactivateMyAccount, linkGoogleAccount } from "@/lib/api";
 
@@ -29,11 +29,13 @@ const AccountSettings = () => {
   const { logout } = useAuth();
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   const [googleLinkPassword, setGoogleLinkPassword] = useState("");
+  const deactivateCancelRef = useRef<HTMLButtonElement>(null);
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
   const deactivateAccountMutation = useMutation({
     mutationFn: deactivateMyAccount,
     onSuccess: () => {
+      setIsDeactivateDialogOpen(false);
       toast({ title: "Профилът е деактивиран", description: "Профилът ви беше деактивиран. Ще бъдете отписани." });
       window.setTimeout(() => void logout(), 2000);
     },
@@ -96,16 +98,28 @@ const AccountSettings = () => {
           <CardDescription>Профилът ще бъде скрит и достъпът до него ще бъде спрян. За повторно активиране се свържете с администратор.</CardDescription>
         </CardHeader>
         <CardFooter>
-          <AlertDialog open={isDeactivateDialogOpen} onOpenChange={setIsDeactivateDialogOpen}>
+          <AlertDialog open={isDeactivateDialogOpen} onOpenChange={(open) => {
+            if (!deactivateAccountMutation.isPending) setIsDeactivateDialogOpen(open);
+          }}>
             <AlertDialogTrigger asChild><Button variant="destructive" className="w-full sm:w-auto">Деактивирай акаунта</Button></AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent
+              aria-labelledby="deactivate-account-title"
+              aria-describedby="deactivate-account-description"
+              onOpenAutoFocus={(event) => {
+                event.preventDefault();
+                deactivateCancelRef.current?.focus();
+              }}
+              onEscapeKeyDown={(event) => {
+                if (deactivateAccountMutation.isPending) event.preventDefault();
+              }}
+            >
               <AlertDialogHeader>
-                <AlertDialogTitle>Да деактивираме ли акаунта?</AlertDialogTitle>
-                <AlertDialogDescription>Няма да можете да влизате, докато администратор не активира профила отново.</AlertDialogDescription>
+                <AlertDialogTitle id="deactivate-account-title">Да деактивираме ли акаунта?</AlertDialogTitle>
+                <AlertDialogDescription id="deactivate-account-description">Няма да можете да влизате, докато администратор не активира профила отново.</AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Отказ</AlertDialogCancel>
-                <AlertDialogAction onClick={() => deactivateAccountMutation.mutate()} disabled={deactivateAccountMutation.isPending}>
+                <AlertDialogCancel ref={deactivateCancelRef} disabled={deactivateAccountMutation.isPending}>Отказ</AlertDialogCancel>
+                <AlertDialogAction aria-describedby="deactivate-account-description" onClick={(event) => { event.preventDefault(); deactivateAccountMutation.mutate(); }} disabled={deactivateAccountMutation.isPending}>
                   {deactivateAccountMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}Да, деактивирай
                 </AlertDialogAction>
               </AlertDialogFooter>

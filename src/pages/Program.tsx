@@ -24,6 +24,7 @@ import { getProgramSchedule, getSiteStatus, SiteStatus } from '@/lib/api';
 
 // Import layout components
 import FeatureDisabledPage from './FeatureDisabledPage'; // Import the new component
+import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 
 // Define the structure of a schedule row
 interface ScheduleRow {
@@ -31,7 +32,7 @@ interface ScheduleRow {
 }
 
 const Program: React.FC = () => {
-  const { data: siteStatus, isLoading: isStatusLoading, isError: isStatusError } = useQuery<SiteStatus>({
+  const { data: siteStatus, isLoading: isStatusLoading, isError: isStatusError, error: statusError, refetch: refetchStatus } = useQuery<SiteStatus>({
     queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
   });
@@ -151,18 +152,13 @@ const Program: React.FC = () => {
     // Top-level rendering logic based on site status
   if (isStatusLoading) {
     return (
-        <div className="flex h-screen items-center justify-center">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-        </div>
+        <main className="container min-h-[60vh] py-16"><ContentSkeleton variant="detail" label="Зареждане на настройките на програмата" /></main>
     );
   }
 
   if (isStatusError) {
       return (
-        <div className="flex h-screen flex-col items-center justify-center p-4 text-center">
-            <h1 className='text-2xl font-bold text-red-500'>Грешка при зареждане на настройките на страницата</h1>
-            <p className='text-muted-foreground'>Моля, опитайте по-късно.</p>
-        </div>
+        <main className="container min-h-[60vh] py-16"><QueryErrorState title="Настройките на програмата не могат да се заредят" message={statusError instanceof Error ? statusError.message : undefined} onRetry={() => void refetchStatus()} /></main>
       )
   }
 

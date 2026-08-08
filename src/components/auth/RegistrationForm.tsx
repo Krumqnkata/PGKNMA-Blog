@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
+import type { RefObject } from "react";
 import { Link } from "react-router-dom";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { Turnstile } from "@marsidev/react-turnstile";
@@ -8,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/components/ui/use-toast";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
 import {
   getPasswordsMatch,
   usePasswordValidation,
@@ -20,12 +21,14 @@ interface RegistrationFormProps {
   onClose: () => void;
   onOpenLogin: () => void;
   onRegistered: (result: RegistrationResponse) => void;
+  initialFocusRef: RefObject<HTMLInputElement>;
 }
 
 export function RegistrationForm({
   onClose,
   onOpenLogin,
   onRegistered,
+  initialFocusRef,
 }: RegistrationFormProps) {
   const { register, loginWithGoogle, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
@@ -154,6 +157,7 @@ export function RegistrationForm({
       <div className="space-y-1">
         <Label htmlFor="reg-email">Имейл</Label>
         <Input
+          ref={initialFocusRef}
           id="reg-email"
           type="email"
           autoComplete="email"
@@ -162,7 +166,9 @@ export function RegistrationForm({
           onChange={(event) => setEmail(event.target.value)}
           disabled={isLoading}
           required
+          aria-describedby="registration-email-hint"
         />
+        <p id="registration-email-hint" className="sr-only">Въведете валиден имейл адрес, който ще използвате за потвърждение.</p>
       </div>
 
       <div className="space-y-1">
@@ -183,6 +189,8 @@ export function RegistrationForm({
                   : "pr-10"
             }
             required
+            aria-invalid={usernameValidation.isValid === false}
+            aria-describedby={usernameValidation.errors[0] ? "registration-username-error" : undefined}
           />
           <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
             {usernameValidation.isChecking && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
@@ -191,7 +199,7 @@ export function RegistrationForm({
           </div>
         </div>
         {usernameValidation.errors[0] && (
-          <p className="mt-1 text-xs text-destructive">{usernameValidation.errors[0]}</p>
+          <p id="registration-username-error" className="mt-1 text-xs text-destructive">{usernameValidation.errors[0]}</p>
         )}
       </div>
 
@@ -219,13 +227,15 @@ export function RegistrationForm({
             disabled={isLoading}
             className={`${passwordValidation.isValid === false ? "border-destructive" : passwordValidation.isValid === true ? "border-green-500" : ""} pr-10`}
             required
+            aria-invalid={passwordValidation.isValid === false}
+            aria-describedby={passwordValidation.errors.length ? "registration-password-errors" : undefined}
           />
           <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Скрий паролата" : "Покажи паролата"}>
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </Button>
         </div>
         {passwordValidation.errors.length > 0 && (
-          <ul className="mt-1 list-inside list-disc text-xs text-destructive">
+          <ul id="registration-password-errors" className="mt-1 list-inside list-disc text-xs text-destructive">
             {passwordValidation.errors.map((message) => <li key={message}>{message}</li>)}
           </ul>
         )}
@@ -233,8 +243,8 @@ export function RegistrationForm({
 
       <div className="space-y-1">
         <Label htmlFor="reg-password2">Потвърди паролата</Label>
-        <Input id="reg-password2" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" value={password2} onChange={(event) => setPassword2(event.target.value)} disabled={isLoading} className={passwordsMatch === false ? "border-destructive" : passwordsMatch === true ? "border-green-500" : ""} required />
-        {passwordsMatch === false && <p className="mt-1 text-xs text-destructive">Паролите не съвпадат.</p>}
+        <Input id="reg-password2" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" value={password2} onChange={(event) => setPassword2(event.target.value)} disabled={isLoading} className={passwordsMatch === false ? "border-destructive" : passwordsMatch === true ? "border-green-500" : ""} required aria-invalid={passwordsMatch === false} aria-describedby={passwordsMatch === false ? "registration-password-match-error" : undefined} />
+        {passwordsMatch === false && <p id="registration-password-match-error" className="mt-1 text-xs text-destructive">Паролите не съвпадат.</p>}
       </div>
 
       <div className="flex max-w-full justify-center overflow-x-auto py-2">

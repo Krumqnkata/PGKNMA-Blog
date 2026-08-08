@@ -1,13 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, MapPin, Loader2 } from "lucide-react"; // Add Loader2 for loading state
+import { Calendar, Clock, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query"; // Import useQuery
 import { getEvents, Event as EventType } from "@/lib/api"; // Import getEvents and EventType
 import { format, parseISO } from 'date-fns'; // For date formatting
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 
 const Events = () => {
-  const { data: events, isLoading, isError, error } = useQuery<EventType[]>({
+  const { data: events, isLoading, isError, error, refetch } = useQuery<EventType[]>({
     queryKey: ["homepageEvents"], // Unique query key
     queryFn: getEvents,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
@@ -17,10 +18,7 @@ const Events = () => {
     return (
       <section className="relative overflow-hidden border-b border-border py-10 lg:py-24 bg-primary/5">
 
-        <div className="container mx-auto px-4 text-center">
-          <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
-          <p className="mt-6 text-xl font-bold text-muted-foreground uppercase tracking-widest">Зареждане на събития...</p>
-        </div>
+        <div className="container mx-auto px-4"><ContentSkeleton count={3} label="Зареждане на предстоящите събития" /></div>
       </section>
     );
   }
@@ -29,10 +27,7 @@ const Events = () => {
     return (
       <section className="relative overflow-hidden border-b border-border py-10 lg:py-24 bg-primary/5">
 
-        <div className="container mx-auto px-4 text-center text-destructive">
-          <p className="text-xl font-bold uppercase tracking-widest">Грешка при зареждане на събития</p>
-          <p className="mt-2 text-sm opacity-70">{error?.message}</p>
-        </div>
+        <div className="container mx-auto px-4"><QueryErrorState message={error?.message} onRetry={() => void refetch()} /></div>
       </section>
     );
   }
@@ -50,9 +45,7 @@ const Events = () => {
 
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-6 text-4xl font-black tracking-tighter sm:text-5xl lg:text-6xl uppercase">Календар на <span className="text-primary italic">училището</span></h2>
-          <p className="text-xl font-medium text-muted-foreground uppercase tracking-widest">
-            Няма предстоящи събития.
-          </p>
+          <QueryEmptyState title="Няма предстоящи събития" description="Новите дати ще се появят тук веднага след публикуването им." />
         </div>
       </section>
     );

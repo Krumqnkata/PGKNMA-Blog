@@ -1,12 +1,13 @@
 import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/use-auth';
 import { getComments, addComment, Comment as CommentType, User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, MessageSquare, ReplyIcon, CornerDownRight } from 'lucide-react';
 import UserAvatar from '@/components/UserAvatar';
 import { toast } from 'sonner';
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 
 interface CommentItemProps {
     comment: CommentType;
@@ -273,14 +274,11 @@ const Comments = ({ postId }: CommentsProps) => {
             )}
 
             {loadingComments ? (
-                <div className="text-center">
-                    <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
-                    <p className="mt-2 text-muted-foreground">Зареждане на коментари...</p>
-                </div>
+                <ContentSkeleton variant="list" count={3} label="Зареждане на коментарите" />
             ) : commentsError ? (
-                <p className="text-sm text-destructive">{commentsError instanceof Error ? commentsError.message : 'Грешка при зареждане на коментарите.'}</p>
+                <QueryErrorState message={commentsError instanceof Error ? commentsError.message : 'Грешка при зареждане на коментарите.'} onRetry={() => void refetch()} />
             ) : processedComments.length === 0 ? (
-                <p className="text-muted-foreground">Все още няма коментари.</p>
+                <QueryEmptyState title="Все още няма коментари" description="Бъдете първият, който ще се включи в разговора." />
             ) : (
                 <div className="space-y-6">
                     {processedComments.map((comment) => (

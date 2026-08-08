@@ -4,6 +4,7 @@ import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
+import PageErrorBoundary from "@/components/PageErrorBoundary";
 
 const SiteLayout = () => {
   const location = useLocation();
@@ -12,9 +13,11 @@ const SiteLayout = () => {
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
       <div className="flex-1">
-        <div key={location.pathname} className="animate-in fade-in duration-300 motion-reduce:animate-none">
-          <Outlet />
-        </div>
+        <PageErrorBoundary resetKey={location.pathname}>
+          <div key={location.pathname} className="animate-in fade-in duration-300 motion-reduce:animate-none">
+            <Outlet />
+          </div>
+        </PageErrorBoundary>
       </div>
       <Footer />
       <BackToTop />

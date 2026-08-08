@@ -6,7 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { getWeeklyPollStatus, submitWeeklyPollAnswer, PollQuestion, PollOption } from "@/lib/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 import { Link } from "react-router-dom";
 import { PollStatistics } from "@/components/PollStatistics";
 import hljs from '@/lib/syntax-highlighter';
@@ -92,21 +93,17 @@ const WeeklyPollContent = () => {
   );
   
   if (isLoading) {
-    return <div className="text-center">Зареждане на анкетата...</div>;
+    return <ContentSkeleton variant="detail" label="Зареждане на седмичната анкета" />;
   }
 
   if (isError) {
     return (
-      <div className="text-center text-red-500">
-        <p>Грешка при зареждане на анкетата: {error.message}</p>
-        <p>Моля, влезте в профила си, за да участвате.</p>
-        <Button onClick={() => refetch()} className="mt-4">Опитай отново</Button>
-      </div>
+      <QueryErrorState message={error.message} onRetry={() => void refetch()} />
     );
   }
 
   if (!currentQuestion) {
-     return <div className="text-center">Няма активни анкети в момента.</div>;
+     return <QueryEmptyState title="Няма активна анкета" description="Следващият въпрос ще се появи тук, когато бъде публикуван." />;
   }
 
   return (
@@ -215,7 +212,7 @@ const WeeklyPoll = () => {
           </div>
   
           {isLoading ? (
-             <div className="text-center">Зареждане...</div>
+             <ContentSkeleton variant="detail" label="Проверка на потребителската сесия" />
           ): isAuthenticated ? (
             <WeeklyPollContent />
           ) : (

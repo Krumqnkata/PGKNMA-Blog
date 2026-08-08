@@ -7,12 +7,13 @@ import { Loader2, ImageOff, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { AuthenticatedImage } from '@/components/AuthenticatedImage';
+import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 
 const MyMemesList: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: memes, isLoading, isError, error } = useQuery<Meme[], Error>({
+  const { data: memes, isLoading, isError, error, refetch } = useQuery<Meme[], Error>({
     queryKey: ['my-memes'],
     queryFn: getMyMemes,
   });
@@ -46,11 +47,11 @@ const MyMemesList: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+    return <ContentSkeleton count={3} label="Зареждане на вашите мемета" />;
   }
 
   if (isError) {
-    return <div className="text-destructive p-4">Грешка при зареждане на меметата: {error.message}</div>;
+    return <QueryErrorState message={error.message} onRetry={() => void refetch()} />;
   }
 
   if (!memes || memes.length === 0) {

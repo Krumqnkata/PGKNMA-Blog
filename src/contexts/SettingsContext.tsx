@@ -1,14 +1,9 @@
-import { createContext, useContext, useMemo, ReactNode } from 'react';
+import { useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getSiteStatus, SiteStatus } from '@/lib/api';
-
-interface SettingsContextType {
-  settings: SiteStatus | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
-const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
+import { SettingsContext } from '@/contexts/settings-context';
+import type { SettingsContextValue } from '@/contexts/settings-context';
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const { data: settings, isLoading, error } = useQuery<SiteStatus, Error>({
@@ -18,7 +13,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
     retry: false,
   });
 
-  const value = useMemo<SettingsContextType>(() => ({
+  const value = useMemo<SettingsContextValue>(() => ({
     settings: settings ?? null,
     isLoading,
     error: error?.message ?? null,
@@ -29,12 +24,4 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
       {children}
     </SettingsContext.Provider>
   );
-};
-
-export const useSettings = () => {
-  const context = useContext(SettingsContext);
-  if (context === undefined) {
-    throw new Error('useSettings must be used within a SettingsProvider');
-  }
-  return context;
 };

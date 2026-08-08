@@ -9,13 +9,14 @@ import { bg } from "date-fns/locale";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import EventCard from "@/components/events/EventCard";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 
 const SchoolCalendar = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedCategory, setSelectedCategory] = useState("All");
   const isMobile = useIsMobile();
 
-  const { data: events, isLoading, isError, error } = useQuery<Event[]>({
+  const { data: events, isLoading, isError, error, refetch } = useQuery<Event[]>({
     queryKey: ["events"],
     queryFn: getEvents,
     staleTime: 5 * 60 * 1000,
@@ -58,21 +59,13 @@ const SchoolCalendar = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-[60vh] w-full">
-        <main className="py-16 text-center">
-          <p className="text-lg text-muted-foreground">Зареждане на събития...</p>
-        </main>
-      </div>
+      <main className="container min-h-[60vh] py-16"><ContentSkeleton count={3} label="Зареждане на училищния календар" /></main>
     );
   }
 
   if (isError) {
     return (
-      <div className="min-h-[60vh] w-full">
-        <main className="py-16 text-center">
-          <p className="text-lg text-destructive">Грешка при зареждане на събития: {error?.message}</p>
-        </main>
-      </div>
+      <main className="container min-h-[60vh] py-16"><QueryErrorState message={error?.message} onRetry={() => void refetch()} /></main>
     );
   }
 

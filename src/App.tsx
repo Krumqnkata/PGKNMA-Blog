@@ -7,7 +7,8 @@ import { lazy, Suspense } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import MaintenancePage from "./pages/MaintenancePage";
 import { Loader2, LoaderPinwheel } from "lucide-react";
-import { SettingsProvider, useSettings } from "@/contexts/SettingsContext";
+import { SettingsProvider } from "@/contexts/SettingsContext";
+import { useSettings } from "@/hooks/use-settings";
 import FeatureDisabledPage from "./pages/FeatureDisabledPage";
 import CustomCursor from "./components/CustomCursor";
 import { useDisableInspect } from "./hooks/use-disable-inspect";
@@ -17,6 +18,8 @@ import PwaInstallBanner from "@/components/PwaInstallBanner";
 import OfflineStatusToast from "@/components/OfflineStatusToast";
 import SEOManager from "@/components/SEOManager";
 import SiteLayout from "@/components/SiteLayout";
+import PageErrorBoundary from "@/components/PageErrorBoundary";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const Index = lazy(() => import("@/pages/Index"));
 const News = lazy(() => import("@/pages/News"));
@@ -48,6 +51,11 @@ const AppLoadingScreen = () => (
     <div className="flex items-center gap-2 text-muted-foreground">
       <Loader2 className="h-5 w-5 animate-spin text-primary motion-reduce:animate-none" />
       <span>Зареждане...</span>
+    </div>
+    <div className="w-full max-w-md space-y-3" aria-hidden="true">
+      <Skeleton className="h-5 w-3/4" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-4 w-5/6" />
     </div>
   </div>
 );
@@ -104,7 +112,7 @@ const AppContent = () => {
                   <Route path="/easter-egg" element={<EasterEgg />} />
                   <Route path="*" element={<NotFound />} />
                   </Route>
-                  <Route path="/tv" element={<TVScreen />} />
+                  <Route path="/tv" element={<PageErrorBoundary resetKey="tv-screen" variant="tv"><TVScreen /></PageErrorBoundary>} />
                 </Routes>
               </Suspense>
             </BrowserRouter>
