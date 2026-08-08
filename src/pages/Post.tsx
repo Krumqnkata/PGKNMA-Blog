@@ -1,17 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import hljs from 'highlight.js';
-import '@/styles/atom-one-dark.css';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import AudioReader from '@/components/AudioReader';
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
 import UserAvatar from '@/components/UserAvatar';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
-import CookieConsent from "@/components/CookieConsent";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
 import { ShareDropdown } from "@/components/ShareDropdown";
@@ -26,18 +21,33 @@ import Counter from "yet-another-react-lightbox/plugins/counter";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 
+const getReadTime = (content: string, hook: string) => {
+    const wordCount = `${content} ${hook}`.split(/\s+/).filter(Boolean).length;
+    return Math.max(1, Math.ceil(wordCount / 200));
+};
+
 const Post = () => {
     const { id } = useParams<{ id: string }>();
-    const [post, setPost] = useState<PostType | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [pdfOpen, setPdfOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
-    const galleryImages = post?.gallery || [];
+    const { data: postData, isLoading: loading, error: postError } = useQuery({
+        queryKey: ['post', id],
+        queryFn: () => getPost(id!),
+        enabled: Boolean(id),
+        staleTime: 5 * 60 * 1000,
+    });
+    const post: PostType | null = postData ?? null;
+    const error = !id ? 'Липсва идентификатор на публикацията.' : postError instanceof Error ? postError.message : null;
+    const galleryImages = useMemo(() => post?.gallery ?? [], [post?.gallery]);
+    const lightboxSlides = useMemo(() => galleryImages.map((image, index) => ({
+        src: image.image_url,
+        alt: image.alt_text || image.title || `Снимка ${index + 1} към ${post?.title || ''}`,
+    })), [galleryImages, post?.title]);
+    const readTime = useMemo(() => post ? getReadTime(post.content, post.hook) : 0, [post]);
 
     useSEO({
         title: post ? post.title : "Зареждане...",
@@ -47,7 +57,9 @@ const Post = () => {
     });
 
     useEffect(() => {
-        const handleScroll = () => {
+        let animationFrameId: number | null = null;
+        const updateProgress = () => {
+            animationFrameId = null;
             if (!contentRef.current) return;
             
             const rect = contentRef.current.getBoundingClientRect();
@@ -69,44 +81,24 @@ const Post = () => {
                 progress = (currentScroll / totalToScroll) * 100;
             }
             
-            setScrollProgress(Math.min(100, Math.max(0, progress)));
+            const nextProgress = Math.min(100, Math.max(0, progress));
+            setScrollProgress((current) => Math.abs(current - nextProgress) < 0.1 ? current : nextProgress);
         };
 
-        window.addEventListener("scroll", handleScroll);
-        window.addEventListener("resize", handleScroll);
-        
-        // Initial calculation
-        handleScroll();
+        const scheduleProgressUpdate = () => {
+            if (animationFrameId === null) animationFrameId = window.requestAnimationFrame(updateProgress);
+        };
+
+        window.addEventListener("scroll", scheduleProgressUpdate, { passive: true });
+        window.addEventListener("resize", scheduleProgressUpdate);
+        scheduleProgressUpdate();
 
         return () => {
-            window.removeEventListener("scroll", handleScroll);
-            window.removeEventListener("resize", handleScroll);
+            window.removeEventListener("scroll", scheduleProgressUpdate);
+            window.removeEventListener("resize", scheduleProgressUpdate);
+            if (animationFrameId !== null) window.cancelAnimationFrame(animationFrameId);
         };
-    }, [post]);
-
-    useEffect(() => {
-        const fetchPost = async () => {
-            if (id) {
-                setLoading(true);
-                try {
-                    const data = await getPost(id);
-                    if (data) {
-                        setPost(data);
-                        setError(null);
-                    } else {
-                        setError('Публикацията не беше намерена.');
-                    }
-                } catch (err: unknown) {
-                    console.error('Неуспешно извличане на публикацията:', err);
-                    setError(err instanceof Error ? err.message : 'Не може да се зареди публикацията.');
-                } finally {
-                    setLoading(false);
-                }
-            }
-        };
-
-        fetchPost();
-    }, [id]);
+    }, [post?.id]);
 
 
     const getFileIcon = (fileName: string) => {
@@ -137,16 +129,8 @@ const Post = () => {
         }
     };
 
-    const getReadTime = (content: string, hook: string) => {
-        const text = `${content} ${hook}`;
-        const wordsPerMinute = 200;
-        const wordCount = text.split(/\s+/).filter(Boolean).length;
-        return Math.ceil(wordCount / wordsPerMinute);
-    };
-
     return (
-        <div className="min-h-screen w-full bg-background">
-            <Header />
+        <div className="w-full bg-background">
             {/* RGB Reading Progress Bar */}
             <style>
                 {`
@@ -205,7 +189,7 @@ const Post = () => {
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Clock className="h-4 w-4" />
-                                        <span>{getReadTime(post.content, post.hook)} мин. четене</span>
+                                        <span>{readTime} мин. четене</span>
                                     </div>
                                     <ShareDropdown title={post.title} summary={post.hook}>
                                         <button 
@@ -314,18 +298,12 @@ const Post = () => {
                     )}
                 </div>
             </main>
-            <Footer />
-            <BackToTop />
-            <CookieConsent />
 
             {post && galleryImages.length > 0 && (
                 <Lightbox
                     open={lightboxOpen}
                     close={() => setLightboxOpen(false)}
-                    slides={galleryImages.map((image, index) => ({
-                        src: image.image_url,
-                        alt: image.alt_text || image.title || `Снимка ${index + 1} към ${post.title}`,
-                    }))}
+                    slides={lightboxSlides}
                     index={lightboxIndex}
                     plugins={[Zoom, Fullscreen, Thumbnails, Counter]}
                     styles={{ container: { padding: "env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0)" } }}

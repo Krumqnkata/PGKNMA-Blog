@@ -1,6 +1,3 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
 import ParticlesComponent from "@/components/Particles";
 import { useTheme } from "next-themes";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -8,7 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Github, Code2, Rocket, Plus } from "lucide-react";
-import CookieConsent from "@/components/CookieConsent";
 import { Link } from "react-router-dom";
 
 const developers = [
@@ -42,9 +38,8 @@ const Developers = () => {
   const { theme } = useTheme();
   
   return (
-    <div className="min-h-screen w-full flex flex-col relative bg-background font-sofia">
+    <div className="relative flex w-full flex-col bg-background font-sofia">
       <ParticlesComponent id="tsparticles" theme={theme} />
-      <Header />
       
       <main className="flex-grow container mx-auto px-4 py-16 relative z-10">
         <div className="max-w-4xl mx-auto text-center mb-16 space-y-4">
@@ -152,9 +147,6 @@ const Developers = () => {
         </div>
       </main>
 
-      <Footer />
-      <BackToTop />
-      <CookieConsent/>
     </div>
   );
 };

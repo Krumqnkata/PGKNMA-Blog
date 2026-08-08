@@ -38,9 +38,6 @@ export default defineConfig(({ mode }) => {
             // Markdown обработка
             'markdown-base': ['react-markdown', 'remark-gfm', 'rehype-raw'],
             
-            // Синтактично подчертаване (основният ти проблем - 1.1MB)
-            'syntax-highlight': ['highlight.js'],
-            
             // Графики
             'charts': ['recharts'],
             

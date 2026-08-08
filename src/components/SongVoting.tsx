@@ -1,10 +1,9 @@
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApprovedSongs, voteForSong, ApprovedSong } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { ThumbsUp, Loader2, ServerCrash, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SongMediaDisplay from './SongMediaDisplay';
@@ -13,6 +12,7 @@ export function SongVoting() {
     const { isAuthenticated } = useAuth();
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const [isExporting, setIsExporting] = useState(false);
 
     const { data: songs, isLoading, isError, error } = useQuery({
         queryKey: ['approvedSongs'],
@@ -52,7 +52,13 @@ export function SongVoting() {
         return text.split('').map(char => cyrillicToLatin[char] || char).join('');
     };
 
-    const exportToPDF = () => {
+    const exportToPDF = async () => {
+        setIsExporting(true);
+        try {
+        const [{ default: jsPDF }, { default: autoTable }] = await Promise.all([
+            import('jspdf'),
+            import('jspdf-autotable'),
+        ]);
         const doc = new jsPDF();
         
         doc.setFontSize(18);
@@ -81,6 +87,15 @@ export function SongVoting() {
         });
 
         doc.save(`predlozheniya-zvunec.pdf`);
+        } catch (error) {
+            toast({
+                title: "Грешка при експортиране",
+                description: error instanceof Error ? error.message : "PDF файлът не можа да бъде създаден.",
+                variant: "destructive",
+            });
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     if (isLoading) {
@@ -116,13 +131,15 @@ export function SongVoting() {
         <section className="container mx-auto px-4 py-12 relative">
             <div className="absolute right-4 top-4 md:right-8 md:top-8">
                 <Button 
-                    onClick={exportToPDF} 
+                    onClick={() => void exportToPDF()}
+                    disabled={isExporting}
                     variant="ghost" 
                     size="icon" 
-                    title="Експортирай в PDF" 
+                    title="Експортирай в PDF"
+                    aria-label="Експортирай предложенията в PDF"
                     className="text-muted-foreground hover:text-primary transition-colors"
                 >
-                    <Download className="h-5 w-5" />
+                    {isExporting ? <Loader2 className="h-5 w-5 animate-spin" /> : <Download className="h-5 w-5" />}
                 </Button>
             </div>
 

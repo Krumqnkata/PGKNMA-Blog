@@ -2,8 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import hljs from 'highlight.js';
-import { useEffect } from 'react';
+import hljs from '@/lib/syntax-highlighter';
 
 interface MarkdownRendererProps {
   content: string;
@@ -16,20 +15,6 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
   className = "prose prose-lg max-w-none break-words prose-headings:mb-4 prose-headings:mt-6 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:my-4 prose-ul:my-4 prose-ol:my-4 prose-li:my-1 prose-blockquote:my-4 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:bg-muted prose-pre:my-4 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-img:my-4 prose-img:max-w-full prose-img:rounded-lg prose-table:my-4 prose-th:font-semibold prose-th:border prose-th:px-3 prose-th:py-2 prose-td:border prose-td:px-3 prose-td:py-2 prose-a:text-primary prose-a:underline hover:prose-a:no-underline prose-strong:font-semibold prose-em:italic dark:prose-invert",
   onPdfClick
 }) => {
-  useEffect(() => {
-    // Wait for DOM to update before applying syntax highlighting
-    const timer = setTimeout(() => {
-      document.querySelectorAll('pre code').forEach((block) => {
-        // Only apply highlighting if it hasn't been highlighted yet
-        if (!block.classList.contains('hljs')) {
-          hljs.highlightElement(block as HTMLElement);
-        }
-      });
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [content]);
-
   return (
     <div className={className}>
       <ReactMarkdown
@@ -38,29 +23,26 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
         components={{
           code({ node, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
-            // Check if this is inline code (no language specified) or a code block
             if (match) {
-              // This is a code block - it will be handled by the pre component
+              const language = match[1].toLowerCase();
+              const code = String(children).replace(/\n$/, '');
+              const highlighted = hljs.getLanguage(language)
+                ? hljs.highlight(code, { language }).value
+                : hljs.highlightAuto(code).value;
               return (
-                <code className={className} {...props}>
-                  {children}
-                </code>
-              );
-            } else {
-              // This is inline code
-              return (
-                <code className={`${className} bg-muted rounded px-1.5 py-0.5 font-mono text-sm`} {...props}>
-                  {children}
-                </code>
+                <code className={`${className} hljs`} dangerouslySetInnerHTML={{ __html: highlighted }} {...props} />
               );
             }
+            return (
+              <code className={`${className ?? ''} rounded bg-muted px-1.5 py-0.5 font-mono text-sm`} {...props}>
+                {children}
+              </code>
+            );
           },
           pre({ node, className, children, ...props }) {
             return (
               <pre className={`${className} bg-secondary rounded-lg p-4 overflow-x-auto`} {...props}>
-                <code className={className} {...props}>
-                  {children}
-                </code>
+                {children}
               </pre>
             );
           },

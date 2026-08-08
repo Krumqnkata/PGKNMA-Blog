@@ -1,5 +1,5 @@
-import { createContext, useContext, ReactNode } from 'react';
-import { useQuery } from '@tanstack/react-query'; // New import
+import { createContext, useContext, useMemo, ReactNode } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { getSiteStatus, SiteStatus } from '@/lib/api';
 
 interface SettingsContextType {
@@ -12,20 +12,20 @@ const SettingsContext = createContext<SettingsContextType | undefined>(undefined
 
 export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const { data: settings, isLoading, error } = useQuery<SiteStatus, Error>({
-    queryKey: ['siteSettings'],
+    queryKey: ['siteStatus'],
     queryFn: getSiteStatus,
-    refetchInterval: 60000, // Refetch every 60 seconds
-    initialData: { // Provide initial data for immediate rendering, then update
-        maintenance_mode: false,
-        enable_bell_suggestions: true,
-        enable_weekly_poll: true,
-        enable_meme_of_the_week: true,
-        enable_user_registration: true,
-    },
+    refetchInterval: 30_000,
+    retry: false,
   });
 
+  const value = useMemo<SettingsContextType>(() => ({
+    settings: settings ?? null,
+    isLoading,
+    error: error?.message ?? null,
+  }), [error, isLoading, settings]);
+
   return (
-    <SettingsContext.Provider value={{ settings: settings || null, isLoading, error: error?.message || null }}>
+    <SettingsContext.Provider value={value}>
       {children}
     </SettingsContext.Provider>
   );

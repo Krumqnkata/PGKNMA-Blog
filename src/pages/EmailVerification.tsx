@@ -2,9 +2,6 @@ import { useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { CheckCircle2, CircleAlert, Loader2, MailCheck, RefreshCw } from "lucide-react";
 
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import CookieConsent from "@/components/CookieConsent";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
@@ -48,8 +45,7 @@ const EmailVerification = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <Header />
+    <div className="flex min-h-[65vh] flex-col bg-background">
       <main className="flex flex-1 items-center justify-center px-4 py-16">
         <section className="w-full max-w-lg rounded-2xl border bg-card p-6 text-center shadow-sm sm:p-10">
           <div className={`mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full ${successful ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"}`}>
@@ -86,8 +82,6 @@ const EmailVerification = () => {
           )}
         </section>
       </main>
-      <Footer />
-      <CookieConsent />
     </div>
   );
 };

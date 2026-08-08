@@ -23,10 +23,6 @@ import { Separator } from "@/components/ui/separator";
 import { getProgramSchedule, getSiteStatus, SiteStatus } from '@/lib/api';
 
 // Import layout components
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
-import CookieConsent from "@/components/CookieConsent";
 import FeatureDisabledPage from './FeatureDisabledPage'; // Import the new component
 
 // Define the structure of a schedule row
@@ -175,8 +171,7 @@ const Program: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background">
-      <Header />
+    <div className="w-full bg-background">
       <main>
         {/* Hero Section */}
         <section className="w-full bg-gradient-to-br from-primary/10 via-transparent to-transparent pt-16 pb-12 md:pt-24">
@@ -196,9 +191,6 @@ const Program: React.FC = () => {
             </div>
         </section>
       </main>
-      <Footer />
-      <BackToTop />
-      <CookieConsent />
     </div>
   );
 };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useGlobalState } from '@/contexts/GlobalStateContext';
+import { useQuery } from '@tanstack/react-query';
+import { getNotifications, Notification } from '@/lib/api';
 import { Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,10 +36,12 @@ const readMapFromStorage = (): ReadMap => {
 };
 
 const NotificationBell: React.FC = () => {
-  const { 
-    notifications: { data: notifications, isLoading, error }, 
-    notificationsEnabled 
-  } = useGlobalState();
+  const { data: notifications, isLoading, error } = useQuery<Notification[], Error>({
+    queryKey: ['notifications'],
+    queryFn: getNotifications,
+    refetchInterval: 5 * 60 * 1000,
+    retry: false,
+  });
 
   const [isOpen, setIsOpen] = useState(false);
   const popoverContentRef = useRef<HTMLDivElement>(null);
@@ -168,10 +171,6 @@ const NotificationBell: React.FC = () => {
       return '';
     }
   };
-
-  if (!notificationsEnabled) {
-    return null;
-  }
 
   return (
     <>

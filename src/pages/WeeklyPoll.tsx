@@ -1,19 +1,15 @@
 import { useCallback, useMemo, useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
-import CookieConsent from "@/components/CookieConsent";
 import { getWeeklyPollStatus, submitWeeklyPollAnswer, PollQuestion, PollOption } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { PollStatistics } from "@/components/PollStatistics";
-import hljs from 'highlight.js';
+import hljs from '@/lib/syntax-highlighter';
 
 type AnswerKey = "a" | "b" | "c" | "d";
 
@@ -24,7 +20,6 @@ const WeeklyPollContent = () => {
 
   const { data: pollStatus, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["weeklyPollStatus"],
-    queryKeyHash: 'weeklyPollStatus',
     queryFn: getWeeklyPollStatus,
     staleTime: Infinity,
   });
@@ -209,8 +204,7 @@ const WeeklyPoll = () => {
     const { isAuthenticated, isLoading, openLoginDialog } = useAuth();
   
     return (
-      <div className="min-h-screen w-full bg-background text-foreground">
-        <Header />
+      <div className="w-full bg-background text-foreground">
         <main className="container mx-auto px-4 py-12">
           <div className="mb-10 text-center">
             <Badge variant="secondary" className="mb-3">Седмична анкета</Badge>
@@ -237,9 +231,6 @@ const WeeklyPoll = () => {
             <PollStatistics />
           </div>
         </main>
-        <Footer />
-        <BackToTop />
-        <CookieConsent />
       </div>
     );
   };

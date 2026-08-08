@@ -1,12 +1,7 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
 import { ContactForm } from "@/components/ContactForm";
-import CookieConsent from "@/components/CookieConsent";
 const Contact = () => {
   return (
-    <div className="min-h-screen w-full">
-      <Header />
+    <div className="w-full">
       <main className="py-12 px-4 md:px-6">
         <div className="container mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">Контакти</h1>
@@ -34,9 +29,6 @@ const Contact = () => {
           </div>
         </div>
       </main>
-      <Footer />
-      <BackToTop />
-      <CookieConsent/>
     </div>
   );
 };

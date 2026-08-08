@@ -3,38 +3,12 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { AuthProvider } from "./contexts/AuthContext";
-import Index from "./pages/Index";
-import News from "./pages/News";
-import SchoolCalendar from "./pages/SchoolCalendar";
-import BellSuggest from "./pages/BellSuggest";
-import WeeklyPoll from "./pages/WeeklyPoll";
-import MemeOfTheWeek from "./pages/MemeOfTheWeek";
-import NotFound from "./pages/NotFound";
-import Contact from "./pages/Contact";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import Developers from "./pages/Developers";
-import Post from "./pages/Post";
-import Program from "./pages/Program";
-import MyProfilePage from "./pages/MyProfilePage";
-import ProtectedRoute from "./components/ProtectedRoute";
-import Changelog from "./pages/Changelog";
-import TVScreen from "./pages/TVScreen";
-import FAQ from "./pages/FAQ";
-import EmailVerification from "./pages/EmailVerification";
-
-
-// New imports
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getSiteStatus } from "./lib/api";
+import { lazy, Suspense } from "react";
+import { AuthProvider } from "@/contexts/AuthContext";
 import MaintenancePage from "./pages/MaintenancePage";
 import { Loader2, LoaderPinwheel } from "lucide-react";
-import { SettingsProvider, useSettings } from "./contexts/SettingsContext"; // Import SettingsProvider and useSettings
+import { SettingsProvider, useSettings } from "@/contexts/SettingsContext";
 import FeatureDisabledPage from "./pages/FeatureDisabledPage";
-import { GlobalStateProvider } from "./contexts/GlobalStateContext"; // Import global state context
-import EasterEgg from "./pages/EasterEgg";
 import CustomCursor from "./components/CustomCursor";
 import { useDisableInspect } from "./hooks/use-disable-inspect";
 import ScrollToTop from "./components/ScrollToTop";
@@ -42,49 +16,56 @@ import FloatingFAQ from "./components/FloatingFAQ";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import OfflineStatusToast from "@/components/OfflineStatusToast";
 import SEOManager from "@/components/SEOManager";
+import SiteLayout from "@/components/SiteLayout";
+
+const Index = lazy(() => import("@/pages/Index"));
+const News = lazy(() => import("@/pages/News"));
+const SchoolCalendar = lazy(() => import("@/pages/SchoolCalendar"));
+const BellSuggest = lazy(() => import("@/pages/BellSuggest"));
+const WeeklyPoll = lazy(() => import("@/pages/WeeklyPoll"));
+const MemeOfTheWeek = lazy(() => import("@/pages/MemeOfTheWeek"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
+const Contact = lazy(() => import("@/pages/Contact"));
+const PrivacyPolicy = lazy(() => import("@/pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("@/pages/TermsOfService"));
+const Developers = lazy(() => import("@/pages/Developers"));
+const Post = lazy(() => import("@/pages/Post"));
+const Program = lazy(() => import("@/pages/Program"));
+const MyProfilePage = lazy(() => import("@/pages/MyProfilePage"));
+const ProtectedRoute = lazy(() => import("@/components/ProtectedRoute"));
+const Changelog = lazy(() => import("@/pages/Changelog"));
+const TVScreen = lazy(() => import("@/pages/TVScreen"));
+const FAQ = lazy(() => import("@/pages/FAQ"));
+const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
+const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
+
+const AppLoadingScreen = () => (
+  <div className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-foreground" role="status" aria-live="polite">
+    <div className="relative">
+      <LoaderPinwheel className="h-14 w-14 animate-spin text-primary motion-reduce:animate-none" />
+      <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping-slow motion-reduce:animate-none" />
+    </div>
+    <div className="flex items-center gap-2 text-muted-foreground">
+      <Loader2 className="h-5 w-5 animate-spin text-primary motion-reduce:animate-none" />
+      <span>Зареждане...</span>
+    </div>
+  </div>
+);
 
 const AppContent = () => {
   // Disable inspect tools (right click, F12, etc.)
   useDisableInspect();
 
-  // Get site status from useQuery (this remains local for now)
-  const { data: siteStatus, isLoading: isSiteStatusLoading, isError: isSiteStatusError } = useQuery({
-    queryKey: ['siteStatus'],
-    queryFn: getSiteStatus,
-    refetchInterval: 30000, // Refetch every 30 seconds
-  });
-
-  const maintenanceMode = siteStatus?.maintenance_mode ?? false;
-
-  // Use useSettings here to access feature flags
-  const { settings: settingsData, isLoading: isSettingsLoading } = useSettings(); // Get settings from context
-
-  // Set initial dark theme for loading screen
-  useEffect(() => {
-    // Always set dark theme during loading
-    document.documentElement.classList.add('dark');
-    document.documentElement.classList.remove('light');
-  }, []);
+  const { settings: settingsData, isLoading, error } = useSettings();
 
   // Show loading screen if any critical data is still loading
-  if (isSiteStatusLoading || isSettingsLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
-        <div className="relative">
-          <LoaderPinwheel className="h-16 w-16 text-blue-400 animate-pulse animate-spin" />
-          <div className="absolute inset-0 rounded-full border border-blue-400/30 animate-ping-slow"></div>
-        </div>
-        <div className="mt-8 flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin text-blue-400" />
-          <span className="text-lg">Зареждане...</span>
-        </div>
-      </div>
-    );
+  if (isLoading) {
+    return <AppLoadingScreen />;
   }
 
   // Show maintenance page if in maintenance mode or a critical error occurred
-  if (maintenanceMode || isSiteStatusError) {
-    return <MaintenancePage isBackendError={isSiteStatusError} />;
+  if (settingsData?.maintenance_mode || error) {
+    return <MaintenancePage isBackendError={Boolean(error)} />;
   }
 
   return (
@@ -100,7 +81,9 @@ const AppContent = () => {
                 <ScrollToTop />
                 <FloatingFAQ />
                 <SEOManager />
+              <Suspense fallback={<AppLoadingScreen />}>
                 <Routes>
+                  <Route element={<SiteLayout />}>
                   <Route path="/" element={<Index />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/post/:id" element={<Post />} />
@@ -118,10 +101,12 @@ const AppContent = () => {
                   <Route path="/developers" element={<Developers />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/verify-email" element={<EmailVerification />} />
-                  <Route path="/tv" element={<TVScreen />} />
-                  <Route path="*" element={<NotFound />} />
                   <Route path="/easter-egg" element={<EasterEgg />} />
+                  <Route path="*" element={<NotFound />} />
+                  </Route>
+                  <Route path="/tv" element={<TVScreen />} />
                 </Routes>
+              </Suspense>
             </BrowserRouter>
           </TooltipProvider>
       </AuthProvider>
@@ -132,9 +117,7 @@ const AppContent = () => {
 const App = () => {
   return (
     <SettingsProvider>
-      <GlobalStateProvider>
-        <AppContent />
-      </GlobalStateProvider>
+      <AppContent />
     </SettingsProvider>
   );
 };
