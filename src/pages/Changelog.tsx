@@ -1,19 +1,18 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getChangelog } from '@/lib/api';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Loader2 } from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import MainLayout from '@/components/MainLayout';
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 interface ChangelogEntry {
   content: string;
   updated_at: string;
 }
 
 const Changelog: React.FC = () => {
-  const { data: changelogEntries, isLoading, error } = useQuery<ChangelogEntry[], Error>({
+  const { data: changelogEntries, isLoading, error, refetch } = useQuery<ChangelogEntry[], Error>({
     queryKey: ['changelog'],
     queryFn: getChangelog,
   });
@@ -31,12 +30,7 @@ const Changelog: React.FC = () => {
   if (isLoading) {
     return (
       <MainLayout>
-        <div className="container mx-auto py-10 flex justify-center items-center">
-          <div className="flex flex-col items-center">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="mt-4 text-lg text-muted-foreground">Зареждане на промените...</p>
-          </div>
-        </div>
+        <div className="container mx-auto py-10"><ContentSkeleton variant="list" count={3} label="Зареждане на историята на промените" className="mx-auto max-w-4xl" /></div>
       </MainLayout>
     );
   }
@@ -44,22 +38,7 @@ const Changelog: React.FC = () => {
   if (error) {
     return (
       <MainLayout>
-        <div className="container mx-auto py-10">
-          <Card className="max-w-2xl mx-auto">
-            <CardHeader>
-              <CardTitle className="text-red-600">Грешка</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>Възникна грешка при зареждането на промените: {error.message}</p>
-              <Button 
-                onClick={() => window.location.reload()} 
-                className="mt-4"
-              >
-                Опитай отново
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <div className="container mx-auto py-10"><QueryErrorState className="mx-auto max-w-2xl" message={error.message} onRetry={() => void refetch()} /></div>
       </MainLayout>
     );
   }
@@ -86,11 +65,7 @@ const Changelog: React.FC = () => {
               ))}
             </div>
           ) : (
-            <Card>
-              <CardContent className="py-10 text-center">
-                <p className="text-muted-foreground">Все още няма записани промени.</p>
-              </CardContent>
-            </Card>
+            <QueryEmptyState title="Все още няма записани промени" description="Историята на следващите версии ще се показва тук." />
           )}
         </div>
       </div>

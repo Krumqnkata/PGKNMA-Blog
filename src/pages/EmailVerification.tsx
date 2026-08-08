@@ -4,7 +4,7 @@ import { CheckCircle2, CircleAlert, Loader2, MailCheck, RefreshCw } from "lucide
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
 import { resendVerificationEmail } from "@/lib/api";
 
 const EmailVerification = () => {

@@ -7,12 +7,13 @@ import { Loader2, MicOff, Trash2 } from 'lucide-react';
 import SongMediaDisplay from './SongMediaDisplay';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 
 const MySongSuggestionsList: React.FC = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: songs, isLoading, isError, error } = useQuery<ApprovedSong[], Error>({
+  const { data: songs, isLoading, isError, error, refetch } = useQuery<ApprovedSong[], Error>({
     queryKey: ['my-song-suggestions'],
     queryFn: getMySongSuggestions,
   });
@@ -48,11 +49,11 @@ const MySongSuggestionsList: React.FC = () => {
   };
 
   if (isLoading) {
-    return <div className="flex justify-center items-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
+    return <ContentSkeleton variant="list" count={3} label="Зареждане на предложенията за песни" />;
   }
 
   if (isError) {
-    return <div className="text-destructive p-4">Грешка при зареждане на песните: {error.message}</div>;
+    return <QueryErrorState message={error.message} onRetry={() => void refetch()} />;
   }
 
   if (!songs || songs.length === 0) {

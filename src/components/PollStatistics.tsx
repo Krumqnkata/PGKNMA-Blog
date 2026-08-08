@@ -2,19 +2,21 @@ import { useQuery } from "@tanstack/react-query";
 import { getPollStatistics } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, CheckCircle2, CircleHelp, Trophy, Users } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const PollStatistics = () => {
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: ["pollStatistics"],
     queryFn: getPollStatistics,
   });
 
   if (isLoading) {
-    return <div className="mt-8 grid gap-4 sm:grid-cols-3">{[1, 2, 3].map((item) => <Card key={item} className="h-32 animate-pulse bg-muted" />)}</div>;
+    return <div role="status" aria-label="Зареждане на статистиката" className="mt-8 grid gap-4 sm:grid-cols-3">{[1, 2, 3].map((item) => <Card key={item} className="space-y-4 p-6"><Skeleton className="h-4 w-2/3" /><Skeleton className="h-9 w-1/3" /></Card>)}</div>;
   }
 
   if (isError) {
-    return <Card className="mt-8 border-destructive/50 bg-destructive/10"><CardContent className="flex gap-2 p-6 text-destructive"><AlertCircle size={20} />{error.message}</CardContent></Card>;
+    return <Card className="mt-8 border-destructive/50 bg-destructive/10"><CardContent role="alert" className="flex flex-col items-start gap-3 p-6 text-destructive"><div className="flex gap-2"><AlertCircle size={20} />{error.message}</div><Button size="sm" variant="outline" onClick={() => void refetch()}>Опитай отново</Button></CardContent></Card>;
   }
 
   const statistics = [

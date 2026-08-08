@@ -8,7 +8,7 @@ import MySongSuggestionsList from '@/components/MySongSuggestionsList';
 import MyMemesList from '@/components/MyMemesList';
 import RulesContent from '@/components/RulesContent'; // Import the new component
 import LoginSessions from '@/components/LoginSessions';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield, History } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation

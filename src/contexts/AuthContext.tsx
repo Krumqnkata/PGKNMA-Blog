@@ -1,23 +1,9 @@
-import { createContext, useState, useEffect, useContext, useCallback, useMemo, ReactNode } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, getCurrentProfile, LoginCredentials, RegisterCredentials, RegistrationResponse, User } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
-
-interface AuthContextType {
-    user: User | null;
-    isAuthenticated: boolean;
-    login: (credentials: LoginCredentials) => Promise<void>;
-    loginWithGoogle: (credential: string) => Promise<void>;
-    register: (credentials: RegisterCredentials) => Promise<RegistrationResponse>;
-    logout: () => Promise<void>;
-    loading: boolean;
-    isLoading: boolean;
-    loginDialogOpen: boolean;
-    openLoginDialog: () => void;
-    closeLoginDialog: () => void;
-    updateUser: (user: User) => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+import { AuthContext } from '@/contexts/auth-context';
+import type { AuthContextValue } from '@/contexts/auth-context';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
@@ -150,7 +136,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('user', JSON.stringify(updatedUser));
     }, []);
 
-    const value = useMemo<AuthContextType>(() => ({
+    const value = useMemo<AuthContextValue>(() => ({
             user, 
             isAuthenticated: !!accessToken, 
             login, 
@@ -170,12 +156,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             {children}
         </AuthContext.Provider>
     );
-};
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === undefined) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
 };

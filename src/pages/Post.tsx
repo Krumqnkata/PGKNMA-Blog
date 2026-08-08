@@ -6,7 +6,7 @@ import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Loader2, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
+import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
 import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import Comments from '@/components/Comments';
 import { ShareDropdown } from "@/components/ShareDropdown";
@@ -18,6 +18,7 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Counter from "yet-another-react-lightbox/plugins/counter";
+import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 
@@ -34,7 +35,7 @@ const Post = () => {
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
     const [pdfOpen, setPdfOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
-    const { data: postData, isLoading: loading, error: postError } = useQuery({
+    const { data: postData, isLoading: loading, error: postError, refetch } = useQuery({
         queryKey: ['post', id],
         queryFn: () => getPost(id!),
         enabled: Boolean(id),
@@ -158,14 +159,9 @@ const Post = () => {
             <main className="py-12 md:py-16">
                 <div className="container mx-auto px-4">
                     {loading ? (
-                        <div className="text-center">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-                            <p className="mt-4 text-lg text-muted-foreground">Зареждане на публикацията...</p>
-                        </div>
+                        <ContentSkeleton variant="detail" label="Зареждане на публикацията" />
                     ) : error ? (
-                        <div className="py-12 text-center text-destructive">
-                            <p className="text-lg font-semibold">{error}</p>
-                        </div>
+                        <QueryErrorState className="mx-auto max-w-2xl" message={error} onRetry={id ? () => void refetch() : undefined} />
                     ) : post && id ? (
                         <article className="max-w-4xl mx-auto">
                             <div ref={contentRef}>

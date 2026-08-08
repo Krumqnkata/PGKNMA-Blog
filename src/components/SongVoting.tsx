@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getApprovedSongs, voteForSong, ApprovedSong } from "@/lib/api";
-import { useAuth } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ThumbsUp, Loader2, ServerCrash, Download } from "lucide-react";
+import { ThumbsUp, Loader2, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SongMediaDisplay from './SongMediaDisplay';
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 
 export function SongVoting() {
     const { isAuthenticated } = useAuth();
@@ -14,7 +15,7 @@ export function SongVoting() {
     const { toast } = useToast();
     const [isExporting, setIsExporting] = useState(false);
 
-    const { data: songs, isLoading, isError, error } = useQuery({
+    const { data: songs, isLoading, isError, error, refetch } = useQuery({
         queryKey: ['approvedSongs'],
         queryFn: getApprovedSongs,
     });
@@ -100,20 +101,13 @@ export function SongVoting() {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center space-x-2 py-8">
-                <Loader2 className="h-6 w-6 animate-spin" />
-                <span>Зареждане на песните за гласуване...</span>
-            </div>
+            <ContentSkeleton count={3} label="Зареждане на песните за гласуване" />
         );
     }
 
     if (isError) {
         return (
-            <div className="flex flex-col items-center justify-center space-y-2 py-8 text-red-500">
-                <ServerCrash className="h-8 w-8" />
-                <span className="font-semibold">Грешка при зареждане</span>
-                <p>{error?.message || "Не успяхме да заредим песните. Моля, опитайте по-късно."}</p>
-            </div>
+            <QueryErrorState message={error?.message} onRetry={() => void refetch()} />
         );
     }
 
@@ -121,9 +115,7 @@ export function SongVoting() {
 
     if (safeSongs.length === 0) {
         return (
-            <div className="text-center py-8 text-gray-500">
-                <p>Все още няма одобрени песни за гласуване.</p>
-            </div>
+            <QueryEmptyState title="Все още няма песни за гласуване" description="Одобрените предложения ще се появят тук." />
         );
     }
 

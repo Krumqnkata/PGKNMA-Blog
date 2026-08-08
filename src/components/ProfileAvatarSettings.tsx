@@ -15,7 +15,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Slider } from '@/components/ui/slider';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/hooks/use-auth';
 import { useToast } from '@/hooks/use-toast';
 import {
   getCurrentProfile,
@@ -27,6 +27,8 @@ import {
 } from '@/lib/api';
 import { cropAvatarToWebp } from '@/lib/crop-avatar';
 import { cn } from '@/lib/utils';
+import { Skeleton } from '@/components/ui/skeleton';
+import { QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 
 const DEFAULT_MAX_BYTES = 5 * 1024 * 1024;
 const DEFAULT_OUTPUT_SIZE = 512;
@@ -225,15 +227,13 @@ const ProfileAvatarSettings = () => {
           <h3 className="font-semibold">Готови училищни аватари</h3>
         </div>
         {profileQuery.isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" /> Зареждане на аватарите…
+          <div role="status" aria-label="Зареждане на готовите аватари" className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+            {[1, 2, 3, 4, 5, 6].map((item) => <Skeleton key={item} className="aspect-square rounded-xl" />)}
           </div>
         ) : profileQuery.isError ? (
-          <p className="text-sm text-destructive">
-            {profileQuery.error instanceof Error
-              ? profileQuery.error.message
-              : 'Готовите аватари не могат да бъдат заредени.'}
-          </p>
+          <QueryErrorState message={profileQuery.error instanceof Error ? profileQuery.error.message : 'Готовите аватари не могат да бъдат заредени.'} onRetry={() => void profileQuery.refetch()} />
+        ) : !options?.presets.length ? (
+          <QueryEmptyState title="Няма готови аватари" description="Все още можете да качите собствена снимка или да използвате инициали." />
         ) : (
           <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
             {options?.presets.map((preset) => {
