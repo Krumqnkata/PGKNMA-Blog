@@ -55,7 +55,8 @@ const SchoolCalendar = () => {
     return (events ?? [])
       .filter((event) => parseISO(event.start_datetime).getTime() >= now)
       .filter((event) => selectedCategory === "All" || event.category === selectedCategory)
-      .toSorted((a, b) => parseISO(a.start_datetime).getTime() - parseISO(b.start_datetime).getTime());
+      .slice()
+      .sort((a, b) => parseISO(a.start_datetime).getTime() - parseISO(b.start_datetime).getTime());
   }, [events, selectedCategory]);
 
   if (isLoading) {

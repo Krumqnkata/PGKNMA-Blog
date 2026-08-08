@@ -270,7 +270,6 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
               theme="filled_blue"
               shape="rectangular"
               text="signin_with"
-              locale="bg"
               width={googleButtonWidth}
             />
           </div>

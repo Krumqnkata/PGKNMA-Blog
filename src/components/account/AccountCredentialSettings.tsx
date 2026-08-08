@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/use-auth";
 import { getPasswordsMatch, usePasswordValidation, useUsernameValidation } from "@/hooks/use-credential-validation";
 import { useToast } from "@/hooks/use-toast";
-import { changeUsername, updateUserPassword } from "@/lib/api";
+import { changeUsername, updateUserPassword, type PasswordChangeData, type UsernameChangeData } from "@/lib/api";
 
 const passwordSchema = z.object({
   current_password: z.string().min(1, "Текущата парола е задължителна."),
@@ -78,7 +78,7 @@ const AccountCredentialSettings = () => {
           <CardDescription>След успешна промяна ще бъдете отписани с цел сигурност.</CardDescription>
         </CardHeader>
         <Form {...usernameForm}>
-          <form onSubmit={usernameForm.handleSubmit((values) => usernameMutation.mutate(values))}>
+          <form onSubmit={usernameForm.handleSubmit((values) => usernameMutation.mutate(values as UsernameChangeData))}>
             <CardContent className="space-y-4">
               <FormField control={usernameForm.control} name="new_username" render={({ field }) => (
                 <FormItem>
@@ -116,7 +116,7 @@ const AccountCredentialSettings = () => {
           <CardDescription>Изберете силна нова парола. След промяната ще бъдете отписани.</CardDescription>
         </CardHeader>
         <Form {...passwordForm}>
-          <form onSubmit={passwordForm.handleSubmit((values) => passwordMutation.mutate(values))}>
+          <form onSubmit={passwordForm.handleSubmit((values) => passwordMutation.mutate(values as PasswordChangeData))}>
             <CardContent className="space-y-4">
               <FormField control={passwordForm.control} name="current_password" render={({ field }) => (
                 <FormItem>
