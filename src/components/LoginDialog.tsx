@@ -153,7 +153,7 @@ const LoginDialog = ({ open, onOpenChange, onOpenRegister }) => {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="max-h-[calc(100dvh-1rem)] w-[calc(100vw-1rem)] overflow-y-auto overscroll-contain p-4 sm:max-h-[calc(100dvh-2rem)] sm:max-w-md sm:p-6">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold">Вход</DialogTitle>
           <DialogDescription>
