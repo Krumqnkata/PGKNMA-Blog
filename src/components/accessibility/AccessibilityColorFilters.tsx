@@ -1,23 +1,26 @@
 export default function AccessibilityColorFilters() {
   return (
-    <svg className="pointer-events-none absolute h-0 w-0" aria-hidden="true" focusable="false">
+    <svg className="pointer-events-none fixed h-0 w-0 overflow-hidden" aria-hidden="true" focusable="false">
       <defs>
-        <filter id="accessibility-protanopia" colorInterpolationFilters="sRGB">
+        <filter id="accessibility-protanopia" x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
           <feColorMatrix
+            in="SourceGraphic"
             type="matrix"
-            values="0.567 0.433 0 0 0  0.558 0.442 0 0 0  0 0.242 0.758 0 0  0 0 0 1 0"
+            values="0.152286 1.052583 -0.204868 0 0  0.114503 0.786281 0.099216 0 0  -0.003882 -0.048116 1.051998 0 0  0 0 0 1 0"
           />
         </filter>
-        <filter id="accessibility-deuteranopia" colorInterpolationFilters="sRGB">
+        <filter id="accessibility-deuteranopia" x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
           <feColorMatrix
+            in="SourceGraphic"
             type="matrix"
-            values="0.625 0.375 0 0 0  0.7 0.3 0 0 0  0 0.3 0.7 0 0  0 0 0 1 0"
+            values="0.367322 0.860646 -0.227968 0 0  0.280085 0.672501 0.047413 0 0  -0.011820 0.042940 0.968881 0 0  0 0 0 1 0"
           />
         </filter>
-        <filter id="accessibility-tritanopia" colorInterpolationFilters="sRGB">
+        <filter id="accessibility-tritanopia" x="-10%" y="-10%" width="120%" height="120%" colorInterpolationFilters="sRGB">
           <feColorMatrix
+            in="SourceGraphic"
             type="matrix"
-            values="0.95 0.05 0 0 0  0 0.433 0.567 0 0  0 0.475 0.525 0 0  0 0 0 1 0"
+            values="1.255528 -0.076749 -0.178779 0 0  -0.078411 0.930809 0.147602 0 0  0.004733 0.691367 0.303900 0 0  0 0 0 1 0"
           />
         </filter>
       </defs>

@@ -202,22 +202,6 @@ html[data-accessibility-contrast="high"] a:not([class*="no-underline"]) {
   text-underline-offset: 0.2em;
 }
 
-html[data-accessibility-monochrome="true"] {
-  filter: grayscale(1);
-}
-
-html[data-accessibility-color-vision="protanopia"] {
-  filter: url("#accessibility-protanopia");
-}
-
-html[data-accessibility-color-vision="deuteranopia"] {
-  filter: url("#accessibility-deuteranopia");
-}
-
-html[data-accessibility-color-vision="tritanopia"] {
-  filter: url("#accessibility-tritanopia");
-}
-
 html[data-accessibility-dyslexia="true"] body {
   font-family: "OpenDyslexic", Verdana, Tahoma, Arial, sans-serif;
 }
@@ -230,10 +214,26 @@ html[data-accessibility-links="highlight"] a {
   text-underline-offset: 0.18em;
 }
 
-html[data-accessibility-focus="enhanced"] :focus-visible {
-  outline: 4px solid #ffcc00 !important;
-  outline-offset: 4px !important;
-  box-shadow: 0 0 0 7px #000 !important;
+html[data-accessibility-focus="enhanced"] :is(
+  a[href],
+  button,
+  input,
+  textarea,
+  select,
+  summary,
+  [role="button"],
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  [role="switch"],
+  [role="checkbox"],
+  [role="radio"],
+  [tabindex]:not([tabindex="-1"])
+):focus {
+  outline: 4px solid #ffdf00 !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 2px #000, 0 0 0 7px #ffdf00, inset 0 0 0 2px #fff !important;
 }
 
 .accessibility-reading-guide {
