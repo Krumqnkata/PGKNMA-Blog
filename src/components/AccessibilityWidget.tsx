@@ -71,7 +71,7 @@ export default function AccessibilityWidget() {
           <Separator />
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Четливост</p>
-            <Button type="button" variant={accessibility.dyslexiaFont ? "default" : "outline"} className="w-full justify-start" aria-pressed={accessibility.dyslexiaFont} onClick={accessibility.toggleDyslexiaFont}><BookOpen className="h-4 w-4" />Шрифт за дислексия</Button>
+            <Button type="button" variant={accessibility.dyslexiaFont ? "default" : "outline"} className="w-full justify-start" aria-pressed={accessibility.dyslexiaFont} onClick={accessibility.toggleDyslexiaFont}><BookOpen className="h-4 w-4" />Шрифт OpenDyslexic</Button>
             <Button type="button" variant={accessibility.highlightLinks ? "default" : "outline"} className="w-full justify-start" aria-pressed={accessibility.highlightLinks} onClick={accessibility.toggleHighlightLinks}><Link2 className="h-4 w-4" />Подчертаване на линковете</Button>
             <Button type="button" variant={accessibility.enhancedFocus ? "default" : "outline"} className="w-full justify-start" aria-pressed={accessibility.enhancedFocus} onClick={accessibility.toggleEnhancedFocus}><Focus className="h-4 w-4" />Ярък фокус</Button>
           </div>
