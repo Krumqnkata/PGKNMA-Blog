@@ -218,20 +218,8 @@ html[data-accessibility-color-vision="tritanopia"] {
   filter: url("#accessibility-tritanopia");
 }
 
-html[data-accessibility-dyslexia="true"] {
-  --accessibility-letter-spacing: 0.035em;
-  --accessibility-word-spacing: 0.08em;
-  --accessibility-line-height: 1.75;
-}
-
 html[data-accessibility-dyslexia="true"] body {
   font-family: "OpenDyslexic", Verdana, Tahoma, Arial, sans-serif;
-  letter-spacing: var(--accessibility-letter-spacing);
-  word-spacing: var(--accessibility-word-spacing);
-}
-
-html[data-accessibility-dyslexia="true"] :is(p, li, blockquote, figcaption, label) {
-  line-height: var(--accessibility-line-height) !important;
 }
 
 html[data-accessibility-links="highlight"] a {
