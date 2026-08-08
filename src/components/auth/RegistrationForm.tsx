@@ -275,7 +275,7 @@ export function RegistrationForm({
       </div>
 
       <div className="flex w-full max-w-full justify-center overflow-hidden" ref={googleContainerRef}>
-        <GoogleLogin key={googleButtonWidth} onSuccess={handleGoogleSuccess} onError={() => setError("Грешка при влизане с Google акаунт.")} theme="filled_blue" shape="rectangular" text="signup_with" locale="bg" width={googleButtonWidth} />
+        <GoogleLogin key={googleButtonWidth} onSuccess={handleGoogleSuccess} onError={() => setError("Грешка при влизане с Google акаунт.")} theme="filled_blue" shape="rectangular" text="signup_with" width={googleButtonWidth} />
       </div>
 
       <p className="mt-2 text-center text-sm text-muted-foreground">

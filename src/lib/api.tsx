@@ -255,6 +255,9 @@ export interface Comment {
     content: string;
     created_at: string;
     parent?: number | null; // Optional, can be null for top-level comments
+    parent_id: number | null;
+    parent_username: string | null;
+    reply_count: number;
     replies?: Comment[];    // Nested replies
 }
 
@@ -527,6 +530,11 @@ export async function getEvents(): Promise<Event[]> {
 
     const data = await response.json();
     return normalizeArray<Event>(data);
+}
+
+export interface TermsOfServiceContent {
+    content: string;
+    date: string;
 }
 
 export async function getTermsOfService(): Promise<TermsOfServiceContent | null> {

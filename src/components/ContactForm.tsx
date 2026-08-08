@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { submitContactForm, ContactFormData } from "@/lib/api";
+import { submitContactForm, type ContactFormData } from "@/lib/api";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
@@ -73,7 +73,9 @@ export function ContactForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    mutate(data); // Call the mutation function
+    // The schema guarantees every API field at runtime. The explicit boundary
+    // type is needed while this project still compiles without strict null checks.
+    mutate(data as ContactFormData);
   }
 
   return (
