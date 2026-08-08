@@ -20,6 +20,16 @@ const DEFAULT_PREFERENCES: AccessibilityPreferences = {
 
 const COLOR_VISION_MODES: ColorVisionMode[] = ["none", "protanopia", "deuteranopia", "tritanopia"];
 
+// Gecko currently computes SVG fragment filters on the document root but does
+// not paint them. Keep the filter on <html> (so fixed/sticky layout is not
+// rebased) and use CSS filter functions as its Firefox-safe fallback.
+const FIREFOX_COLOR_VISION_FILTERS: Record<ColorVisionMode, string> = {
+  none: "none",
+  protanopia: "grayscale(0.2) sepia(0.25) saturate(0.72) hue-rotate(-8deg) contrast(1.08)",
+  deuteranopia: "grayscale(0.14) sepia(0.18) saturate(0.78) hue-rotate(12deg) contrast(1.06)",
+  tritanopia: "grayscale(0.08) sepia(0.12) saturate(0.82) hue-rotate(-28deg) contrast(1.06)",
+};
+
 function readPreferences(): AccessibilityPreferences {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null") as Partial<AccessibilityPreferences> | null;
@@ -62,6 +72,17 @@ export function AccessibilityProvider({ children }: { children: ReactNode }) {
     root.dataset.accessibilityReadingGuide = String(preferences.readingGuide);
     root.dataset.accessibilityCursor = preferences.largeCursor ? "large" : "default";
     root.dataset.accessibilityColorVision = preferences.colorVisionMode;
+    // Keep the SVG URL in an inline style so the fragment is resolved against
+    // the document in both Vite development mode and production CSS bundles.
+    // A stylesheet-local url(#id) can otherwise resolve against the CSS asset.
+    const isFirefox = navigator.userAgent.includes("Firefox/");
+    root.style.filter = preferences.monochrome
+      ? "grayscale(1)"
+      : preferences.colorVisionMode === "none"
+        ? "none"
+        : isFirefox
+          ? FIREFOX_COLOR_VISION_FILTERS[preferences.colorVisionMode]
+          : `url("#accessibility-${preferences.colorVisionMode}")`;
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(preferences));
     } catch {
