@@ -12,7 +12,7 @@ const SiteLayout = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Header />
-      <div className="flex-1">
+      <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <PageErrorBoundary resetKey={location.pathname}>
           <div key={location.pathname} className="animate-in fade-in duration-300 motion-reduce:animate-none">
             <Outlet />

@@ -133,16 +133,18 @@ const AudioReader: React.FC<AudioReaderProps> = ({ content, title }) => {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-2">
               {!isPlaying || isPaused ? (
-                <Button size="icon" onClick={handlePlay} className="rounded-full h-10 w-10 shadow-md hover:scale-105 transition-transform cursor-pointer" title="Пусни">
-                  <Play className="h-5 w-5 fill-current" />
+                <Button size="sm" onClick={handlePlay} className="h-10 rounded-full px-4 shadow-md transition-transform hover:scale-105 cursor-pointer" title={isPaused ? "Продължи" : "Преслушай статията"}>
+                  <Play className="h-5 w-5 fill-current" aria-hidden="true" />
+                  {isPaused ? "Продължи" : "Преслушай"}
                 </Button>
               ) : (
-                <Button size="icon" variant="outline" onClick={handlePause} className="rounded-full h-10 w-10 border-primary text-primary hover:bg-primary/10 shadow-md hover:scale-105 transition-transform cursor-pointer" title="Пауза">
-                  <Pause className="h-5 w-5 fill-current" />
+                <Button size="sm" variant="outline" onClick={handlePause} className="h-10 rounded-full border-primary px-4 text-primary shadow-md transition-transform hover:scale-105 hover:bg-primary/10 cursor-pointer" title="Пауза">
+                  <Pause className="h-5 w-5 fill-current" aria-hidden="true" />
+                  Пауза
                 </Button>
               )}
-              <Button size="icon" variant="ghost" onClick={handleStop} className="rounded-full h-10 w-10 text-muted-foreground hover:text-destructive cursor-pointer" disabled={!isPlaying && !isPaused} title="Спри">
-                <Square className="h-5 w-5 fill-current" />
+              <Button size="icon" variant="ghost" onClick={handleStop} className="rounded-full h-10 w-10 text-muted-foreground hover:text-destructive cursor-pointer" disabled={!isPlaying && !isPaused} title="Спри" aria-label="Спри прочитането">
+                <Square className="h-5 w-5 fill-current" aria-hidden="true" />
               </Button>
             </div>
 
