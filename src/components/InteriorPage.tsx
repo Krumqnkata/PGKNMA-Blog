@@ -17,13 +17,37 @@ export function InteriorPage({ children, className }: InteriorPageProps) {
 }
 
 interface InteriorPageHeroProps {
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   description: string;
   icon?: LucideIcon;
   actions?: ReactNode;
   children?: ReactNode;
   className?: string;
+}
+
+interface PageEyebrowProps {
+  children: ReactNode;
+  icon?: LucideIcon;
+  className?: string;
+}
+
+export function PageEyebrow({ children, icon: Icon, className }: PageEyebrowProps) {
+  return (
+    <p
+      className={cn(
+        "inline-flex max-w-full items-center gap-3 text-[0.68rem] font-extrabold uppercase leading-relaxed tracking-[0.22em] text-primary/85 sm:text-xs",
+        className,
+      )}
+    >
+      <span className="flex shrink-0 items-center" aria-hidden="true">
+        <span className="h-px w-7 bg-gradient-to-r from-primary/30 to-primary sm:w-9" />
+        <span className="h-1.5 w-1.5 rotate-45 bg-primary" />
+      </span>
+      {Icon && <Icon className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />}
+      <span>{children}</span>
+    </p>
+  );
 }
 
 export function InteriorPageHero({ eyebrow, title, description, icon: Icon, actions, children, className }: InteriorPageHeroProps) {
@@ -33,11 +57,8 @@ export function InteriorPageHero({ eyebrow, title, description, icon: Icon, acti
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,hsl(var(--border)/0.22)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.22)_1px,transparent_1px)] bg-[size:42px_42px] [mask-image:linear-gradient(to_bottom,black,transparent_92%)]" />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-background/80 px-4 py-2 text-sm font-bold text-primary shadow-sm backdrop-blur">
-            {Icon && <Icon className="h-4 w-4" aria-hidden="true" />}
-            {eyebrow}
-          </div>
-          <h1 className="mt-5 text-balance text-4xl font-black leading-[1.06] tracking-[-0.035em] sm:text-5xl lg:text-6xl">{title}</h1>
+          {eyebrow && <PageEyebrow icon={Icon}>{eyebrow}</PageEyebrow>}
+          <h1 className={cn("text-balance text-4xl font-black leading-[1.06] tracking-[-0.035em] sm:text-5xl lg:text-6xl", eyebrow && "mt-4 sm:mt-5")}>{title}</h1>
           <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">{description}</p>
           {actions && <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">{actions}</div>}
           {children}

@@ -3,6 +3,7 @@ import { ArrowDown, ArrowRight, CalendarDays, Mail, Newspaper, Sparkles } from "
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
+import { PageEyebrow } from "@/components/InteriorPage";
 import { useAccessibility } from "@/hooks/use-accessibility";
 
 const PHRASES = ["новините", "събитията", "идеите", "училищната общност"];
@@ -32,10 +33,8 @@ export default function Hero() {
 
       <div className="container mx-auto grid min-h-[calc(100svh-4rem)] items-center gap-12 px-4 py-14 lg:grid-cols-12 lg:py-20">
         <div className="text-center lg:col-span-7 lg:text-left">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-background/80 px-4 py-2 text-sm font-semibold text-primary shadow-sm backdrop-blur">
-            <Sparkles className="h-4 w-4" aria-hidden="true" />Официалният ученически портал на ПГКНМА
-          </div>
-          <h1 id="home-hero-title" className="mt-6 text-balance text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-6xl lg:text-7xl xl:text-8xl">
+          <PageEyebrow icon={Sparkles}>Официалният ученически портал на ПГКНМА</PageEyebrow>
+          <h1 id="home-hero-title" className="mt-5 text-balance text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:mt-6 sm:text-6xl lg:text-7xl xl:text-8xl">
             Училищният живот,
             <span className="block bg-gradient-to-r from-primary via-teal-500 to-blue-500 bg-clip-text text-transparent">ясен и близо до теб.</span>
           </h1>
