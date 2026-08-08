@@ -570,6 +570,7 @@ export interface RegistrationResponse {
     verification_required: boolean;
     email_sent: boolean;
     auto_verified: boolean;
+    email_failure_reason?: "daily_quota_exceeded" | "monthly_quota_exceeded" | "rate_limit_exceeded" | "service_unavailable" | "delivery_failed" | null;
     detail: string;
 }
 
