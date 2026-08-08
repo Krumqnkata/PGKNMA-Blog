@@ -109,7 +109,7 @@ const News = () => {
           ) : (
             <>
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {visiblePosts.map((article) => <NewsCard article={article} key={article.id} />)}
+                {visiblePosts.map((article, index) => <NewsCard article={article} priority={index === 0} key={article.id} />)}
               </div>
               <NewsPagination currentPage={currentPage} pageCount={pageCount} onPageChange={handlePageChange} />
             </>

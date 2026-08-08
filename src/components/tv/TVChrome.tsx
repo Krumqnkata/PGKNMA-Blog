@@ -15,17 +15,32 @@ export function TVBackground() {
   const [imageIndex, setImageIndex] = useState(0);
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setImageIndex((currentIndex) => {
-        let nextIndex = currentIndex;
-        while (nextIndex === currentIndex) {
-          nextIndex = Math.floor(Math.random() * LANDSCAPE_IMAGES.length);
-        }
-        return nextIndex;
-      });
-    }, BACKGROUND_CHANGE_DURATION);
-    return () => window.clearInterval(interval);
-  }, []);
+    let nextIndex = imageIndex;
+    while (nextIndex === imageIndex) {
+      nextIndex = Math.floor(Math.random() * LANDSCAPE_IMAGES.length);
+    }
+
+    let cancelled = false;
+    let timer: number | undefined;
+    const nextImage = new Image();
+    const scheduleChange = () => {
+      if (cancelled || timer) return;
+      timer = window.setTimeout(() => setImageIndex(nextIndex), BACKGROUND_CHANGE_DURATION);
+    };
+
+    nextImage.decoding = "async";
+    nextImage.onload = scheduleChange;
+    nextImage.onerror = scheduleChange;
+    nextImage.src = LANDSCAPE_IMAGES[nextIndex];
+    if (nextImage.complete) scheduleChange();
+
+    return () => {
+      cancelled = true;
+      if (timer) window.clearTimeout(timer);
+      nextImage.onload = null;
+      nextImage.onerror = null;
+    };
+  }, [imageIndex]);
 
   return (
     <div className="fixed inset-0 z-0 bg-gray-900">
@@ -33,6 +48,8 @@ export function TVBackground() {
         key={LANDSCAPE_IMAGES[imageIndex]}
         src={LANDSCAPE_IMAGES[imageIndex]}
         alt=""
+        decoding="async"
+        fetchPriority="high"
         className="h-full w-full animate-in object-cover fade-in duration-1000"
       />
       <div className="absolute inset-0 bg-gray-900/70" />

@@ -14,6 +14,8 @@ export const useSEO = ({ title, description, ogImage, ogType = "website" }: SEOP
     
     // Set Title (add site name suffix if not present)
     const fullTitle = title.includes("ПГКНМА") ? title : `${title} | ПГКНМА Блог`;
+    const canonicalUrl = new URL(window.location.pathname, window.location.origin).toString();
+    const absoluteImage = new URL(ogImage || "/social-preview.jpg", window.location.origin).toString();
     document.title = fullTitle;
     
     // Update global titles array used by index.html script if present
@@ -65,15 +67,15 @@ export const useSEO = ({ title, description, ogImage, ogType = "website" }: SEOP
     // Update OpenGraph Image
     let ogImg = document.querySelector('meta[property="og:image"]');
     let createdOgImg = false;
-    if (!ogImg && ogImage) {
+    if (!ogImg) {
       ogImg = document.createElement("meta");
       ogImg.setAttribute("property", "og:image");
       document.head.appendChild(ogImg);
       createdOgImg = true;
     }
     const prevOgImg = ogImg?.getAttribute("content") || "";
-    if (ogImg && ogImage) {
-      ogImg.setAttribute("content", ogImage);
+    if (ogImg) {
+      ogImg.setAttribute("content", absoluteImage);
     }
 
     // Update OpenGraph Type
@@ -87,6 +89,37 @@ export const useSEO = ({ title, description, ogImage, ogType = "website" }: SEOP
     }
     const prevOgType = ogTypeMeta.getAttribute("content") || "";
     ogTypeMeta.setAttribute("content", ogType);
+
+    const managedAttributes: Array<[string, string, string]> = [
+      ["property", "og:url", canonicalUrl],
+      ["property", "og:image:secure_url", absoluteImage],
+      ["name", "twitter:card", "summary_large_image"],
+      ["name", "twitter:title", fullTitle],
+      ["name", "twitter:description", description || "Новини и събития от ПГКНМА."],
+      ["name", "twitter:image", absoluteImage],
+    ];
+    const managedMeta = managedAttributes.map(([attribute, key, content]) => {
+      let element = document.querySelector<HTMLMetaElement>(`meta[${attribute}="${key}"]`);
+      const created = !element;
+      const previous = element?.getAttribute("content") || "";
+      if (!element) {
+        element = document.createElement("meta");
+        element.setAttribute(attribute, key);
+        document.head.appendChild(element);
+      }
+      element.setAttribute("content", content);
+      return { element, created, previous };
+    });
+
+    let canonical = document.querySelector<HTMLLinkElement>('link[rel="canonical"]');
+    const createdCanonical = !canonical;
+    const previousCanonical = canonical?.getAttribute("href") || "";
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.setAttribute("rel", "canonical");
+      document.head.appendChild(canonical);
+    }
+    canonical.setAttribute("href", canonicalUrl);
 
     // Cleanup/Restore on unmount
     return () => {
@@ -134,6 +167,15 @@ export const useSEO = ({ title, description, ogImage, ogType = "website" }: SEOP
         } else {
           ogTypeMeta.setAttribute("content", prevOgType);
         }
+      }
+
+      managedMeta.forEach(({ element, created, previous }) => {
+        if (created) element.remove();
+        else element.setAttribute("content", previous);
+      });
+      if (canonical) {
+        if (createdCanonical) canonical.remove();
+        else canonical.setAttribute("href", previousCanonical);
       }
     };
   }, [title, description, ogImage, ogType]);

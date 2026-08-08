@@ -1,4 +1,4 @@
-const CACHE_NAME = "pgknma-cache-v1";
+const CACHE_NAME = "pgknma-cache-v2";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -7,8 +7,7 @@ const STATIC_ASSETS = [
   "/icon-512.png",
   "/apple-touch-icon.png",
   "/logo-light.png",
-  "/logo-dark.png",
-  "/program.csv"
+  "/logo-dark.png"
 ];
 
 // Install Event - Pre-cache Static Shell

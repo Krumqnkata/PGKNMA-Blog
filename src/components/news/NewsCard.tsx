@@ -5,17 +5,19 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/lib/api";
+import { getPostShareUrl } from "@/lib/share";
 
 interface NewsCardProps {
   article: Post;
+  priority?: boolean;
 }
 
 async function shareArticle(article: Post) {
-  const url = `${window.location.origin}/post/${article.id}`;
+  const url = getPostShareUrl(article.id);
 
   try {
     if (navigator.share) {
-      await navigator.share({ title: article.title, text: article.hook, url });
+      await navigator.share({ url });
       return;
     }
 
@@ -27,7 +29,7 @@ async function shareArticle(article: Post) {
   }
 }
 
-const NewsCard = ({ article }: NewsCardProps) => (
+const NewsCard = ({ article, priority = false }: NewsCardProps) => (
   <Card className="group h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-2xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
     <article className="flex h-full flex-col">
     <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
@@ -36,7 +38,8 @@ const NewsCard = ({ article }: NewsCardProps) => (
           src={article.banner || "/logo-light.png"}
           alt=""
           className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority ? "high" : "low"}
           decoding="async"
         />
       </Link>

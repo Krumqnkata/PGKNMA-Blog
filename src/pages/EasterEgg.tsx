@@ -93,6 +93,8 @@ const EasterEgg: React.FC = () => {
                     src="/Prof_Minko_Balkanski.jpg"
                     alt="Портрет на Професор Минко Балкански"
                     className="mx-auto w-full max-w-xs rounded-2xl border border-border/60 shadow-lg"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <p className="text-sm text-gray-500 mt-2">Професор Минко Балкански</p>
                 </div>
