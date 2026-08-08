@@ -3,17 +3,22 @@ import NewsGrid from "@/components/NewsGrid";
 import Events from "@/components/Events";
 import ParticlesComponent from "@/components/Particles";
 import { useTheme } from "next-themes";
+import HomeQuickLinks from "@/components/HomeQuickLinks";
+import RevealOnScroll from "@/components/RevealOnScroll";
+import { useAccessibility } from "@/hooks/use-accessibility";
 
 const Index = () => {
   const { theme } = useTheme();
+  const { reduceMotion } = useAccessibility();
 
   return (
     <div className="w-full">
-      <ParticlesComponent id="tsparticles" key={theme} theme={theme} />
+      {!reduceMotion && <ParticlesComponent id="tsparticles" key={theme} theme={theme} />}
       <main className="relative z-10">
         <Hero />
-        <NewsGrid />
-        <Events />
+        <RevealOnScroll><HomeQuickLinks /></RevealOnScroll>
+        <RevealOnScroll><NewsGrid /></RevealOnScroll>
+        <RevealOnScroll><Events /></RevealOnScroll>
       </main>
     </div>
   );

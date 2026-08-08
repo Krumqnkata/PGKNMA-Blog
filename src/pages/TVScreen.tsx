@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 
 import { TVBackground, TVScreenFooter, TVScreenHeader } from "@/components/tv/TVChrome";
 import {
@@ -7,6 +6,9 @@ import {
   MemesSection,
   PollUsersSection,
   SongsSection,
+  TVDataNotice,
+  TVModulePlaceholder,
+  TVModuleUnavailable,
 } from "@/components/tv/TVSections";
 import type {
   ApprovedSong,
@@ -20,9 +22,7 @@ import {
   getMemes,
   getPollStatistics,
 } from "@/lib/api";
-import { ContentSkeleton } from "@/components/query/QueryStates";
-import { Button } from "@/components/ui/button";
-import { RefreshCw } from "lucide-react";
+import { useResilientTVQuery } from "@/hooks/use-resilient-tv-query";
 
 interface PollStatistics {
   leaderboard: LeaderboardEntry[];
@@ -33,10 +33,10 @@ const SECTION_COUNT = 4;
 
 const TVScreen = () => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
-  const songsQuery = useQuery<ApprovedSong[], Error>({ queryKey: ["approvedSongs"], queryFn: getApprovedSongs, refetchInterval: 30_000 });
-  const memesQuery = useQuery<Meme[], Error>({ queryKey: ["memes"], queryFn: getMemes, refetchInterval: 30_000 });
-  const pollQuery = useQuery<PollStatistics, Error>({ queryKey: ["pollStatistics"], queryFn: getPollStatistics, refetchInterval: 30_000 });
-  const eventsQuery = useQuery<TVEvent[], Error>({ queryKey: ["events"], queryFn: getEvents, refetchInterval: 60_000 });
+  const songsQuery = useResilientTVQuery<ApprovedSong[]>("songs", getApprovedSongs, 30_000);
+  const memesQuery = useResilientTVQuery<Meme[]>("memes", getMemes, 30_000);
+  const pollQuery = useResilientTVQuery<PollStatistics>("polls", getPollStatistics, 30_000);
+  const eventsQuery = useResilientTVQuery<TVEvent[]>("events", getEvents, 60_000);
 
   useEffect(() => {
     const interval = window.setInterval(
@@ -63,21 +63,19 @@ const TVScreen = () => {
     [eventsQuery.data],
   );
 
-  const isLoading = songsQuery.isLoading || memesQuery.isLoading || pollQuery.isLoading || eventsQuery.isLoading;
-  const isError = songsQuery.isError || memesQuery.isError || pollQuery.isError || eventsQuery.isError;
-
-  if (isLoading) {
-    return <div className="min-h-screen bg-gray-950 px-8 py-28 text-white"><ContentSkeleton count={3} label="Зареждане на данните за TV екрана" /></div>;
-  }
-  if (isError) {
-    return <div role="alert" className="flex min-h-screen flex-col items-center justify-center gap-4 bg-gray-950 px-4 text-center text-white"><h1 className="text-2xl font-bold">TV данните не могат да бъдат заредени</h1><p className="text-gray-300">Проверете връзката и опитайте отново.</p><Button onClick={() => { void songsQuery.refetch(); void memesQuery.refetch(); void pollQuery.refetch(); void eventsQuery.refetch(); }}><RefreshCw className="h-4 w-4" />Опитай отново</Button></div>;
-  }
-
   const sections = [
-    <SongsSection key="songs" songs={topSongs} />,
-    <MemesSection key="memes" memes={topMemes} />,
-    <PollUsersSection key="polls" users={topPollUsers} />,
-    <EventsSection key="events" events={upcomingEvents} />,
+    songsQuery.data === undefined
+      ? songsQuery.isPending ? <TVModulePlaceholder key="songs" title="Зареждане на топ песните" /> : <TVModuleUnavailable key="songs" title="Топ песни" />
+      : <div key="songs" className="relative"><SongsSection songs={topSongs} />{songsQuery.isRefetchError && <TVDataNotice>Показваме последно запазените песни</TVDataNotice>}</div>,
+    memesQuery.data === undefined
+      ? memesQuery.isPending ? <TVModulePlaceholder key="memes" title="Зареждане на топ меметата" /> : <TVModuleUnavailable key="memes" title="Топ мемета" />
+      : <div key="memes" className="relative"><MemesSection memes={topMemes} />{memesQuery.isRefetchError && <TVDataNotice>Показваме последно запазените мемета</TVDataNotice>}</div>,
+    pollQuery.data === undefined
+      ? pollQuery.isPending ? <TVModulePlaceholder key="polls" title="Зареждане на класацията" /> : <TVModuleUnavailable key="polls" title="Класация на анкетите" />
+      : <div key="polls" className="relative"><PollUsersSection users={topPollUsers} />{pollQuery.isRefetchError && <TVDataNotice>Показваме последно запазената класация</TVDataNotice>}</div>,
+    eventsQuery.data === undefined
+      ? eventsQuery.isPending ? <TVModulePlaceholder key="events" title="Зареждане на събитията" /> : <TVModuleUnavailable key="events" title="Предстоящи събития" />
+      : <div key="events" className="relative"><EventsSection events={upcomingEvents} />{eventsQuery.isRefetchError && <TVDataNotice>Показваме последно запазените събития</TVDataNotice>}</div>,
   ];
 
   return (

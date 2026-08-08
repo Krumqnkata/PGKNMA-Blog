@@ -7,6 +7,7 @@ import logoDark from "/logo-dark.png";
 import { useAuth } from "@/hooks/use-auth";
 import { UserDropdown } from "./UserDropdown";
 import { useLocation } from "react-router-dom";
+import AccessibilityWidget from "@/components/AccessibilityWidget";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -30,11 +31,11 @@ const Header = () => {
   return (
     <header className="sticky top-0 z-50 w-full bg-[#0a2e2e]/90 backdrop-blur-md shadow-sm text-white">
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-      <nav className="container mx-auto flex h-16 items-center justify-between px-4">
+      <nav className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-4">
         {/* Logo */}
         <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
           <img src={logo} className="h-auto w-10" alt="Logo" />
-          <span className="text-[15px] font-bold uppercase tracking-widest">ПГКНМА Блог</span>
+          <span className="hidden text-[15px] font-bold uppercase tracking-widest sm:inline">ПГКНМА Блог</span>
         </NavLink>
 
         {/* Desktop Navigation */}
@@ -52,16 +53,17 @@ const Header = () => {
         </div>
 
         {/* Right Actions */}
-        <div className="flex items-center gap-2">
-          <Suspense fallback={<div className="h-10 w-10" aria-hidden="true" />}>
-            <NotificationBell />
+        <div className="flex items-center gap-1 sm:gap-2">
+          <AccessibilityWidget />
+          <Suspense fallback={<div className="h-[40px] w-[40px]" aria-hidden="true" />}>
+            <div className="[&_button]:h-[40px] [&_button]:w-[40px]"><NotificationBell /></div>
           </Suspense>
 
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="transition-transform hover:scale-105"
+            className="h-[40px] w-[40px] transition-transform hover:scale-105"
             aria-label={resolvedTheme === "dark" ? "Включи светла тема" : "Включи тъмна тема"}
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
@@ -72,7 +74,7 @@ const Header = () => {
             {isAuthenticated ? (
               <UserDropdown />
             ) : (
-              <Button variant="ghost" size="icon" className="rounded-full" onClick={openLoginDialog}>
+              <Button variant="ghost" size="icon" className="h-[40px] w-[40px] rounded-full" onClick={openLoginDialog} aria-label="Отвори вход в профила">
                 <UserIcon className="h-5 w-5" />
               </Button>
             )}
@@ -82,7 +84,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden"
+            className="h-[40px] w-[40px] lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"

@@ -115,6 +115,103 @@ All colors MUST be HSL.
   }
 }
 
+/* User-controlled accessibility preferences. Root attributes keep component layouts intact. */
+html {
+  font-size: var(--accessibility-font-size, 100%);
+}
+
+html[data-accessibility-contrast="high"] {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 0%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 210 100% 28%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 92%;
+  --secondary-foreground: 0 0% 0%;
+  --muted: 0 0% 92%;
+  --muted-foreground: 0 0% 18%;
+  --accent: 48 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 210 100% 35%;
+}
+
+html.dark[data-accessibility-contrast="high"] {
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
+  --card: 0 0% 3%;
+  --card-foreground: 0 0% 100%;
+  --popover: 0 0% 3%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 52 100% 55%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 0 0% 12%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 0 0% 12%;
+  --muted-foreground: 0 0% 85%;
+  --accent: 190 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  --border: 0 0% 82%;
+  --input: 0 0% 82%;
+  --ring: 52 100% 55%;
+}
+
+html[data-accessibility-contrast="high"] :focus-visible {
+  outline: 3px solid hsl(var(--ring)) !important;
+  outline-offset: 3px !important;
+}
+
+html[data-accessibility-contrast="high"] a:not([class*="no-underline"]) {
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.2em;
+}
+
+html[data-accessibility-monochrome="true"] {
+  filter: grayscale(1);
+}
+
+html[data-accessibility-motion="reduce"] {
+  scroll-behavior: auto !important;
+}
+
+html[data-accessibility-motion="reduce"] *,
+html[data-accessibility-motion="reduce"] *::before,
+html[data-accessibility-motion="reduce"] *::after {
+  animation-delay: 0ms !important;
+  animation-duration: 1ms !important;
+  animation-iteration-count: 1 !important;
+  scroll-behavior: auto !important;
+  transition-delay: 0ms !important;
+  transition-duration: 1ms !important;
+}
+
+.home-scroll-reveal {
+  opacity: 0;
+  transform: translateY(2rem);
+  transition: opacity 700ms ease, transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-scroll-reveal[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+html[data-accessibility-motion="reduce"] .home-scroll-reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-scroll-reveal {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     scroll-behavior: auto !important;

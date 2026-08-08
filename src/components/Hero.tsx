@@ -1,148 +1,86 @@
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ArrowDown, ArrowRight, CalendarDays, Mail, Newspaper, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
+
 import { Button } from "@/components/ui/button";
-import { Calendar, Newspaper, Mail } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useAccessibility } from "@/hooks/use-accessibility";
 
-const Hero = () => {
-  const navigate = useNavigate();
-  const [text, setText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [loopNum, setLoopNum] = useState(0);
-  const [typingSpeed, setTypingSpeed] = useState(150);
+const PHRASES = ["новините", "събитията", "идеите", "училищната общност"];
 
-  const phrases = useMemo(() => [
-    "Нашата Гимназия",
-    "Училищния Живот",
-    "Вашето Бъдеще",
-    "Новите Технологии",
-    "Нашите Проекти",
-  ], []);
+export default function Hero() {
+  const { reduceMotion } = useAccessibility();
+  const [phraseIndex, setPhraseIndex] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    const handleType = () => {
-      const i = loopNum % phrases.length;
-      const fullText = phrases[i];
+    if (reduceMotion) return;
+    const interval = window.setInterval(() => setPhraseIndex((current) => (current + 1) % PHRASES.length), 3_500);
+    return () => window.clearInterval(interval);
+  }, [reduceMotion]);
 
-      setText(
-        isDeleting
-          ? fullText.substring(0, text.length - 1)
-          : fullText.substring(0, text.length + 1)
-      );
-
-      setTypingSpeed(isDeleting ? 75 : 150);
-
-      if (!isDeleting && text === fullText) {
-        setTimeout(() => setIsDeleting(true), 2000);
-      } else if (isDeleting && text === "") {
-        setIsDeleting(false);
-        setLoopNum(loopNum + 1);
-      }
-    };
-
-    const timer = setTimeout(handleType, typingSpeed);
-    return () => clearTimeout(timer);
-  }, [text, isDeleting, loopNum, typingSpeed, phrases]);
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (reduceMotion) video.pause();
+    else void video.play().catch(() => undefined);
+  }, [reduceMotion]);
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-background">
-      {/* Background Textures/Gradients */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,var(--primary-foreground)_0%,transparent_40%)] opacity-20" />
-      <div className="absolute -left-24 -top-24 h-96 w-96 rounded-full bg-primary/5 blur-3xl" />
-      
-      <div className="container relative mx-auto px-4 py-12 sm:py-20 lg:py-24">
-        <div className="grid items-center gap-12 lg:grid-cols-12">
-          {/* Content Column */}
-          <div className="flex flex-col items-center text-center lg:col-span-7 lg:items-start lg:text-left xl:col-span-6 order-first">
-            {/* Badge */}
-            <div className="mb-8 inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm animate-in fade-in slide-in-from-bottom-4 duration-700">
-              <span className="mr-2 h-2 w-2 rounded-full bg-primary animate-pulse" />
-              Добре дошли в ПГКНМА Блог!
-            </div>
+    <section className="relative isolate overflow-hidden border-b bg-background" aria-labelledby="home-hero-title">
+      <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_15%_10%,hsl(var(--primary)/0.18),transparent_32%),radial-gradient(circle_at_90%_70%,hsl(var(--accent)/0.12),transparent_35%)]" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,hsl(var(--border)/0.25)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.25)_1px,transparent_1px)] bg-[size:42px_42px] [mask-image:linear-gradient(to_bottom,black,transparent_85%)]" />
 
-            {/* Headline */}
-            <h1 className="mb-8 text-3xl font-extrabold tracking-tight sm:text-6xl xl:text-7xl leading-[1.1]">
-              Бъдете в крак с всичко за{" "}
-              <span className="block text-primary italic">
-                {text}
-                <span className="ml-1 inline-block h-[0.9em] w-1.5 animate-pulse bg-primary align-middle" />
-              </span>
-            </h1>
+      <div className="container mx-auto grid min-h-[calc(100svh-4rem)] items-center gap-12 px-4 py-14 lg:grid-cols-12 lg:py-20">
+        <div className="text-center lg:col-span-7 lg:text-left">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-background/80 px-4 py-2 text-sm font-semibold text-primary shadow-sm backdrop-blur">
+            <Sparkles className="h-4 w-4" aria-hidden="true" />Официалният ученически портал на ПГКНМА
+          </div>
+          <h1 id="home-hero-title" className="mt-6 text-balance text-4xl font-black leading-[1.04] tracking-[-0.04em] sm:text-6xl lg:text-7xl xl:text-8xl">
+            Училищният живот,
+            <span className="block bg-gradient-to-r from-primary via-teal-500 to-blue-500 bg-clip-text text-transparent">ясен и близо до теб.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-muted-foreground sm:text-xl lg:mx-0">
+            Следи <span key={phraseIndex} className="font-semibold text-foreground motion-safe:animate-in motion-safe:fade-in">{reduceMotion ? "важното" : PHRASES[phraseIndex]}</span>, откривай възможности и участвай активно в общността на гимназията.
+          </p>
 
-            {/* Subheadline */}
-            <p className="mb-10 max-w-xl text-base text-muted-foreground sm:text-xl leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000">
-             Твоят информационен център: актуални новини и предстоящи събития за гимназията.
-             Създадено с внимание за ученици, родители и учители.
-            </p>
-
-            {/* CTAs */}
-            <div className="flex w-full flex-col gap-4 sm:w-auto sm:flex-row animate-in fade-in slide-in-from-bottom-12 duration-1000">
-              <Button size="lg" className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg shadow-xl shadow-primary/20 transition-all hover:translate-y-[-2px] hover:shadow-2xl hover:shadow-primary/30" onClick={() => navigate("/news")}>
-                <Newspaper className="h-5 w-5" />
-                Последни Новини
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg backdrop-blur-sm transition-all hover:bg-primary/5 hover:translate-y-[-2px]"
-                onClick={() => navigate("/events")}
-              >
-                <Calendar className="h-5 w-5" />
-                Училищен Календар
-              </Button>
-              <Button
-                size="lg"
-                variant="secondary"
-                className="h-12 sm:h-14 gap-2 px-8 text-base sm:text-lg backdrop-blur-sm transition-all hover:bg-primary/10 hover:translate-y-[-2px]"
-                onClick={() => navigate("/contact")}
-              >
-                <Mail className="h-5 w-5" />
-                Свържи се с нас
-              </Button>
-            </div>
+          <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row lg:justify-start">
+            <Button size="lg" asChild className="h-12 rounded-xl px-7 text-base shadow-lg shadow-primary/20">
+              <Link to="/news"><Newspaper className="h-5 w-5" />Последни новини<ArrowRight className="h-4 w-4" /></Link>
+            </Button>
+            <Button size="lg" variant="outline" asChild className="h-12 rounded-xl bg-background/70 px-7 text-base backdrop-blur">
+              <Link to="/events"><CalendarDays className="h-5 w-5" />Виж календара</Link>
+            </Button>
+            <Button size="lg" variant="ghost" asChild className="h-12 rounded-xl px-5 text-base">
+              <Link to="/contact"><Mail className="h-5 w-5" />Контакти</Link>
+            </Button>
           </div>
 
-          {/* Visual Column - The "Grid Breaker" */}
-          <div className="relative lg:col-span-5 xl:col-span-6 order-last lg:order-last mb-12 lg:mb-0 w-full">
-            <div className="relative mx-auto aspect-square max-w-[350px] sm:max-w-[500px]">
-              {/* Decorative behind elements */}
-              <div className="absolute -inset-4 rounded-3xl border border-primary/10 bg-gradient-to-br from-primary/5 to-transparent" />
-              <div className="absolute -bottom-10 -right-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl" />
-              
-              {/* Main Visual Composition */}
-              <div className="relative h-full w-full overflow-hidden rounded-2xl border border-border bg-card shadow-2xl group/image">
-                <video
-                  src="/front-page-loop.webm"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  className="h-full w-full object-cover opacity-80 transition-transform duration-700 group-hover/image:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-60" />
+          <dl className="mx-auto mt-10 grid max-w-xl grid-cols-3 divide-x rounded-2xl border bg-card/70 p-4 text-center shadow-sm backdrop-blur lg:mx-0">
+            <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Достъп</dt><dd className="mt-1 text-lg font-black sm:text-2xl">24/7</dd></div>
+            <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">Общност</dt><dd className="mt-1 text-lg font-black sm:text-2xl">450+</dd></div>
+            <div><dt className="text-xs uppercase tracking-wider text-muted-foreground">На едно място</dt><dd className="mt-1 text-lg font-black sm:text-2xl">Всичко</dd></div>
+          </dl>
+        </div>
 
-                {/* Floating UI Element 2 */}
-                <div className="absolute bottom-6 right-6 sm:bottom-10 sm:right-10 animate-pulse">
-                  <div className="rounded-xl border border-border/50 bg-background/80 p-4 sm:p-6 backdrop-blur-md shadow-lg">
-                    <div className="text-xl sm:text-3xl font-black text-primary">450+</div>
-                    <div className="text-[10px] sm:text-xs uppercase tracking-widest text-foreground/70 font-bold">Усмихнати лица в гимназията</div>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Out-of-bounds accent - Precisely on top-right corner */}
-              <div className="absolute right-0 top-0 h-24 w-24 -translate-y-1/2 translate-x-1/2 rounded-full border-4 border-primary/20 animate-spin [animation-duration:10s]" />
-              
-              {/* Pinging dot - Precisely on bottom-left corner */}
-              <div className="absolute bottom-0 left-0 h-4 w-4 -translate-x-1/2 translate-y-1/2 rounded-full bg-primary animate-ping" />
+        <div className="relative mx-auto w-full max-w-xl lg:col-span-5">
+          <div className="absolute -inset-5 -z-10 rounded-[2.5rem] bg-gradient-to-br from-primary/25 via-transparent to-blue-500/20 blur-2xl" />
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border bg-card shadow-2xl sm:aspect-square lg:aspect-[4/5]">
+            <video ref={videoRef} src="/front-page-loop.webm" autoPlay={!reduceMotion} loop muted playsInline preload="metadata" className="h-full w-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/5 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-6 text-white sm:p-8">
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-teal-200">Заедно създаваме</p>
+              <p className="mt-2 text-2xl font-black leading-tight sm:text-4xl">Място за знания, идеи и бъдеще.</p>
+            </div>
+            <div className="absolute right-4 top-4 rounded-2xl border border-white/20 bg-slate-950/55 px-4 py-3 text-white shadow-lg backdrop-blur-md">
+              <p className="text-xs uppercase tracking-wider text-white/70">Актуално</p><p className="mt-1 font-bold">Всеки учебен ден</p>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Modern Section Divider */}
-      <div className="absolute bottom-0 left-0 h-24 w-full bg-gradient-to-t from-background to-transparent" />
+      <a href="#home-highlights" aria-label="Към бързите връзки" className="absolute bottom-4 left-1/2 hidden -translate-x-1/2 rounded-full border bg-background/80 p-2 text-muted-foreground shadow-sm backdrop-blur transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring md:block">
+        <ArrowDown className="h-5 w-5 motion-safe:animate-bounce" aria-hidden="true" />
+      </a>
     </section>
   );
-};
-
-export default Hero;
+}

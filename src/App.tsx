@@ -20,6 +20,7 @@ import SEOManager from "@/components/SEOManager";
 import SiteLayout from "@/components/SiteLayout";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AccessibilityProvider } from "@/contexts/AccessibilityProvider";
 
 const Index = lazy(() => import("@/pages/Index"));
 const News = lazy(() => import("@/pages/News"));
@@ -65,14 +66,15 @@ const AppContent = () => {
   useDisableInspect();
 
   const { settings: settingsData, isLoading, error } = useSettings();
+  const isTVRoute = window.location.pathname === "/tv";
 
   // Show loading screen if any critical data is still loading
-  if (isLoading) {
+  if (isLoading && !isTVRoute) {
     return <AppLoadingScreen />;
   }
 
   // Show maintenance page if in maintenance mode or a critical error occurred
-  if (settingsData?.maintenance_mode || error) {
+  if (!isTVRoute && (settingsData?.maintenance_mode || error)) {
     return <MaintenancePage isBackendError={Boolean(error)} />;
   }
 
@@ -125,7 +127,9 @@ const AppContent = () => {
 const App = () => {
   return (
     <SettingsProvider>
-      <AppContent />
+      <AccessibilityProvider>
+        <AppContent />
+      </AccessibilityProvider>
     </SettingsProvider>
   );
 };
