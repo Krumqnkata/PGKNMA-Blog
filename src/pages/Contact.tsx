@@ -1,36 +1,48 @@
 import { ContactForm } from "@/components/ContactForm";
+import { Mail, MapPin, Phone } from "lucide-react";
+
+import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Contact = () => {
   return (
-    <div className="w-full">
-      <main className="py-12 px-4 md:px-6">
-        <div className="container mx-auto">
-          <h1 className="text-3xl font-bold text-center mb-8">Контакти</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Информация за контакт</h2>
-              <p className="mb-2"><strong>Адрес:</strong> град Стара Загора, ул. "Стефан Сливков" №7</p>
-              <p className="mb-2"><strong>Телефон:</strong> +359 88 499 4500</p>
-              <p className="mb-2"><strong>Имейл:</strong> info-2400020@edu.mon.bg, support@pgknma.space</p>              <div className="mt-4 relative rounded-md overflow-hidden">
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Свържете се с нас" title={<>Нека <span className="text-primary">поговорим</span></>} description="Въпрос, идея или технически проблем — изпратете ни съобщение или използвайте директните контакти." icon={Mail} />
+      <InteriorSection>
+          <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
+            <Card className="overflow-hidden">
+              <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent"><CardTitle>Информация за контакт</CardTitle></CardHeader>
+              <CardContent className="space-y-5 pt-5 sm:pt-6">
+                <ContactDetail icon={MapPin} label="Адрес">гр. Стара Загора, ул. „Стефан Сливков“ №7</ContactDetail>
+                <ContactDetail icon={Phone} label="Телефон">+359 88 499 4500</ContactDetail>
+                <ContactDetail icon={Mail} label="Имейл">info-2400020@edu.mon.bg<br />support@pgknma.space</ContactDetail>
+                <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 shadow-inner sm:aspect-video lg:aspect-[4/3]">
                 <iframe
                   width="100%"
-                  height="450"
+                  height="100%"
+                  title="Местоположение на ПГКНМА"
                   src="https://www.openstreetmap.org/export/embed.html?bbox=25.64068,42.42345,25.65072,42.42935&amp;layer=mapnik&amp;marker=42.42642,25.64575"
-                  style={{ border: "1px solid black" }}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  className="dark:invert-[90%]"
-                ></iframe>
+                className="h-full w-full dark:invert-[90%]"
+                />
               </div>
-            </div>
-            <div>
-              <h2 className="text-2xl font-semibold mb-4">Формуляр за контакт</h2>
-              <ContactForm />
-            </div>
+              </CardContent>
+            </Card>
+            <Card className="overflow-hidden">
+              <CardHeader className="border-b border-border/60 bg-gradient-to-r from-blue-500/10 to-transparent"><CardTitle>Изпратете съобщение</CardTitle></CardHeader>
+              <CardContent className="pt-5 sm:pt-6"><ContactForm /></CardContent>
+            </Card>
           </div>
-        </div>
-      </main>
-    </div>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
+
+const ContactDetail = ({ icon: Icon, label, children }: { icon: typeof Mail; label: string; children: React.ReactNode }) => (
+  <div className="flex items-start gap-3">
+    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="h-5 w-5" aria-hidden="true" /></div>
+    <div><p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{label}</p><div className="mt-1 text-sm font-semibold leading-relaxed">{children}</div></div>
+  </div>
+);
 
 export default Contact;

@@ -1,6 +1,4 @@
 import { useMemo, useState } from "react";
-import ParticlesComponent from "@/components/Particles";
-import { useTheme } from "next-themes";
 import {
   Accordion,
   AccordionContent,
@@ -10,6 +8,9 @@ import {
 import { HelpCircle, Info, UserPlus, Music, Calendar, ShieldAlert, Code, Zap, Smartphone, MessageSquare, Bug, Globe, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
 
 const GoogleIcon = ({ className }: { className?: string }) => (
   <svg
@@ -232,7 +233,6 @@ const faqs = [
 ];
 
 const FAQ = () => {
-  const { theme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const filteredFaqs = useMemo(() => {
     const query = searchQuery.trim().toLocaleLowerCase("bg");
@@ -243,27 +243,9 @@ const FAQ = () => {
   }, [searchQuery]);
 
   return (
-    <div className="relative w-full overflow-hidden bg-background">
-      <ParticlesComponent id="faq-particles" key={theme} theme={theme} />
-      
-      {/* Background Blobs for Depth */}
-      <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
-
-      
-      <main className="relative z-10 py-16 px-4 md:px-6">
-        <div className="container mx-auto max-w-3xl">
-          <div className="text-center mb-12 space-y-4">
-            <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-amber-500/10 mb-2 backdrop-blur-sm border border-amber-500/20 shadow-lg animate-bounce-slow">
-              <HelpCircle className="h-8 w-8 text-amber-500" />
-            </div>
-            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl drop-shadow-sm">
-              Често задавани въпроси
-            </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Всичко, което трябва да знаете за платформата ПГКНМА Блог в един модерен и достъпен формат.
-            </p>
-          </div>
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Помощен център" title={<>Често задавани <span className="text-primary">въпроси</span></>} description="Бързи и ясни отговори за профила, съдържанието и функциите на платформата." icon={HelpCircle} />
+      <InteriorSection containerClassName="max-w-3xl">
 
           <div className="relative mx-auto mb-6 max-w-xl">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
@@ -277,14 +259,14 @@ const FAQ = () => {
             />
           </div>
 
-          <div className="bg-card/40 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden">
-            <div className="p-2 md:p-8">
+          <div className="overflow-hidden rounded-3xl border border-border/70 bg-card/80 shadow-xl shadow-primary/5 backdrop-blur-md">
+            <div className="p-2 sm:p-4 md:p-6">
               {filteredFaqs.length > 0 ? <Accordion type="single" collapsible className="w-full space-y-2">
                 {filteredFaqs.map((faq) => (
                   <AccordionItem 
                     key={faq.question}
                     value={faq.question}
-                    className="border-none bg-white/5 dark:bg-black/5 rounded-2xl transition-all duration-300 hover:bg-white/10 dark:hover:bg-black/10 px-4"
+                    className="rounded-2xl border border-transparent bg-muted/25 px-4 transition-[background-color,border-color,box-shadow] duration-300 hover:border-border/70 hover:bg-muted/50 data-[state=open]:border-primary/20 data-[state=open]:bg-primary/5 data-[state=open]:shadow-sm"
                   >
                     <AccordionTrigger className="hover:no-underline py-5 text-left group">
                       <div className="flex items-center gap-4">
@@ -311,7 +293,7 @@ const FAQ = () => {
             </div>
           </div>
 
-          <div className="mt-16 p-10 bg-primary/10 backdrop-blur-lg rounded-3xl border border-primary/20 text-center space-y-6 relative overflow-hidden group">
+          <div className="group relative mt-12 space-y-6 overflow-hidden rounded-3xl border border-primary/20 bg-primary/10 p-7 text-center shadow-lg backdrop-blur-lg sm:p-10">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
             <div className="relative z-10">
               <h2 className="text-3xl font-bold">Все още имате въпроси?</h2>
@@ -319,18 +301,12 @@ const FAQ = () => {
                 Ако не намирате отговора, който търсите, нашият екип е тук, за да помогне.
               </p>
               <div className="pt-6">
-                <a 
-                  href="/contact" 
-                  className="inline-flex items-center justify-center px-8 py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg transition-all duration-300 hover:scale-105 active:scale-95 shadow-xl shadow-primary/30 hover:shadow-primary/40"
-                >
-                  Свържете се с нас
-                </a>
+                <Button asChild size="lg"><Link to="/contact">Свържете се с нас</Link></Button>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 

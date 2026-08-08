@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
-import MainLayout from '../components/MainLayout'; // Assuming MainLayout is in this path
 import { Link } from 'react-router-dom';
+import { Sparkles } from 'lucide-react';
+import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 const EasterEgg: React.FC = () => {
   const [revealed, setRevealed] = useState(false);
   const [answerInput, setAnswerInput] = useState('');
@@ -21,60 +25,64 @@ const EasterEgg: React.FC = () => {
 
   if (!revealed) {
     return (
-      <div className="flex min-h-[65vh] flex-col items-center justify-center bg-background p-4 text-foreground">
-        <div className="max-w-md mx-auto py-10 px-4 rounded-lg bg-card text-card-foreground shadow-lg">
-          <h1 className="mb-8 text-4xl font-bold text-center">Easter Egg</h1>
-          <p className="mb-4 text-lg text-center">
+      <InteriorPage>
+        <InteriorSection className="flex min-h-[70vh] items-center">
+        <Card className="mx-auto w-full max-w-md overflow-hidden shadow-2xl shadow-primary/5">
+          <div className="border-b border-border/60 bg-gradient-to-br from-primary/15 to-transparent p-6 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary"><Sparkles className="h-7 w-7" aria-hidden="true" /></div>
+            <p className="mt-4 text-xs font-bold uppercase tracking-[0.2em] text-primary">Тайна страница</p>
+            <h1 className="mt-1 text-3xl font-black tracking-tight">Easter Egg</h1>
+          </div>
+          <CardContent className="p-6 sm:p-8">
+          <p className="mb-4 text-center leading-relaxed text-muted-foreground">
             За да продължиш, отговори на следния въпрос:
           </p>
-          <p className="mb-4 text-xl font-semibold text-center">
+          <p className="mb-5 text-center text-xl font-bold leading-snug">
             {question}
           </p>
-          <input
+          <Input
             type="text"
             value={answerInput}
             onChange={(e) => setAnswerInput(e.target.value)}
             placeholder="Въведи отговор тук..."
-            className="mb-4 w-full rounded-lg border border-gray-300 p-2 text-gray-900 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary"
+            className="mb-4"
+            aria-label="Отговор на въпроса"
           />
-          <button
-            onClick={handleSubmit}
-            className="rounded-lg bg-primary px-6 py-3 text-primary-foreground shadow-lg transition-all duration-300 hover:bg-primary/90 focus:outline-none focus:ring-4 focus:ring-primary focus:ring-opacity-50 w-full"
-          >
-            Изпрати отговор
-          </button>
+          <Button onClick={handleSubmit} className="w-full">Изпрати отговор</Button>
           {feedbackMessage && (
-            <p className={`mt-4 text-center ${feedbackMessage.includes('верен') ? 'text-green-500' : 'text-red-500'}`}>
+            <p role="status" className={`mt-4 rounded-xl p-3 text-center text-sm font-semibold ${feedbackMessage.includes('верен') ? 'bg-emerald-500/10 text-emerald-600' : 'bg-destructive/10 text-destructive'}`}>
               {feedbackMessage}
             </p>
           )}
-          <Link to="/" className="block mt-4 text-center text-sm text-muted-foreground hover:text-primary transition-colors duration-200">
+          <Link to="/" className="mt-5 block text-center text-sm font-semibold text-muted-foreground transition-colors duration-200 hover:text-primary">
             Върни се на началната страница
           </Link>
-        </div>
-      </div>
+          </CardContent>
+        </Card>
+        </InteriorSection>
+      </InteriorPage>
     );
   }
 
   return (
-    <MainLayout>
-      <div className="flex flex-col items-center justify-center max-w-full mx-auto py-10 px-4">
-        <h1 className="mb-8 text-4xl font-bold text-center">Добре дошли на easter egg страницата!</h1>
-        <div className="mt-8 flex flex-col items-center gap-8 w-full max-w-5xl"> {/* Layout for video and text */}
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Тайната е отключена" title={<>Историята на <span className="text-primary">проф. Минко Балкански</span></>} description="Бележит учен, филантроп и вдъхновение за поколения български ученици." icon={Sparkles} />
+      <InteriorSection containerClassName="max-w-5xl">
+        <div className="flex w-full flex-col items-center gap-8">
             <div className="w-full">
-              <div className="relative aspect-[16/9] w-full max-w-xl mx-auto"> {/* Responsive video container */}
-                <iframe
+              <div className="relative mx-auto aspect-video w-full max-w-3xl overflow-hidden rounded-3xl border border-border/70 bg-black shadow-2xl">
+                <video
                   src="/minko-b-ai-video-easter-egg.mp4"
-                  title=""
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute top-0 left-0 w-full h-full rounded-lg shadow-lg"
-                ></iframe>
+                  controls
+                  preload="metadata"
+                  className="h-full w-full"
+                  aria-label="Видео за професор Минко Балкански"
+                />
               </div>
             </div>
-            <div className="flex-1 text-lg text-center md:text-left p-4 rounded-lg bg-secondary text-secondary-foreground shadow-md w-full md:w-auto">
-              <h2 className="text-2xl font-bold mb-4">Професор Минко Балкански – Бележит Учен и Филантроп</h2>
+            <Card className="w-full overflow-hidden">
+              <CardContent className="p-6 text-base leading-relaxed sm:p-8 lg:p-10">
+              <h2 className="mb-5 text-2xl font-black tracking-tight sm:text-3xl">Професор Минко Балкански – бележит учен и филантроп</h2>
               
               <div className="mb-4">
                 <p className="mb-2">
@@ -84,7 +92,7 @@ const EasterEgg: React.FC = () => {
                   <img
                     src="/Prof_Minko_Balkanski.jpg"
                     alt="Портрет на Професор Минко Балкански"
-                    className="w-full max-w-xs mx-auto rounded-lg shadow-md"
+                    className="mx-auto w-full max-w-xs rounded-2xl border border-border/60 shadow-lg"
                   />
                   <p className="text-sm text-gray-500 mt-2">Професор Минко Балкански</p>
                 </div>
@@ -103,10 +111,11 @@ const EasterEgg: React.FC = () => {
                   Освен с научните си постижения, професор Балкански е известен и с мащабната си благотворителна дейност в България. Той основава фондация „Миню Балкански“, чиято мисия е да подкрепя културата, образованието и науката в родния му край. Фондацията осигурява компютърни кабинети на училища, организира олимпиади по математика и физика и провежда подготвителни курсове за талантливи ученици. За изключителния си принос е удостоен с множество отличия, сред които орден „Стара планина“ през 2003 г.
                 </p>
               </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
-      </div>
-    </MainLayout>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 

@@ -26,8 +26,8 @@ export function ContentSkeleton({ count = 3, variant = "cards", label = "Зар�
   return (
     <div role="status" aria-label={label} className={`${variant === "cards" ? "grid gap-6 sm:grid-cols-2 lg:grid-cols-3" : "space-y-4"} ${className}`}>
       {Array.from({ length: count }, (_, index) => (
-        <div key={index} className="rounded-xl border bg-card p-4">
-          {variant === "cards" && <Skeleton className="mb-4 aspect-video w-full rounded-lg" />}
+        <div key={index} className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
+          {variant === "cards" && <Skeleton className="mb-4 aspect-video w-full rounded-xl" />}
           <div className="space-y-3"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-1/2" /></div>
         </div>
       ))}
@@ -45,7 +45,7 @@ interface QueryErrorStateProps {
 
 export function QueryErrorState({ title = "Съдържанието не можа да се зареди", message, onRetry, className = "" }: QueryErrorStateProps) {
   return (
-    <div role="alert" className={`rounded-xl border border-destructive/40 bg-destructive/5 p-6 text-center ${className}`}>
+    <div role="alert" className={`rounded-2xl border border-destructive/35 bg-destructive/5 p-7 text-center shadow-sm ${className}`}>
       <AlertCircle className="mx-auto h-9 w-9 text-destructive" aria-hidden="true" />
       <h2 className="mt-3 text-lg font-semibold">{title}</h2>
       {message && <p className="mt-2 text-sm text-muted-foreground">{message}</p>}
@@ -63,7 +63,7 @@ interface QueryEmptyStateProps {
 
 export function QueryEmptyState({ title, description, icon: Icon = Inbox, className = "" }: QueryEmptyStateProps) {
   return (
-    <div className={`rounded-xl border-2 border-dashed p-8 text-center ${className}`}>
+    <div className={`rounded-2xl border-2 border-dashed border-border/80 bg-card/50 p-8 text-center ${className}`}>
       <Icon className="mx-auto h-10 w-10 text-muted-foreground/60" aria-hidden="true" />
       <h2 className="mt-3 text-lg font-semibold">{title}</h2>
       {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}

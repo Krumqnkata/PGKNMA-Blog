@@ -30,8 +30,8 @@ const PersonalDataExportCard = () => {
   });
 
   return (
-    <Card>
-      <CardHeader>
+    <Card className="h-fit overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-primary/25 hover:shadow-lg">
+      <CardHeader className="border-b border-border/60 bg-gradient-to-r from-emerald-500/10 to-transparent">
         <div className="flex items-start gap-3">
           <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
           <div className="space-y-1">

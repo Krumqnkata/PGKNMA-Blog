@@ -78,7 +78,7 @@ export function ContactForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
         <FormField
           control={form.control}
           name="name"
@@ -149,17 +149,11 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={isPending}>
+        <Button type="submit" className="w-full sm:w-auto" disabled={isPending}>
           {isPending ? "Изпращане..." : "Изпращане"}
         </Button>
       </form>
-      <p className="text-sm text-muted-foreground mt-4">
-        Полетата отбелязани със * са задължителни.
-      </p>
-      <p className="text-sm text-muted-foreground mt-4">
-        Препоръчително е да не споделяте лична информация в съобщението си.
-        Също така е добре да сте влезли с вашия акаунт, за да можем да ви отговорим по-лесно.
-      </p>
+      <div className="mt-5 rounded-xl bg-muted/50 p-3 text-xs leading-relaxed text-muted-foreground">Полетата със * са задължителни. Не споделяйте чувствителна лична информация в съобщението.</div>
     </Form>
   );
 }

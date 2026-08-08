@@ -6,6 +6,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import MainLayout from '@/components/MainLayout';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
+import { History } from 'lucide-react';
+import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 interface ChangelogEntry {
   content: string;
   updated_at: string;
@@ -44,16 +46,16 @@ const Changelog: React.FC = () => {
   }
 
   return (
-    <MainLayout>
-      <div className="container mx-auto py-10">
-        <div className="max-w-4xl mx-auto">
-          <h1 className="text-3xl font-bold mb-8 text-center">История на промените в сайта</h1>
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Развитие на платформата" title={<>История на <span className="text-primary">промените</span></>} description="Нови възможности, подобрения и поправки — подредени хронологично." icon={History} />
+      <InteriorSection containerClassName="max-w-4xl">
           
           {changelogEntries && changelogEntries.length > 0 ? (
             <div className="space-y-6">
               {changelogEntries.map((entry, index) => (
-                <Card key={index} className="transition-all duration-200 hover:shadow-md">
-                  <CardHeader>
+                <Card key={index} className="relative overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-lg motion-reduce:hover:translate-y-0">
+                  <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-primary to-blue-500" aria-hidden="true" />
+                  <CardHeader className="border-b border-border/60 bg-muted/25">
                     <CardTitle className="text-lg">
                       {formatDate(entry.updated_at)}
                     </CardTitle>
@@ -67,9 +69,8 @@ const Changelog: React.FC = () => {
           ) : (
             <QueryEmptyState title="Все още няма записани промени" description="Историята на следващите версии ще се показва тук." />
           )}
-        </div>
-      </div>
-    </MainLayout>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 

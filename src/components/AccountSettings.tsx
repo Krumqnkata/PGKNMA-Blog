@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import { useMutation } from "@tanstack/react-query";
-import { Loader2 } from "lucide-react";
+import { AlertTriangle, Loader2, ShieldCheck } from "lucide-react";
 
 import AccountCredentialSettings from "@/components/account/AccountCredentialSettings";
 import PersonalDataExportCard from "@/components/PersonalDataExportCard";
@@ -64,17 +64,21 @@ const AccountSettings = () => {
 
   return (
     <div className="space-y-6 sm:space-y-8">
+      <div className="flex items-start gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4 text-sm leading-relaxed text-muted-foreground">
+        <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
+        <p>Промените по данните за вход могат да прекратят активната ви сесия. Това предпазва профила от неоторизиран достъп.</p>
+      </div>
       <ProfileAvatarSettings />
       <AccountCredentialSettings />
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <Card className="h-fit transition-shadow duration-200 hover:shadow-md">
-          <CardHeader>
+        <Card className="h-fit overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-primary/25 hover:shadow-lg">
+          <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent">
             <CardTitle>Вход с Google</CardTitle>
             <CardDescription>Свържете Google акаунт със същия имейл. При профили с парола се изисква текущата парола.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="max-w-sm space-y-2">
+            <div className="max-w-sm space-y-2.5">
               <label htmlFor="google-link-password" className="text-sm font-medium">Текуща парола</label>
               <Input id="google-link-password" type="password" autoComplete="current-password" value={googleLinkPassword} onChange={(event) => setGoogleLinkPassword(event.target.value)} placeholder="••••••••" />
             </div>
@@ -92,9 +96,9 @@ const AccountSettings = () => {
         <PersonalDataExportCard />
       </div>
 
-      <Card className="border-destructive/50 bg-destructive/[0.03]">
-        <CardHeader>
-          <CardTitle>Деактивиране на акаунт</CardTitle>
+      <Card className="overflow-hidden border-destructive/35 bg-destructive/[0.025]">
+        <CardHeader className="border-b border-destructive/15 bg-destructive/5">
+          <CardTitle className="flex items-center gap-2"><AlertTriangle className="h-5 w-5 text-destructive" aria-hidden="true" />Деактивиране на акаунт</CardTitle>
           <CardDescription>Профилът ще бъде скрит и достъпът до него ще бъде спрян. За повторно активиране се свържете с администратор.</CardDescription>
         </CardHeader>
         <CardFooter>

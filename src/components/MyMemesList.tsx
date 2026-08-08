@@ -38,12 +38,12 @@ const MyMemesList: React.FC = () => {
 
   const getStatusBadge = (status: Meme['status']) => {
     if (status === 'approved') {
-      return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-green-900 text-green-300">Одобрено</span>;
+      return <span className="mr-2 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-bold text-emerald-600 dark:text-emerald-300">Одобрено</span>;
     }
     if (status === 'rejected') {
-      return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-red-900 text-red-300">Отхвърлено</span>;
+      return <span className="mr-2 rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-bold text-destructive">Отхвърлено</span>;
     }
-    return <span className="text-xs font-medium mr-2 px-2.5 py-0.5 rounded bg-yellow-900 text-yellow-300">Изчакващо</span>;
+    return <span className="mr-2 rounded-full bg-amber-500/10 px-2.5 py-1 text-xs font-bold text-amber-600 dark:text-amber-300">Изчакващо</span>;
   };
 
   if (isLoading) {
@@ -56,7 +56,7 @@ const MyMemesList: React.FC = () => {
 
   if (!memes || memes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-10 border-2 border-dashed rounded-lg">
+      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center">
         <ImageOff className="h-12 w-12 text-muted-foreground" />
         <h3 className="mt-4 text-lg font-semibold">Нямате качени мемета</h3>
         <p className="mt-1 text-sm text-muted-foreground">Все още не сте качили меме за 'Меме на седмицата'.</p>
@@ -67,7 +67,7 @@ const MyMemesList: React.FC = () => {
   return (
     <div className="space-y-4">
       {memes.map((meme) => (
-        <Card key={meme.id}>
+        <Card key={meme.id} className="transition-[box-shadow,border-color] hover:border-primary/25 hover:shadow-md">
           <CardHeader>
             <div className="flex justify-between items-start">
               <div>
@@ -106,7 +106,7 @@ const MyMemesList: React.FC = () => {
             </div>
           </CardHeader>
           <CardContent>
-            <AuthenticatedImage src={meme.image_url} alt={meme.title} className="max-h-96 w-auto rounded-lg" />
+            <AuthenticatedImage src={meme.image_url} alt={meme.title} className="max-h-96 w-auto rounded-2xl border border-border/60 shadow-sm" />
           </CardContent>
         </Card>
       ))}

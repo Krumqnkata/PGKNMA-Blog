@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import MainLayout from '@/components/MainLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import AccountSettings from '@/components/AccountSettings';
@@ -13,6 +12,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield, History } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import UserAvatar from '@/components/UserAvatar';
+import { InteriorPage, InteriorSection } from '@/components/InteriorPage';
 
 const MyProfilePage: React.FC = () => {
   const { user } = useAuth();
@@ -40,24 +40,28 @@ const MyProfilePage: React.FC = () => {
   ];
 
   return (
-    <MainLayout>
-      <div className="container mx-auto px-4 py-6 sm:py-10">
-        <div className="mb-6 flex items-center gap-3 sm:mb-8 sm:gap-4">
+    <InteriorPage>
+      <InteriorSection className="pt-8 sm:pt-12">
+        <div className="relative mb-8 overflow-hidden rounded-3xl border border-border/70 bg-card p-5 shadow-xl shadow-primary/5 sm:p-8">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,hsl(var(--primary)/0.18),transparent_38%),linear-gradient(120deg,transparent_55%,hsl(210_100%_55%/0.08))]" aria-hidden="true" />
+          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
           <UserAvatar
             username={user?.username}
             avatarUrl={user?.avatar_url}
-            className="h-16 w-16 border-2 border-background shadow-md"
+            className="h-20 w-20 border-4 border-background shadow-xl sm:h-24 sm:w-24"
           />
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold sm:text-3xl">Моят профил</h1>
-            <p className="truncate text-sm text-muted-foreground sm:text-lg">Добре дошли, {user?.username || 'потребител'}!</p>
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Лично пространство</p>
+            <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">Моят профил</h1>
+            <p className="mt-1 truncate text-sm leading-relaxed text-muted-foreground sm:text-base">Добре дошли, <span className="font-bold text-foreground">{user?.username || 'потребител'}</span>. Управлявайте профила и активността си.</p>
+          </div>
           </div>
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="settings" className="w-full">
           {isMobile ? (
             <Select value={activeTab} onValueChange={setActiveTab}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="h-12 w-full bg-card">
                 <SelectValue placeholder="Изберете секция" />
               </SelectTrigger>
               <SelectContent>
@@ -72,10 +76,10 @@ const MyProfilePage: React.FC = () => {
               </SelectContent>
             </Select>
           ) : (
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm xl:grid-cols-6">
               {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value}>
-                  <tab.Icon className="mr-2 h-4 w-4" />
+                <TabsTrigger key={tab.value} value={tab.value} className="min-h-11 px-2">
+                  <tab.Icon className="mr-1.5 h-4 w-4" />
                   {tab.label}
                 </TabsTrigger>
               ))}
@@ -83,7 +87,7 @@ const MyProfilePage: React.FC = () => {
           )}
 
           {tabs.map(tab => (
-            <TabsContent key={tab.value} value={tab.value} className="mt-6">
+            <TabsContent key={tab.value} value={tab.value} className="mt-7 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2">
               {tab.value === 'settings' && <AccountSettings />}
               {tab.value === 'songs' && <MySongSuggestionsList />}
               {tab.value === 'memes' && <MyMemesList />}
@@ -93,8 +97,8 @@ const MyProfilePage: React.FC = () => {
             </TabsContent>
           ))}
         </Tabs>
-      </div>
-    </MainLayout>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 

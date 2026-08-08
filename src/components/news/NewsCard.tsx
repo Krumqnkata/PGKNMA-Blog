@@ -1,4 +1,4 @@
-import { Calendar, Share2, Tag } from "lucide-react";
+import { ArrowUpRight, Calendar, Share2, Tag, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -28,8 +28,9 @@ async function shareArticle(article: Post) {
 }
 
 const NewsCard = ({ article }: NewsCardProps) => (
-  <Card className="group h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-xl motion-reduce:hover:translate-y-0">
-    <div className="relative aspect-video w-full overflow-hidden bg-muted">
+  <Card className="group h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-2xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
+    <article className="flex h-full flex-col">
+    <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
       <Link to={`/post/${article.id}`} aria-label={`Прочети: ${article.title}`}>
         <img
           src={article.banner || "/logo-light.png"}
@@ -39,6 +40,10 @@ const NewsCard = ({ article }: NewsCardProps) => (
           decoding="async"
         />
       </Link>
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80" />
+      <Badge className="absolute bottom-3 left-3 border-white/20 bg-slate-950/65 text-white shadow-lg backdrop-blur-md hover:bg-slate-950/75">
+        <Tag className="mr-1.5 h-3 w-3" aria-hidden="true" />{article.category_name || "Без категория"}
+      </Badge>
       <button
         type="button"
         onClick={() => void shareArticle(article)}
@@ -49,24 +54,24 @@ const NewsCard = ({ article }: NewsCardProps) => (
       </button>
     </div>
 
-    <div className="p-5 sm:p-6">
-      <Badge variant="secondary" className="mb-3 text-sm font-medium">
-        <Tag className="mr-1.5 h-3 w-3" />
-        {article.category_name || "Без категория"}
-      </Badge>
-      <h2 className="mb-2 text-xl font-bold uppercase leading-snug">
-        <Link to={`/post/${article.id}`} className="transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+    <div className="flex flex-1 flex-col p-5 sm:p-6">
+      <h2 className="text-balance text-xl font-black leading-snug tracking-tight sm:text-2xl">
+        <Link to={`/post/${article.id}`} className="rounded transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           {article.title}
         </Link>
       </h2>
-      <p className="mb-4 line-clamp-3 text-sm text-muted-foreground">{article.hook}</p>
-      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-        <Calendar className="h-3 w-3" aria-hidden="true" />
-        <time dateTime={article.published_at || article.created_at}>
-          {new Date(article.published_at || article.created_at).toLocaleDateString("bg-BG")}
-        </time>
+      <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{article.hook}</p>
+      <div className="mt-auto pt-5">
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border/60 pt-4 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" aria-hidden="true" /><time dateTime={article.published_at || article.created_at}>{new Date(article.published_at || article.created_at).toLocaleDateString("bg-BG", { day: "numeric", month: "short", year: "numeric" })}</time></span>
+          {article.author_username && <span className="flex min-w-0 items-center gap-1.5"><UserRound className="h-3.5 w-3.5" aria-hidden="true" /><span className="truncate">{article.author_username}</span></span>}
+        </div>
+        <Link to={`/post/${article.id}`} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          Прочети публикацията <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />
+        </Link>
       </div>
     </div>
+    </article>
   </Card>
 );
 

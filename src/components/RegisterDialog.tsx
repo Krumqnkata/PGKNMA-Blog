@@ -69,7 +69,7 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
       <DialogContent
         ref={dialogContentRef}
         tabIndex={-1}
-        className="max-h-[90dvh] w-[calc(100%-1.5rem)] overflow-y-auto sm:max-w-md"
+        className="max-h-[90dvh] overflow-y-auto sm:max-w-lg"
         aria-labelledby="register-dialog-title"
         aria-describedby="register-dialog-description"
         onOpenAutoFocus={(event) => {
@@ -86,8 +86,8 @@ const RegisterDialog = ({ open, onOpenChange, onOpenLogin }: RegisterDialogProps
           onOpenChange(false);
         }}
       >
-        <DialogHeader>
-          <DialogTitle id="register-dialog-title" className="text-xl font-semibold">Регистрация</DialogTitle>
+        <DialogHeader className="-mx-5 -mt-5 border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent px-5 pb-5 pt-5 pr-14 text-left sm:-mx-6 sm:-mt-6 sm:px-6 sm:pb-6 sm:pt-6 sm:pr-14">
+          <DialogTitle id="register-dialog-title" className="text-2xl font-black">Създай профил</DialogTitle>
           <DialogDescription id="register-dialog-description">
             {settings?.enable_user_registration
               ? "Попълнете данните си, за да създадете профил."

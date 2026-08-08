@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { getPrivacyPolicy, PrivacyPolicyContent } from "../lib/api";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { ShieldCheck } from "lucide-react";
+import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
+import { Card, CardContent } from "@/components/ui/card";
+import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 
 const PrivacyPolicy = () => {
   const [policy, setPolicy] = useState<PrivacyPolicyContent | null>(null);
@@ -34,39 +38,26 @@ const PrivacyPolicy = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] w-full items-center justify-center">
-        <p>Зареждане на Политиката за поверителност...</p>
-      </div>
+      <InteriorPage><InteriorSection containerClassName="max-w-4xl"><ContentSkeleton variant="detail" label="Зареждане на Политиката за поверителност" /></InteriorSection></InteriorPage>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-[60vh] w-full items-center justify-center text-red-500">
-        <p>{error}</p>
-      </div>
+      <InteriorPage><InteriorSection containerClassName="max-w-3xl"><QueryErrorState message={error} /></InteriorSection></InteriorPage>
     );
   }
 
   return (
-    <div className="w-full">
-      <main className="py-12 px-4 md:px-6">
-        <div className="container mx-auto prose prose-lg max-w-4xl dark:prose-invert">
-          <h1 className="text-3xl font-bold text-center mb-8 text-foreground">Политика за поверителност</h1>
-
-          {policy && (
-            <p className="text-center text-muted-foreground">Последна актуализация: {formatDate(policy.date)}</p>
-          )}
-
-          {policy ? (
-            <MarkdownRenderer content={policy.content} />
-          ) : (
-            <p>Не е налична политика за поверителност.</p>
-          )}
-
-        </div>
-      </main>
-    </div>
+    <InteriorPage>
+      <InteriorPageHero eyebrow="Правна информация" title={<>Политика за <span className="text-primary">поверителност</span></>} description="Как събираме, използваме и защитаваме информацията в училищната платформа." icon={ShieldCheck} />
+      <InteriorSection containerClassName="max-w-4xl">
+        <Card className="overflow-hidden">
+          {policy && <div className="border-b border-border/60 bg-muted/35 px-5 py-3 text-center text-sm font-semibold text-muted-foreground">Последна актуализация: {formatDate(policy.date)}</div>}
+          <CardContent className="p-5 sm:p-8 lg:p-10">{policy ? <MarkdownRenderer content={policy.content} className="prose-lg dark:prose-invert" /> : <p>Не е налична политика за поверителност.</p>}</CardContent>
+        </Card>
+      </InteriorSection>
+    </InteriorPage>
   );
 };
 
