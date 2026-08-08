@@ -5,6 +5,7 @@ const PageLoadStats = () => {
   const [loadTime, setLoadTime] = useState<number | null>(null);
 
   useEffect(() => {
+    let timeoutId: number | undefined;
     const calculateLoadTime = () => {
       const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming;
       if (navigation) {
@@ -12,12 +13,20 @@ const PageLoadStats = () => {
         setLoadTime(Math.round(time));
       }
     };
+    const scheduleCalculation = () => {
+      timeoutId = window.setTimeout(calculateLoadTime, 0);
+    };
 
     if (document.readyState === "complete") {
-      setTimeout(calculateLoadTime, 0);
+      scheduleCalculation();
     } else {
-      window.addEventListener("load", () => setTimeout(calculateLoadTime, 0));
+      window.addEventListener("load", scheduleCalculation, { once: true });
     }
+
+    return () => {
+      window.removeEventListener("load", scheduleCalculation);
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+    };
   }, []);
 
   if (loadTime === null) return null;

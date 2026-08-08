@@ -1,8 +1,4 @@
 import { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
-import CookieConsent from "@/components/CookieConsent";
 import { getPrivacyPolicy, PrivacyPolicyContent } from "../lib/api";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
 
@@ -38,7 +34,7 @@ const PrivacyPolicy = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center">
+      <div className="flex min-h-[60vh] w-full items-center justify-center">
         <p>Зареждане на Политиката за поверителност...</p>
       </div>
     );
@@ -46,15 +42,14 @@ const PrivacyPolicy = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center text-red-500">
+      <div className="flex min-h-[60vh] w-full items-center justify-center text-red-500">
         <p>{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full">
-      <Header />
+    <div className="w-full">
       <main className="py-12 px-4 md:px-6">
         <div className="container mx-auto prose prose-lg max-w-4xl dark:prose-invert">
           <h1 className="text-3xl font-bold text-center mb-8 text-foreground">Политика за поверителност</h1>
@@ -71,9 +66,6 @@ const PrivacyPolicy = () => {
 
         </div>
       </main>
-      <Footer />
-      <BackToTop />
-      <CookieConsent />
     </div>
   );
 };

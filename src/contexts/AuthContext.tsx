@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, useContext, useCallback, ReactNode } from 'react';
+import { createContext, useState, useEffect, useContext, useCallback, useMemo, ReactNode } from 'react';
 import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, getCurrentProfile, LoginCredentials, RegisterCredentials, RegistrationResponse, User } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         return () => window.removeEventListener('auth:session-ended', handleSessionEnded);
     }, [toast]);
 
-    const login = async (credentials: LoginCredentials) => {
+    const login = useCallback(async (credentials: LoginCredentials) => {
         setLoading(true);
         try {
             const data = await apiLogin(credentials);
@@ -99,9 +99,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const loginWithGoogle = async (credential: string) => {
+    const loginWithGoogle = useCallback(async (credential: string) => {
         setLoading(true);
         try {
             const data = await apiLoginWithGoogle(credential);
@@ -118,18 +118,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const register = async (credentials: RegisterCredentials) => {
+    const register = useCallback(async (credentials: RegisterCredentials) => {
         setLoading(true);
         try {
             return await apiRegister(credentials);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    const logout = async () => {
+    const logout = useCallback(async () => {
         try {
             await logoutCurrentBlogSession();
         } catch (error) {
@@ -141,17 +141,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
         }
-    };
+    }, []);
 
-    const openLoginDialog = () => setLoginDialogOpen(true);
-    const closeLoginDialog = () => setLoginDialogOpen(false);
+    const openLoginDialog = useCallback(() => setLoginDialogOpen(true), []);
+    const closeLoginDialog = useCallback(() => setLoginDialogOpen(false), []);
     const updateUser = useCallback((updatedUser: User) => {
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
     }, []);
 
-    return (
-        <AuthContext.Provider value={{ 
+    const value = useMemo<AuthContextType>(() => ({
             user, 
             isAuthenticated: !!accessToken, 
             login, 
@@ -164,7 +163,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             openLoginDialog,
             closeLoginDialog,
             updateUser,
-        }}>
+    }), [accessToken, closeLoginDialog, loading, login, loginDialogOpen, loginWithGoogle, logout, openLoginDialog, register, updateUser, user]);
+
+    return (
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

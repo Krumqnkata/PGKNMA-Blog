@@ -21,7 +21,7 @@ const EasterEgg: React.FC = () => {
 
   if (!revealed) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground p-4">
+      <div className="flex min-h-[65vh] flex-col items-center justify-center bg-background p-4 text-foreground">
         <div className="max-w-md mx-auto py-10 px-4 rounded-lg bg-card text-card-foreground shadow-lg">
           <h1 className="mb-8 text-4xl font-bold text-center">Easter Egg</h1>
           <p className="mb-4 text-lg text-center">

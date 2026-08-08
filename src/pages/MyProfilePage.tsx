@@ -12,7 +12,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield, History } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
-import BackToTop from '@/components/BackToTop';
 import UserAvatar from '@/components/UserAvatar';
 
 const MyProfilePage: React.FC = () => {
@@ -26,15 +25,9 @@ const MyProfilePage: React.FC = () => {
     return params.get('tab') || 'settings';
   });
 
-  // Update activeTab when URL search params change
   useEffect(() => {
     const params = new URLSearchParams(location.search);
-    const tabFromUrl = params.get('tab');
-    if (tabFromUrl && tabFromUrl !== activeTab) {
-      setActiveTab(tabFromUrl);
-    } else if (!tabFromUrl && activeTab !== 'settings') {
-      setActiveTab('settings');
-    }
+    setActiveTab(params.get('tab') || 'settings');
   }, [location.search]);
 
   const tabs = [
@@ -48,16 +41,16 @@ const MyProfilePage: React.FC = () => {
 
   return (
     <MainLayout>
-      <div className="container mx-auto py-10">
-        <div className="mb-8 flex items-center gap-4">
+      <div className="container mx-auto px-4 py-6 sm:py-10">
+        <div className="mb-6 flex items-center gap-3 sm:mb-8 sm:gap-4">
           <UserAvatar
             username={user?.username}
             avatarUrl={user?.avatar_url}
             className="h-16 w-16 border-2 border-background shadow-md"
           />
           <div className="min-w-0">
-            <h1 className="text-3xl font-bold">Моят профил</h1>
-            <p className="truncate text-lg text-muted-foreground">Добре дошли, {user?.username || 'потребител'}!</p>
+            <h1 className="text-2xl font-bold sm:text-3xl">Моят профил</h1>
+            <p className="truncate text-sm text-muted-foreground sm:text-lg">Добре дошли, {user?.username || 'потребител'}!</p>
           </div>
         </div>
 
@@ -101,7 +94,6 @@ const MyProfilePage: React.FC = () => {
           ))}
         </Tabs>
       </div>
-      <BackToTop />
     </MainLayout>
   );
 };

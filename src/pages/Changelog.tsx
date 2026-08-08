@@ -7,7 +7,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2 } from 'lucide-react';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import MainLayout from '@/components/MainLayout';
-import BackToTop from '@/components/BackToTop';
 interface ChangelogEntry {
   content: string;
   updated_at: string;
@@ -95,7 +94,6 @@ const Changelog: React.FC = () => {
           )}
         </div>
       </div>
-      <BackToTop />
     </MainLayout>
   );
 };

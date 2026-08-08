@@ -1,12 +1,8 @@
-import { useState, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { Moon, Sun, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
-import SearchDialog from "@/components/SearchDialog";
-import LoginDialog from "@/components/LoginDialog";
-import RegisterDialog from "@/components/RegisterDialog";
 import { useTheme } from "next-themes";
-import NotificationBell from "@/components/NotificationBell";
 import logoDark from "/logo-dark.png";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserDropdown } from "./UserDropdown";
@@ -26,20 +22,10 @@ const Header = () => {
   const location = useLocation();
   const isOnProfilePage = location.pathname === '/profile';
 
-  const { theme, setTheme, systemTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const logo = logoDark;
 
-  const navLinks = [
-    { name: "Начало", path: "/" },
-    { name: "Новини", path: "/news" },
-    { name: "Събития", path: "/events" },
-    { name: "Предложения за звънец", path: "/bell-suggest" },
-    { name: "Седмична анкета", path: "/weekly-poll" },
-    { name: "Меме на седмицата", path: "/meme-of-the-week" },
-    { name: "Програма", path: "/program"},
-  ];
-
-  // --- Check session on mount ---
+  useEffect(() => setMobileMenuOpen(false), [location.pathname]);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#0a2e2e]/90 backdrop-blur-md shadow-sm text-white">
@@ -67,13 +53,16 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-2">
-          <NotificationBell />
+          <Suspense fallback={<div className="h-10 w-10" aria-hidden="true" />}>
+            <NotificationBell />
+          </Suspense>
 
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
             className="transition-transform hover:scale-105"
+            aria-label={resolvedTheme === "dark" ? "Включи светла тема" : "Включи тъмна тема"}
           >
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -95,6 +84,9 @@ const Header = () => {
             size="icon"
             className="lg:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-navigation"
+            aria-label={mobileMenuOpen ? "Затвори менюто" : "Отвори менюто"}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </Button>
@@ -103,7 +95,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="border-b border-border bg-background lg:hidden">
+        <div id="mobile-navigation" className="border-b border-border bg-background text-foreground shadow-xl animate-in slide-in-from-top-2 duration-200 lg:hidden">
           <div className="container mx-auto space-y-1 px-4 py-4">
             {navLinks.map((link) => (
                 <NavLink
@@ -146,10 +138,26 @@ const Header = () => {
         </div>
       )}
 
-      <LoginDialog open={loginDialogOpen} onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />
-      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onOpenLogin={openLoginDialog} />
+      <Suspense fallback={null}>
+        {loginDialogOpen && <LoginDialog open onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />}
+        {registerOpen && <RegisterDialog open onOpenChange={setRegisterOpen} onOpenLogin={openLoginDialog} />}
+      </Suspense>
     </header>
   );
 };
 
 export default Header;
+
+const NotificationBell = lazy(() => import("@/components/NotificationBell"));
+const LoginDialog = lazy(() => import("@/components/LoginDialog"));
+const RegisterDialog = lazy(() => import("@/components/RegisterDialog"));
+
+const navLinks = [
+  { name: "Начало", path: "/" },
+  { name: "Новини", path: "/news" },
+  { name: "Събития", path: "/events" },
+  { name: "Предложения за звънец", path: "/bell-suggest" },
+  { name: "Седмична анкета", path: "/weekly-poll" },
+  { name: "Меме на седмицата", path: "/meme-of-the-week" },
+  { name: "Програма", path: "/program" },
+] as const;

@@ -1,99 +1,58 @@
-import { useState, useEffect } from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
-import { Card } from "@/components/ui/card";
+import { useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, Loader2, Tag, Search, Share2 } from "lucide-react";
-import { toast } from "sonner";
-import CookieConsent from "@/components/CookieConsent";
-import { Link } from "react-router-dom";
+import { Loader2, Search } from "lucide-react";
 import { getPosts, Post } from '@/lib/api';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
+import NewsCard from "@/components/news/NewsCard";
+import NewsPagination from "@/components/news/NewsPagination";
+import { useDebouncedValue } from "@/hooks/use-debounced-value";
 
-// Debounce hook
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-  return debouncedValue;
-}
+const ITEMS_PER_PAGE = 9;
 
 const News = () => {
-    const [posts, setPosts] = useState<Post[]>([]);
-    const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
-    const [categories, setCategories] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-    const [searchQuery, setSearchQuery] = useState(''); // State for search input
-    const debouncedSearch = useDebounce(searchQuery, 500); // Debounced search query
-    
-    // Pagination state
+    const [searchQuery, setSearchQuery] = useState('');
+    const debouncedSearch = useDebouncedValue(searchQuery, 300);
     const [currentPage, setCurrentPage] = useState(1);
-    const ITEMS_PER_PAGE = 9;
+    const { data: posts = [], isLoading, error } = useQuery<Post[], Error>({
+      queryKey: ['posts'],
+      queryFn: getPosts,
+      staleTime: 5 * 60 * 1000,
+    });
 
-    useEffect(() => {
-        // Fetch all posts just once when the component mounts
-        const fetchAllPosts = async () => {
-            setLoading(true);
-            try {
-                const data = await getPosts(); // Always fetch all posts
-                setPosts(data);
-                const uniqueCategories = [...new Set(data.map(post => post.category_name))];
-                setCategories(uniqueCategories);
-                setError(null);
-            } catch (err: unknown) {
-                console.error('Неуспешно извличане на новини:', err);
-                setError(err instanceof Error ? err.message : 'Неуспешно извличане на новини.');
-            } finally {
-                setLoading(false);
-            }
-        };
-        fetchAllPosts();
-    }, []);
+    const categories = useMemo(
+      () => [...new Set(posts.map((post) => post.category_name).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'bg')),
+      [posts],
+    );
 
-    // Combined filtering logic in a single useEffect
-    useEffect(() => {
-        let tempPosts = posts;
+    const filteredPosts = useMemo(() => {
+      const normalizedSearch = debouncedSearch.trim().toLocaleLowerCase('bg');
+      return posts.filter((post) => {
+        const matchesCategory = !selectedCategory || post.category_name === selectedCategory;
+        if (!matchesCategory || !normalizedSearch) return matchesCategory;
 
-        // Apply search filter first
-        if (debouncedSearch) {
-            tempPosts = tempPosts.filter(post =>
-                post.title.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-                post.content.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
-                post.author_username.toLowerCase().includes(debouncedSearch.toLowerCase())
-            );
-        }
+        return [post.title, post.content, post.author_username]
+          .some((value) => value?.toLocaleLowerCase('bg').includes(normalizedSearch));
+      });
+    }, [debouncedSearch, posts, selectedCategory]);
 
-        // Then apply category filter on the result of the search filter
-        if (selectedCategory) {
-            tempPosts = tempPosts.filter(post => post.category_name === selectedCategory);
-        }
+    useEffect(() => setCurrentPage(1), [debouncedSearch, selectedCategory]);
 
-        setFilteredPosts(tempPosts);
-        setCurrentPage(1); // Reset to first page on filter change
-    }, [posts, debouncedSearch, selectedCategory]);
+    const pageCount = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
+    const visiblePosts = useMemo(
+      () => filteredPosts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE),
+      [currentPage, filteredPosts],
+    );
+
+    const handlePageChange = (page: number) => {
+      if (page === currentPage) return;
+      setCurrentPage(page);
+      document.getElementById('news-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     return (
-        <div className="min-h-screen w-full bg-background">
-            <Header />
+        <div className="w-full bg-background">
             <main>
                 {/* Hero Section */}
                 <section className="relative w-full overflow-hidden bg-background pt-8 pb-0 md:pt-12 md:pb-0">
@@ -147,14 +106,15 @@ const News = () => {
                             </div>
                         </div>
 
-                        {loading ? (
+                        <div id="news-results" className="scroll-mt-24" />
+                        {isLoading ? (
                             <div className="py-12 text-center flex justify-center items-center">
                                 <Loader2 className="h-8 w-8 animate-spin text-primary" />
                                 <p className="text-lg text-muted-foreground ml-3">Зареждане на новините...</p>
                             </div>
                         ) : error ? (
                             <div className="py-12 text-center text-destructive">
-                                <p className="text-lg font-semibold">{error}</p>
+                                <p className="text-lg font-semibold">{error.message || 'Неуспешно извличане на новини.'}</p>
                             </div>
                         ) : filteredPosts.length === 0 ? (
                             <div className="py-12 text-center">
@@ -163,130 +123,15 @@ const News = () => {
                         ) : (
                             <>
                                 <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                                    {filteredPosts
-                                        .slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE)
-                                        .map((article) => (
-                                            <Link to={`/post/${article.id}`} key={article.id} className="group block">
-                                                <Card
-                                                    className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 h-full"
-                                                >
-                                                    <div className="aspect-video w-full overflow-hidden bg-muted relative">
-                                                        <img
-                                                            src={article.banner || "/logo-light.png"} 
-                                                            //alt={article.title}
-                                                            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                            loading="lazy"
-                                                        />
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                e.stopPropagation();
-                                                                const url = `${window.location.origin}/post/${article.id}`;
-                                                                if (navigator.share) {
-                                                                    navigator.share({
-                                                                        title: article.title,
-                                                                        text: article.hook,
-                                                                        url: url
-                                                                    }).catch(() => {});
-                                                                } else {
-                                                                    navigator.clipboard.writeText(url)
-                                                                        .then(() => toast.success('Връзката е копирана успешно!'))
-                                                                        .catch(() => toast.error('Грешка при копиране на връзката.'));
-                                                                }
-                                                            }}
-                                                            className="absolute top-3 right-3 p-2 rounded-xl bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition-all duration-300 hover:scale-110 active:scale-95 border border-white/10 cursor-pointer z-10"
-                                                            title="Сподели"
-                                                        >
-                                                            <Share2 className="h-4 w-4" />
-                                                        </button>
-                                                    </div>
-
-                                                    <div className="p-6">
-                                                        <Badge variant="secondary" className="mb-3 text-sm font-medium">
-                                                            <Tag className="h-3 w-3 mr-1.5" />
-                                                            {article.category_name || "Uncategorized"}
-                                                        </Badge>
-                                                        <h3 className="mb-2 text-xl font-bold leading-snug transition-colors group-hover:text-primary uppercase">
-                                                            {article.title}
-                                                        </h3>
-                                                        <p className="mb-4 text-sm text-muted-foreground line-clamp-3">
-                                                            {article.hook}
-                                                        </p>
-                                                         <div className="flex items-center text-xs text-muted-foreground">
-                                                             <div className="flex items-center gap-1">
-                                                                 <Calendar className="h-3 w-3 mr-1" />
-                                                                 <span>{new Date(article.published_at || article.created_at).toLocaleDateString('bg-BG')}</span>
-                                                             </div>
-                                                         </div>
-                                                    </div>
-                                                </Card>
-                                            </Link>
-                                        ))}
+                                    {visiblePosts.map((article) => <NewsCard article={article} key={article.id} />)}
                                 </div>
 
-                                {filteredPosts.length > ITEMS_PER_PAGE && (
-                                    <div className="mt-12">
-                                        <Pagination>
-                                            <PaginationContent>
-                                                <PaginationItem>
-                                                    <PaginationPrevious 
-                                                        href="#" 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            if (currentPage > 1) {
-                                                                setCurrentPage(currentPage - 1);
-                                                                window.scrollTo({ top: 400, behavior: 'smooth' });
-                                                            }
-                                                        }}
-                                                        className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                                    >
-                                                        Предишна
-                                                    </PaginationPrevious>
-                                                </PaginationItem>
-                                                
-                                                {Array.from({ length: Math.ceil(filteredPosts.length / ITEMS_PER_PAGE) }).map((_, i) => (
-                                                    <PaginationItem key={i + 1}>
-                                                        <PaginationLink 
-                                                            href="#" 
-                                                            isActive={currentPage === i + 1}
-                                                            onClick={(e) => {
-                                                                e.preventDefault();
-                                                                setCurrentPage(i + 1);
-                                                                window.scrollTo({ top: 400, behavior: 'smooth' });
-                                                            }}
-                                                        >
-                                                            {i + 1}
-                                                        </PaginationLink>
-                                                    </PaginationItem>
-                                                ))}
-
-                                                <PaginationItem>
-                                                    <PaginationNext 
-                                                        href="#" 
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            if (currentPage < Math.ceil(filteredPosts.length / ITEMS_PER_PAGE)) {
-                                                                setCurrentPage(currentPage + 1);
-                                                                window.scrollTo({ top: 400, behavior: 'smooth' });
-                                                            }
-                                                        }}
-                                                        className={currentPage === Math.ceil(filteredPosts.length / ITEMS_PER_PAGE) ? "pointer-events-none opacity-50" : "cursor-pointer"}
-                                                    >
-                                                        Следваща
-                                                    </PaginationNext>
-                                                </PaginationItem>
-                                            </PaginationContent>
-                                        </Pagination>
-                                    </div>
-                                )}
+                                <NewsPagination currentPage={currentPage} pageCount={pageCount} onPageChange={handlePageChange} />
                             </>
                         )}
                     </div>
                 </section>
             </main>
-            <Footer />
-            <BackToTop />
-            <CookieConsent/>
         </div>
     );
 };

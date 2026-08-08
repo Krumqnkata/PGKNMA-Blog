@@ -1,8 +1,4 @@
-import React from "react";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
-import CookieConsent from "@/components/CookieConsent";
+import { useMemo, useState } from "react";
 import ParticlesComponent from "@/components/Particles";
 import { useTheme } from "next-themes";
 import {
@@ -11,8 +7,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle, Info, UserPlus, Music, Calendar, ShieldAlert, Code, Zap, Smartphone, MessageSquare, Bug, Globe } from "lucide-react";
+import { HelpCircle, Info, UserPlus, Music, Calendar, ShieldAlert, Code, Zap, Smartphone, MessageSquare, Bug, Globe, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
 
 const GoogleIcon = ({ className }: { className?: string }) => (
   <svg
@@ -39,10 +36,7 @@ const GoogleIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const FAQ = () => {
-  const { theme } = useTheme();
-
-  const faqs = [
+const faqs = [
     {
       question: "Какво е ПГКНМА Блог?",
       answer: "ПГКНМА Блог е дигитална платформа, създадена за учениците, учителите и родителите на Професионална гимназия по компютърно моделиране и компютърни системи \"Проф. Минко Балкански\". Тук можете да намерите новини, събития и училищни проекти.",
@@ -235,17 +229,27 @@ const FAQ = () => {
       bg: "bg-slate-500/10",
       hover: "group-hover:bg-slate-500/20"
     },
-  ];
+];
+
+const FAQ = () => {
+  const { theme } = useTheme();
+  const [searchQuery, setSearchQuery] = useState("");
+  const filteredFaqs = useMemo(() => {
+    const query = searchQuery.trim().toLocaleLowerCase("bg");
+    if (!query) return faqs;
+    return faqs.filter(({ question, answer }) =>
+      `${question} ${answer}`.toLocaleLowerCase("bg").includes(query),
+    );
+  }, [searchQuery]);
 
   return (
-    <div className="min-h-screen w-full bg-background relative overflow-hidden">
+    <div className="relative w-full overflow-hidden bg-background">
       <ParticlesComponent id="faq-particles" key={theme} theme={theme} />
       
       {/* Background Blobs for Depth */}
       <div className="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-      <Header />
       
       <main className="relative z-10 py-16 px-4 md:px-6">
         <div className="container mx-auto max-w-3xl">
@@ -261,13 +265,25 @@ const FAQ = () => {
             </p>
           </div>
 
+          <div className="relative mx-auto mb-6 max-w-xl">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+            <Input
+              type="search"
+              value={searchQuery}
+              onChange={(event) => setSearchQuery(event.target.value)}
+              placeholder="Търсене във въпросите…"
+              className="h-12 rounded-xl bg-card/70 pl-10 shadow-sm backdrop-blur-sm transition-shadow focus-visible:shadow-md"
+              aria-label="Търсене в често задаваните въпроси"
+            />
+          </div>
+
           <div className="bg-card/40 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden">
             <div className="p-2 md:p-8">
-              <Accordion type="single" collapsible className="w-full space-y-2">
-                {faqs.map((faq, index) => (
+              {filteredFaqs.length > 0 ? <Accordion type="single" collapsible className="w-full space-y-2">
+                {filteredFaqs.map((faq) => (
                   <AccordionItem 
-                    key={index} 
-                    value={`item-${index}`} 
+                    key={faq.question}
+                    value={faq.question}
                     className="border-none bg-white/5 dark:bg-black/5 rounded-2xl transition-all duration-300 hover:bg-white/10 dark:hover:bg-black/10 px-4"
                   >
                     <AccordionTrigger className="hover:no-underline py-5 text-left group">
@@ -286,7 +302,12 @@ const FAQ = () => {
                     </AccordionContent>
                   </AccordionItem>
                 ))}
-              </Accordion>
+              </Accordion> : (
+                <div className="px-4 py-12 text-center text-muted-foreground">
+                  <HelpCircle className="mx-auto mb-3 h-8 w-8 opacity-50" />
+                  <p>Няма въпроси, отговарящи на търсенето.</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -309,9 +330,6 @@ const FAQ = () => {
           </div>
         </div>
       </main>
-      <Footer />
-      <BackToTop />
-      <CookieConsent />
     </div>
   );
 };

@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import BackToTop from "@/components/BackToTop";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +6,6 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { getMemes, submitMeme, voteForMeme, Meme } from '@/lib/api';
 import { Skeleton } from "@/components/ui/skeleton";
-import CookieConsent from "@/components/CookieConsent";
 import { useAuth } from '@/contexts/AuthContext';
 import LoginDialog from '@/components/LoginDialog';
 import RegisterDialog from '@/components/RegisterDialog';
@@ -124,8 +120,7 @@ const MemeOfTheWeek: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen w-full">
-      <Header />
+    <div className="w-full">
       <main>
         <div className="container mx-auto py-8 px-4">
           <h1 className="text-3xl font-bold mb-4 text-center">Меме на седмицата</h1>
@@ -222,8 +217,6 @@ const MemeOfTheWeek: React.FC = () => {
           </div>
         </div>
       </main>
-      <Footer />
-      <BackToTop />
       <LoginDialog 
         open={loginDialogOpen} 
         onOpenChange={(isOpen) => !isOpen && closeLoginDialog()} 
@@ -233,7 +226,6 @@ const MemeOfTheWeek: React.FC = () => {
         }}
       />
       <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} />
-      <CookieConsent/>
     </div>
   );
 };

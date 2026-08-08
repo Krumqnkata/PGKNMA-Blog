@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
-import { getComments, addComment, Comment as CommentType } from '@/lib/api';
+import { getComments, addComment, Comment as CommentType, User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, MessageSquare, ReplyIcon, CornerDownRight } from 'lucide-react';
@@ -12,10 +13,12 @@ interface CommentItemProps {
     postId: string;
     onReplySuccess: () => void;
     level: number;
+    isAuthenticated: boolean;
+    currentUser: User | null;
+    openLoginDialog: () => void;
 }
 
-const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySuccess, level }) => {
-    const { isAuthenticated, user, openLoginDialog } = useAuth();
+const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthenticated, currentUser, openLoginDialog }: CommentItemProps) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [submittingReply, setSubmittingReply] = useState(false);
@@ -27,7 +30,7 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
             toast.error('Моля, напишете отговор.');
             return;
         }
-        if (!isAuthenticated || !user) {
+        if (!isAuthenticated || !currentUser) {
             openLoginDialog();
             return;
         }
@@ -95,8 +98,8 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
                     {showReplyForm && (
                         <div className="mt-3 flex items-start gap-3">
                             <UserAvatar
-                                username={user?.username}
-                                avatarUrl={user?.avatar_url}
+                                username={currentUser?.username}
+                                avatarUrl={currentUser?.avatar_url}
                                 className="h-7 w-7 text-xs"
                             />
                             <div className="w-full">
@@ -153,6 +156,9 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
                                      postId={postId}
                                      onReplySuccess={onReplySuccess}
                                      level={level + 1}
+                                     isAuthenticated={isAuthenticated}
+                                     currentUser={currentUser}
+                                     openLoginDialog={openLoginDialog}
                                  />
                              ))}
                          </div>
@@ -161,6 +167,23 @@ const CommentItem: React.FC<CommentItemProps> = ({ comment, postId, onReplySucce
             )}
         </div>
     );
+});
+
+CommentItem.displayName = 'CommentItem';
+
+const buildCommentTree = (comments: CommentType[]): CommentType[] => {
+    const commentsById = new Map<number, CommentType>();
+    comments.forEach((comment) => commentsById.set(comment.id, { ...comment, replies: [] }));
+
+    const topLevelComments: CommentType[] = [];
+    comments.forEach((comment) => {
+        const currentComment = commentsById.get(comment.id)!;
+        const parent = comment.parent_id ? commentsById.get(comment.parent_id) : undefined;
+        if (parent) parent.replies = [...(parent.replies ?? []), currentComment];
+        else topLevelComments.push(currentComment);
+    });
+
+    return topLevelComments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 };
 
 interface CommentsProps {
@@ -169,59 +192,17 @@ interface CommentsProps {
 
 const Comments = ({ postId }: CommentsProps) => {
     const { isAuthenticated, user, openLoginDialog } = useAuth();
-    const [rawComments, setRawComments] = useState<CommentType[]>([]);
     const [newCommentContent, setNewCommentContent] = useState('');
-    const [loadingComments, setLoadingComments] = useState(true);
     const [submittingMainComment, setSubmittingMainComment] = useState(false);
-    const [error, setError] = useState('');
+    const [submissionError, setSubmissionError] = useState('');
+    const { data: rawComments = [], isLoading: loadingComments, error: commentsError, refetch } = useQuery({
+        queryKey: ['comments', postId],
+        queryFn: () => getComments(postId),
+        staleTime: 60 * 1000,
+    });
 
-    const fetchAndSetComments = useCallback(async () => {
-        // Keep loading state until processing is also complete
-        setLoadingComments(true);
-        setError('');
-        try {
-            const fetchedComments = await getComments(postId);
-            if (Array.isArray(fetchedComments)) {
-                setRawComments(fetchedComments);
-            }
-        } catch (err: unknown) {
-            setError(err instanceof Error ? err.message : 'Грешка при зареждане на коментарите.');
-            console.error(err);
-        } finally {
-            // Loading is set to false in the useMemo effect
-        }
-    }, [postId]);
-
-    useEffect(() => {
-        fetchAndSetComments();
-    }, [fetchAndSetComments]);
-
-    const processedComments = useMemo(() => {
-        const commentsById: { [key: number]: CommentType } = {};
-        rawComments.forEach(comment => {
-            comment.replies = []; // Initialize replies array
-            commentsById[comment.id] = comment;
-        });
-
-        const topLevelComments: CommentType[] = [];
-        rawComments.forEach(comment => {
-            if (comment.parent_id && commentsById[comment.parent_id]) {
-                const parent = commentsById[comment.parent_id];
-                if(parent.replies) {
-                    parent.replies.push(comment);
-                } else {
-                    parent.replies = [comment];
-                }
-            } else {
-                topLevelComments.push(comment);
-            }
-        });
-        
-        // Now that processing is done, we can stop loading
-        setLoadingComments(false);
-
-        return topLevelComments.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-    }, [rawComments]);
+    const refreshComments = useCallback(() => { void refetch(); }, [refetch]);
+    const processedComments = useMemo(() => buildCommentTree(Array.isArray(rawComments) ? rawComments : []), [rawComments]);
 
     const handleMainCommentSubmit = async () => {
         if (!newCommentContent.trim()) {
@@ -234,15 +215,15 @@ const Comments = ({ postId }: CommentsProps) => {
         }
 
         setSubmittingMainComment(true);
-        setError('');
+        setSubmissionError('');
         try {
             await addComment(postId, newCommentContent, null);
             setNewCommentContent('');
-            fetchAndSetComments();
+            await refetch();
             toast.success('Коментарът е добавен успешно!');
         } catch (err: unknown) {
             const errorMessage = err instanceof Error ? err.message : 'Грешка при добавяне на коментара.';
-            setError(errorMessage);
+            setSubmissionError(errorMessage);
             console.error(err);
         } finally {
             setSubmittingMainComment(false);
@@ -283,7 +264,7 @@ const Comments = ({ postId }: CommentsProps) => {
                             </div>
                         </div>
                     </div>
-                    {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                    {submissionError && <p className="mt-2 text-sm text-destructive">{submissionError}</p>}
                 </div>
             ) : (
                 <p className="text-muted-foreground mb-8">
@@ -296,8 +277,8 @@ const Comments = ({ postId }: CommentsProps) => {
                     <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
                     <p className="mt-2 text-muted-foreground">Зареждане на коментари...</p>
                 </div>
-            ) : error ? (
-                <p className="text-red-500 text-sm">{error}</p>
+            ) : commentsError ? (
+                <p className="text-sm text-destructive">{commentsError instanceof Error ? commentsError.message : 'Грешка при зареждане на коментарите.'}</p>
             ) : processedComments.length === 0 ? (
                 <p className="text-muted-foreground">Все още няма коментари.</p>
             ) : (
@@ -307,8 +288,11 @@ const Comments = ({ postId }: CommentsProps) => {
                             key={comment.id}
                             comment={comment}
                             postId={postId}
-                            onReplySuccess={fetchAndSetComments}
+                            onReplySuccess={refreshComments}
                             level={0}
+                            isAuthenticated={isAuthenticated}
+                            currentUser={user}
+                            openLoginDialog={openLoginDialog}
                         />
                     ))}
                 </div>

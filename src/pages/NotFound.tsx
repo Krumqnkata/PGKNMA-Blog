@@ -2,7 +2,6 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Home, MoveLeft, Terminal } from "lucide-react";
-import CookieConsent from "@/components/CookieConsent";
 
 const NotFound = () => {
   const location = useLocation();
@@ -18,7 +17,7 @@ const NotFound = () => {
 
   return (
     <div 
-      className="relative flex min-h-screen flex-col items-center justify-center p-4 text-center overflow-hidden font-mono"
+      className="relative flex min-h-[70vh] flex-col items-center justify-center overflow-hidden p-4 text-center font-mono"
       style={{ backgroundColor: bgDark, color: textRetro }}
     >
       {/* CRT Scanline Overlay */}
@@ -80,7 +79,6 @@ const NotFound = () => {
         </div>
       </div>
 
-      <CookieConsent />
     </div>
   );
 };
