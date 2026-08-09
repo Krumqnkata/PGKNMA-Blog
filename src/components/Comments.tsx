@@ -72,9 +72,9 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
             <div className="flex items-start gap-4">
                 {comment.username ? (
                     <Link to={publicProfilePath(comment.username)} aria-label={`Профил на ${comment.username}`} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                        <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} siteRole={comment.site_role} />
+                        <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} siteRole={comment.site_role} equippedRewards={comment.equipped_rewards} />
                     </Link>
-                ) : <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} siteRole={comment.site_role} />}
+                ) : <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} siteRole={comment.site_role} equippedRewards={comment.equipped_rewards} />}
                 <div className="w-full">
                     <div className="flex items-center gap-2 mb-1">
                         {comment.username ? (
@@ -112,6 +112,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
                                 username={currentUser?.username}
                                 avatarUrl={currentUser?.avatar_url}
                                 siteRole={currentUser?.site_role}
+                                equippedRewards={currentUser?.equipped_rewards}
                                 className="h-7 w-7 text-xs"
                             />
                             <div className="w-full">
@@ -252,7 +253,7 @@ const Comments = ({ postId }: CommentsProps) => {
             {isAuthenticated ? (
                 <div className="mb-8">
                     <div className="flex items-start gap-4">
-                        <UserAvatar username={user?.username} avatarUrl={user?.avatar_url} siteRole={user?.site_role} />
+                        <UserAvatar username={user?.username} avatarUrl={user?.avatar_url} siteRole={user?.site_role} equippedRewards={user?.equipped_rewards} />
                         <div className="w-full">
                             <p className="text-sm text-muted-foreground mb-2">
                                 Моля, спазвайте добрия тон. Обидно съдържание и спам ще бъдат премахвани.

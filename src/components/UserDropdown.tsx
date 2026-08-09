@@ -37,6 +37,7 @@ export const UserDropdown: React.FC = () => {
             username={user.username}
             avatarUrl={user.avatar_url}
             siteRole={user.site_role}
+            equippedRewards={user.equipped_rewards}
             className="h-9 w-9"
           />
         </Button>

@@ -2,11 +2,13 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import { login as apiLogin, register as apiRegister, loginWithGoogle as apiLoginWithGoogle, logoutCurrentBlogSession, getCurrentProfile, LoginCredentials, RegisterCredentials, RegistrationResponse, User } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/contexts/auth-context';
 import type { AuthContextValue } from '@/contexts/auth-context';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
+    const queryClient = useQueryClient();
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -56,6 +58,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             const detail = (event as CustomEvent<{ message?: string }>).detail;
             setUser(null);
             setAccessToken(null);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            localStorage.removeItem('user');
+            queryClient.removeQueries({ queryKey: ['notifications'] });
             setLoginDialogOpen(true);
             toast({
                 title: 'Сесията приключи',
@@ -65,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         };
         window.addEventListener('auth:session-ended', handleSessionEnded);
         return () => window.removeEventListener('auth:session-ended', handleSessionEnded);
-    }, [toast]);
+    }, [queryClient, toast]);
 
     const login = useCallback(async (credentials: LoginCredentials) => {
         setLoading(true);
@@ -126,8 +132,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
+            queryClient.removeQueries({ queryKey: ['notifications'] });
         }
-    }, []);
+    }, [queryClient]);
 
     const openLoginDialog = useCallback(() => setLoginDialogOpen(true), []);
     const closeLoginDialog = useCallback(() => setLoginDialogOpen(false), []);

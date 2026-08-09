@@ -193,6 +193,7 @@ const Post = () => {
                                             username={post.author_username}
                                             avatarUrl={post.author_avatar_url}
                                             siteRole={post.author_site_role}
+                                            equippedRewards={post.author_equipped_rewards}
                                             className="h-6 w-6 text-xs"
                                         />
                                         <span>{post.author_username}</span>

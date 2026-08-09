@@ -11,8 +11,10 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/hooks/use-auth';
+import { cn } from '@/lib/utils';
 
-const STORAGE_KEY = 'read-notifications-v3';
+const STORAGE_KEY_PREFIX = 'read-notifications-v4';
 
 // Малка бърза hash функция (djb2), за да не пазим целия html_text
 // в localStorage - само "отпечатък" от него. По-леко, по-бързо сравнение.
@@ -27,9 +29,9 @@ function hashText(text: string): string {
 type ReadEntry = { hash: string; readAt: number };
 type ReadMap = Record<string, ReadEntry>;
 
-const readMapFromStorage = (): ReadMap => {
+const readMapFromStorage = (storageKey: string): ReadMap => {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
+    const saved = localStorage.getItem(storageKey);
     return saved ? JSON.parse(saved) : {};
   } catch {
     return {};
@@ -37,14 +39,18 @@ const readMapFromStorage = (): ReadMap => {
 };
 
 const NotificationBell: React.FC = () => {
+  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const storageKey = `${STORAGE_KEY_PREFIX}:${user?.id ?? 'public'}`;
   const { data: notifications, isLoading, error, refetch } = useQuery<Notification[], Error>({
-    queryKey: ['notifications'],
+    queryKey: ['notifications', user?.id ?? 'public'],
     queryFn: getNotifications,
+    enabled: !authLoading,
     refetchInterval: 5 * 60 * 1000,
     retry: false,
   });
 
   const [isOpen, setIsOpen] = useState(false);
+  const [channel, setChannel] = useState<'general' | 'gamification'>('general');
   const popoverContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -62,33 +68,50 @@ const NotificationBell: React.FC = () => {
     };
   }, [isOpen]);
 
-  const [readMap, setReadMap] = useState<ReadMap>(readMapFromStorage);
+  const [readMap, setReadMap] = useState<ReadMap>({});
+
+  useEffect(() => {
+    setReadMap(readMapFromStorage(storageKey));
+    if (!isAuthenticated) setChannel('general');
+  }, [isAuthenticated, storageKey]);
 
   const persistReadMap = useCallback((map: ReadMap) => {
     setReadMap(map);
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+      localStorage.setItem(storageKey, JSON.stringify(map));
     } catch {
       // localStorage може да е пълен/недостъпен (напр. private mode) - тихо игнорираме
     }
-  }, []);
+  }, [storageKey]);
 
   // Синхронизация между отворени табове/прозорци: ако известие се
   // маркира като прочетено в един таб, останалите да се обновят веднага.
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
-      if (e.key === STORAGE_KEY) {
-        setReadMap(readMapFromStorage());
+      if (e.key === storageKey) {
+        setReadMap(readMapFromStorage(storageKey));
       }
     };
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
-  }, []);
+  }, [storageKey]);
 
-  const enabledNotifications = useMemo(() => {
+  const visibleNotifications = useMemo(() => {
     const notifArray = Array.isArray(notifications) ? notifications : [];
-    return notifArray.filter(n => n.enabled);
-  }, [notifications]);
+    return notifArray.filter(n => n.enabled && (isAuthenticated || !n.is_gamification));
+  }, [isAuthenticated, notifications]);
+
+  const generalNotifications = useMemo(
+    () => visibleNotifications.filter((notification) => !notification.is_gamification),
+    [visibleNotifications],
+  );
+  const gamificationNotifications = useMemo(
+    () => visibleNotifications.filter((notification) => notification.is_gamification),
+    [visibleNotifications],
+  );
+  const enabledNotifications = channel === 'gamification'
+    ? gamificationNotifications
+    : generalNotifications;
 
   // Известието е непрочетено ако: никога не е било маркирано,
   // или текущият hash на текста му се различава от последно прочетения
@@ -103,11 +126,12 @@ const NotificationBell: React.FC = () => {
   );
 
   const unreadNotifications = useMemo(() => {
-    return enabledNotifications.filter(isNotificationUnread);
-  }, [enabledNotifications, isNotificationUnread]);
+    return visibleNotifications.filter(isNotificationUnread);
+  }, [visibleNotifications, isNotificationUnread]);
 
   const unreadCount = unreadNotifications.length;
-  const totalCount = enabledNotifications.length;
+  const totalCount = visibleNotifications.length;
+  const activeUnreadCount = enabledNotifications.filter(isNotificationUnread).length;
 
   // Почистваме записи за известия, които вече изобщо не съществуват
   // (нито enabled, нито disabled) - за да не расте localStorage безкрайно.
@@ -130,7 +154,7 @@ const NotificationBell: React.FC = () => {
       if (entries.length !== Object.keys(prev).length) {
         const pruned = Object.fromEntries(entries);
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(pruned));
+          localStorage.setItem(storageKey, JSON.stringify(pruned));
         } catch {
           // ignore
         }
@@ -138,7 +162,7 @@ const NotificationBell: React.FC = () => {
       }
       return prev;
     });
-  }, [notifications]);
+  }, [notifications, storageKey]);
 
   // Маркиране на едно известие като прочетено
   const handleMarkOneAsRead = (n: { id: number; html_text: string }) => {
@@ -220,13 +244,13 @@ const NotificationBell: React.FC = () => {
           <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-muted/30">
             <div className="flex items-center gap-2">
               <h4 className="font-semibold text-sm tracking-wide">Известия</h4>
-              {unreadCount > 0 && (
+              {activeUnreadCount > 0 && (
                 <span className="px-1.5 py-0.5 text-[10px] font-medium bg-primary/20 text-primary rounded-full">
-                  {unreadCount} нови
+                  {activeUnreadCount} нови
                 </span>
               )}
             </div>
-            {unreadCount > 0 && (
+            {activeUnreadCount > 0 && (
               <Button 
                 variant="ghost" 
                 size="sm" 
@@ -238,6 +262,29 @@ const NotificationBell: React.FC = () => {
               </Button>
             )}
           </div>
+
+          {isAuthenticated && (
+            <div className="grid grid-cols-2 gap-1 border-b border-border bg-muted/20 p-1.5" role="tablist" aria-label="Вид известия">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={channel === 'general'}
+                onClick={() => setChannel('general')}
+                className={cn('rounded-lg px-3 py-2 text-xs font-bold transition-colors', channel === 'general' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}
+              >
+                Общи ({generalNotifications.length})
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={channel === 'gamification'}
+                onClick={() => setChannel('gamification')}
+                className={cn('rounded-lg px-3 py-2 text-xs font-bold transition-colors', channel === 'gamification' ? 'bg-violet-600 text-white shadow-sm' : 'text-muted-foreground hover:text-foreground')}
+              >
+                Постижения ({gamificationNotifications.length})
+              </button>
+            </div>
+          )}
 
           {isLoading ? (
             <div role="status" aria-label="Зареждане на известията" className="space-y-4 p-4">
