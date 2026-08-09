@@ -68,6 +68,7 @@ const iconMap: Record<string, LucideIcon> = {
   megaphone: Megaphone,
   'message-circle': MessageCircle,
   music: Music,
+  sparkles: Sparkles,
   sprout: Sprout,
   star: Star,
   trophy: Trophy,
