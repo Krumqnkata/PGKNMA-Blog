@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
-import { getPost, Post as PostType } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
+import { getPost, Post as PostType, recordGamificationActivity } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import { getPostShareUrl } from '@/lib/share';
 import Comments from '@/components/Comments';
 import { ShareDropdown } from "@/components/ShareDropdown";
@@ -22,6 +22,8 @@ import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
+import { useAuth } from '@/hooks/use-auth';
+import { publicProfilePath } from '@/lib/public-profile';
 
 const getReadTime = (content: string, hook: string) => {
     const wordCount = `${content} ${hook}`.split(/\s+/).filter(Boolean).length;
@@ -29,6 +31,7 @@ const getReadTime = (content: string, hook: string) => {
 };
 
 const Post = () => {
+    const { user } = useAuth();
     const { id } = useParams<{ id: string }>();
     const [lightboxOpen, setLightboxOpen] = useState(false);
     const [lightboxIndex, setLightboxIndex] = useState(0);
@@ -50,6 +53,25 @@ const Post = () => {
         alt: image.alt_text || image.title || `Снимка ${index + 1} към ${post?.title || ''}`,
     })), [galleryImages, post?.title]);
     const readTime = useMemo(() => post ? getReadTime(post.content, post.hook) : 0, [post]);
+
+    useEffect(() => {
+        if (!user || !post?.id) return undefined;
+        let visibleSeconds = 0;
+        let recorded = false;
+        const intervalId = window.setInterval(() => {
+            if (document.visibilityState !== 'visible' || recorded) return;
+            visibleSeconds += 1;
+            if (visibleSeconds >= 15) {
+                recorded = true;
+                window.clearInterval(intervalId);
+                void recordGamificationActivity('post_read', {
+                    objectId: post.id,
+                    engagementSeconds: visibleSeconds,
+                }).catch(() => undefined);
+            }
+        }, 1000);
+        return () => window.clearInterval(intervalId);
+    }, [post?.id, user]);
 
     useSEO({
         title: post ? post.title : "Зареждане...",
@@ -165,14 +187,14 @@ const Post = () => {
                                 <h1 className="text-balance text-3xl font-black leading-[1.08] tracking-[-0.035em] sm:text-4xl md:text-5xl">{post.title}</h1>
                                 <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">{post.hook}</p>
                                 <div className="mb-8 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-border/60 py-4 text-sm text-muted-foreground">
-                                    <div className="flex items-center gap-1.5">
+                                    {post.author_username ? <Link className="flex items-center gap-1.5 rounded hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" to={publicProfilePath(post.author_username)}>
                                         <UserAvatar
                                             username={post.author_username}
                                             avatarUrl={post.author_avatar_url}
                                             className="h-6 w-6 text-xs"
                                         />
-                                        <span>{post.author_username || `User ID: ${post.author}`}</span>
-                                    </div>
+                                        <span>{post.author_username}</span>
+                                    </Link> : <span>User ID: {post.author}</span>}
                                     <div className="flex items-center gap-1.5">
                                         <Calendar className="h-4 w-4" />
                                         <span>{new Date(post.published_at || post.created_at).toLocaleDateString('bg-BG')}</span>

@@ -14,7 +14,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 // Икони
-import { User as UserIcon, Settings, LogOut, Shield } from 'lucide-react';
+import { Eye, User as UserIcon, Settings, LogOut, Shield } from 'lucide-react';
+import { publicProfilePath } from '@/lib/public-profile';
 
 export const UserDropdown: React.FC = () => {
   const { user, logout } = useAuth();
@@ -46,6 +47,12 @@ export const UserDropdown: React.FC = () => {
           <Link to="/profile">
             <UserIcon className="mr-2 h-4 w-4" />
             <span>Профил</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to={publicProfilePath(user.username)}>
+            <Eye className="mr-2 h-4 w-4" />
+            <span>Публичен профил</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
