@@ -13,6 +13,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { User, Music, MessageSquare, Image as ImageIcon, Shield, History, Trophy } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import UserAvatar from '@/components/UserAvatar';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { InteriorPage, InteriorSection } from '@/components/InteriorPage';
 
 const MyProfilePage: React.FC = () => {
@@ -50,11 +51,13 @@ const MyProfilePage: React.FC = () => {
           <UserAvatar
             username={user?.username}
             avatarUrl={user?.avatar_url}
+            siteRole={user?.site_role}
             className="h-20 w-20 border-4 border-background shadow-xl sm:h-24 sm:w-24"
           />
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Лично пространство</p>
             <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">Моят профил</h1>
+            <SiteRoleBadge role={user?.site_role} className="mt-2" />
             <p className="mt-1 truncate text-sm leading-relaxed text-muted-foreground sm:text-base">Добре дошли, <span className="font-bold text-foreground">{user?.username || 'потребител'}</span>. Управлявайте профила и активността си.</p>
           </div>
           </div>

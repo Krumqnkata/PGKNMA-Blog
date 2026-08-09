@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/use-auth';
 import UserAvatar from '@/components/UserAvatar';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
 
 // Компоненти от shadcn/ui
 import { Button } from '@/components/ui/button';
@@ -35,13 +36,17 @@ export const UserDropdown: React.FC = () => {
           <UserAvatar
             username={user.username}
             avatarUrl={user.avatar_url}
+            siteRole={user.site_role}
             className="h-9 w-9"
           />
         </Button>
       </DropdownMenuTrigger>
       
       <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel>Здравей, {user.username}</DropdownMenuLabel>
+        <DropdownMenuLabel className="flex items-center justify-between gap-2">
+          <span className="truncate">Здравей, {user.username}</span>
+          <SiteRoleBadge role={user.site_role} compact />
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
           <Link to="/profile">
@@ -55,12 +60,14 @@ export const UserDropdown: React.FC = () => {
             <span>Публичен профил</span>
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/admin/">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Администрация на сайта</span>
-          </Link>
-        </DropdownMenuItem>
+        {user.site_role && (
+          <DropdownMenuItem asChild>
+            <Link to="/admin/">
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Администрация на сайта</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link to="/profile?tab=rules">
             <Shield className="mr-2 h-4 w-4" />

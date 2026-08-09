@@ -1,11 +1,13 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
+import type { SiteRole } from '@/lib/api';
 
 interface UserAvatarProps {
   username?: string | null;
   avatarUrl?: string | null;
   className?: string;
   imageClassName?: string;
+  siteRole?: SiteRole;
 }
 
 const getInitial = (username?: string | null) => (
@@ -17,8 +19,16 @@ const UserAvatar = ({
   avatarUrl,
   className,
   imageClassName,
+  siteRole,
 }: UserAvatarProps) => (
-  <Avatar className={className}>
+  <Avatar
+    className={cn(
+      className,
+      siteRole === 'administrator' && 'ring-2 ring-amber-400 ring-offset-2 ring-offset-background shadow-[0_0_18px_hsl(43_96%_56%/0.35)]',
+      siteRole === 'contributor' && 'ring-2 ring-sky-500 ring-offset-2 ring-offset-background shadow-[0_0_14px_hsl(199_89%_48%/0.25)]',
+    )}
+    title={siteRole === 'administrator' ? 'Администратор на сайта' : siteRole === 'contributor' ? 'Сътрудник на сайта' : undefined}
+  >
     {avatarUrl ? (
       <AvatarImage
         src={avatarUrl}

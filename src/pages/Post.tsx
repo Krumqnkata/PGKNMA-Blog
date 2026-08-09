@@ -4,6 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
 import { getPost, Post as PostType, recordGamificationActivity } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
@@ -191,9 +192,11 @@ const Post = () => {
                                         <UserAvatar
                                             username={post.author_username}
                                             avatarUrl={post.author_avatar_url}
+                                            siteRole={post.author_site_role}
                                             className="h-6 w-6 text-xs"
                                         />
                                         <span>{post.author_username}</span>
+                                        <SiteRoleBadge role={post.author_site_role} compact />
                                     </Link> : <span>User ID: {post.author}</span>}
                                     <div className="flex items-center gap-1.5">
                                         <Calendar className="h-4 w-4" />

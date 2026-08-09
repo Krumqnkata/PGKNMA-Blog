@@ -39,6 +39,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/use-toast';
 import UserAvatar from '@/components/UserAvatar';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Link } from 'react-router-dom';
 import {
   getGamificationLeaderboard,
@@ -197,9 +198,12 @@ export default function GamificationProgress() {
         {entry.rank}
       </span>
       <Link to={publicProfilePath(entry.username)} aria-label={`Профил на ${entry.username}`} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <UserAvatar username={entry.username} avatarUrl={entry.avatar_url} className="h-9 w-9" />
+        <UserAvatar username={entry.username} avatarUrl={entry.avatar_url} siteRole={entry.site_role} className="h-9 w-9" />
       </Link>
-      <Link to={publicProfilePath(entry.username)} className="min-w-0 flex-1 truncate font-semibold hover:text-primary hover:underline">{entry.username}</Link>
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <Link to={publicProfilePath(entry.username)} className="truncate font-semibold hover:text-primary hover:underline">{entry.username}</Link>
+        <SiteRoleBadge role={entry.site_role} compact />
+      </div>
       <span className="shrink-0 font-black tabular-nums text-primary">{entry.points}</span>
     </li>
   );
