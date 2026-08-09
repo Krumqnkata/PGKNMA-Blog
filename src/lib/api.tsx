@@ -224,6 +224,7 @@ export interface User {
     avatar_preset?: string;
     email_verified?: boolean;
     site_role?: SiteRole;
+    can_access_admin?: boolean;
     equipped_rewards?: PublicDigitalReward[];
 }
 

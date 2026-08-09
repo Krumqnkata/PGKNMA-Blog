@@ -61,12 +61,12 @@ export const UserDropdown: React.FC = () => {
             <span>Публичен профил</span>
           </Link>
         </DropdownMenuItem>
-        {user.site_role && (
+        {user.can_access_admin === true && (
           <DropdownMenuItem asChild>
-            <Link to="/admin/">
+            <a href="/admin/">
               <Settings className="mr-2 h-4 w-4" />
               <span>Администрация на сайта</span>
-            </Link>
+            </a>
           </DropdownMenuItem>
         )}
         <DropdownMenuItem asChild>
