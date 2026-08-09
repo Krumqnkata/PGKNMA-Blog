@@ -27,6 +27,7 @@ export interface Post {
     author_username: string; // ✅ Очакваме потребителско име на автора от Django
     author_avatar_url: string | null;
     author_site_role: SiteRole;
+    author_equipped_rewards: PublicDigitalReward[];
     title: string;
     banner: string | null;
     hook: string; 
@@ -223,6 +224,7 @@ export interface User {
     avatar_preset?: string;
     email_verified?: boolean;
     site_role?: SiteRole;
+    equipped_rewards?: PublicDigitalReward[];
 }
 
 export type AvatarSource = 'initials' | 'upload' | 'preset' | 'google';
@@ -264,6 +266,7 @@ export interface Comment {
     username: string;
     avatar_url: string | null;
     site_role: SiteRole;
+    equipped_rewards: PublicDigitalReward[];
     content: string;
     created_at: string;
     parent?: number | null; // Optional, can be null for top-level comments
@@ -508,6 +511,9 @@ export interface Notification {
   html_text: string;
   enabled: boolean;
   created_at: string;
+  category: string;
+  action_url: string;
+  is_gamification: boolean;
 }
 
 export async function getNotifications(): Promise<Notification[]> {
@@ -1322,6 +1328,7 @@ export interface GamificationProfile {
     badges: GamificationBadge[];
     recent_transactions: PointTransaction[];
     missions: GamificationMission[];
+    rewards: PublicDigitalReward[];
 }
 
 export async function getGamificationProfile(): Promise<GamificationProfile> {
@@ -1337,12 +1344,33 @@ export async function getGamificationProfile(): Promise<GamificationProfile> {
     return response.json();
 }
 
+export async function selectDigitalReward(
+    rewardKey: string,
+    selected: boolean,
+): Promise<PublicDigitalReward> {
+    const response = await apiRequest(
+        `/api/gamification/rewards/${encodeURIComponent(rewardKey)}/select/`,
+        {
+            method: 'PATCH',
+            body: JSON.stringify({ selected }),
+        },
+    );
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Наградата не може да бъде активирана.',
+        ));
+    }
+    return response.json();
+}
+
 export interface LeaderboardEntry {
     rank: number;
     username: string;
     avatar_url: string | null;
     points: number;
     site_role: SiteRole;
+    equipped_rewards: PublicDigitalReward[];
 }
 
 export interface LeaderboardSection {

@@ -8,12 +8,14 @@ import {
   Circle,
   CircleHelp,
   GraduationCap,
+  Gift,
   Image as ImageIcon,
   LockKeyhole,
   Medal,
   Megaphone,
   MessageCircle,
   Music,
+  Palette,
   Sparkles,
   Sprout,
   Star,
@@ -47,10 +49,15 @@ import {
   type GamificationBadge,
   type GamificationBadgeRarity,
   type LeaderboardEntry,
+  type PublicDigitalReward,
+  getCurrentProfile,
+  selectDigitalReward,
   updateLeaderboardPreference,
 } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { publicProfilePath } from '@/lib/public-profile';
+import { safeRewardColor } from '@/lib/digital-rewards';
+import { useAuth } from '@/hooks/use-auth';
 
 const iconMap: Record<string, LucideIcon> = {
   award: Award,
@@ -86,6 +93,14 @@ const formatDate = (value: string) => new Intl.DateTimeFormat('bg-BG', {
   dateStyle: 'medium',
   timeStyle: 'short',
 }).format(new Date(value));
+
+const rewardKindLabels: Record<PublicDigitalReward['kind'], string> = {
+  avatar_frame: 'Рамка за аватар',
+  profile_border: 'Рамка за профил',
+  profile_theme: 'Профилна тема',
+  user_title: 'Потребителска титла',
+  special_icon: 'Специална икона',
+};
 
 function BadgeCard({ badge }: { badge: GamificationBadge }) {
   const Icon = iconMap[badge.icon] || CircleHelp;
@@ -127,6 +142,7 @@ function BadgeCard({ badge }: { badge: GamificationBadge }) {
 
 export default function GamificationProgress() {
   const { toast } = useToast();
+  const { updateUser } = useAuth();
   const queryClient = useQueryClient();
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<'weekly' | 'monthly' | 'all_time'>('weekly');
   const progressQuery = useQuery({
@@ -150,6 +166,29 @@ export default function GamificationProgress() {
     },
     onError: (error: Error) => toast({
       title: 'Настройката не е запазена',
+      description: error.message,
+      variant: 'destructive',
+    }),
+  });
+  const rewardMutation = useMutation({
+    mutationFn: ({ key, selected }: { key: string; selected: boolean }) => (
+      selectDigitalReward(key, selected)
+    ),
+    onSuccess: async (reward) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['gamification-profile'] }),
+        queryClient.invalidateQueries({ queryKey: ['current-profile'] }),
+        queryClient.invalidateQueries({ queryKey: ['public-user-profile'] }),
+      ]);
+      const currentProfile = await getCurrentProfile();
+      updateUser(currentProfile.user);
+      toast({
+        title: reward.selected ? 'Наградата е активирана' : 'Наградата е свалена',
+        description: reward.title,
+      });
+    },
+    onError: (error: Error) => toast({
+      title: 'Наградата не е променена',
       description: error.message,
       variant: 'destructive',
     }),
@@ -198,7 +237,7 @@ export default function GamificationProgress() {
         {entry.rank}
       </span>
       <Link to={publicProfilePath(entry.username)} aria-label={`Профил на ${entry.username}`} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        <UserAvatar username={entry.username} avatarUrl={entry.avatar_url} siteRole={entry.site_role} className="h-9 w-9" />
+        <UserAvatar username={entry.username} avatarUrl={entry.avatar_url} siteRole={entry.site_role} equippedRewards={entry.equipped_rewards} className="h-9 w-9" />
       </Link>
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <Link to={publicProfilePath(entry.username)} className="truncate font-semibold hover:text-primary hover:underline">{entry.username}</Link>
@@ -262,6 +301,53 @@ export default function GamificationProgress() {
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {data.badges.map((badge) => <BadgeCard key={badge.slug} badge={badge} />)}
         </div>
+      </section>
+
+      <section aria-labelledby="rewards-title">
+        <div className="mb-4">
+          <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Персонализация</p>
+          <h2 id="rewards-title" className="mt-1 text-2xl font-black tracking-tight">Моите дигитални награди</h2>
+          <p className="mt-1 text-sm text-muted-foreground">Изберете по една активна награда от всеки вид. Промяната се вижда веднага в профила и аватара.</p>
+        </div>
+        {data.rewards.length ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {data.rewards.map((reward) => {
+              const color = safeRewardColor(reward.config.color, '#8b5cf6');
+              const secondary = safeRewardColor(reward.config.secondary_color, '#22d3ee');
+              return (
+                <Card key={reward.key} className={cn('overflow-hidden transition-colors', reward.selected && 'border-violet-500/60 bg-violet-500/[0.05]')}>
+                  <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${color}, ${secondary})` }} />
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-300">
+                        {reward.kind === 'profile_theme' ? <Palette className="h-5 w-5" /> : <Gift className="h-5 w-5" />}
+                      </span>
+                      <div className="min-w-0">
+                        <CardTitle className="text-lg">{reward.title}</CardTitle>
+                        <CardDescription>{rewardKindLabels[reward.kind]}</CardDescription>
+                      </div>
+                      {reward.selected && <Badge className="ml-auto bg-violet-600 text-white">Активна</Badge>}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="mb-4 text-xs text-muted-foreground">Отключена на {formatDate(reward.unlocked_at)}</p>
+                    <Button
+                      type="button"
+                      variant={reward.selected ? 'outline' : 'default'}
+                      className="w-full"
+                      disabled={rewardMutation.isPending}
+                      onClick={() => rewardMutation.mutate({ key: reward.key, selected: !reward.selected })}
+                    >
+                      {reward.selected ? 'Свали наградата' : 'Използвай наградата'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <Card><CardContent className="py-10 text-center text-muted-foreground">Все още нямате отключени дигитални награди.</CardContent></Card>
+        )}
       </section>
 
       <section aria-labelledby="missions-title">

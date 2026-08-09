@@ -1,6 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 import type { SiteRole } from '@/lib/api';
+import type { PublicDigitalReward } from '@/lib/api';
+import { avatarFrameStyle } from '@/lib/digital-rewards';
 
 interface UserAvatarProps {
   username?: string | null;
@@ -8,6 +10,7 @@ interface UserAvatarProps {
   className?: string;
   imageClassName?: string;
   siteRole?: SiteRole;
+  equippedRewards?: PublicDigitalReward[];
 }
 
 const getInitial = (username?: string | null) => (
@@ -20,6 +23,7 @@ const UserAvatar = ({
   className,
   imageClassName,
   siteRole,
+  equippedRewards,
 }: UserAvatarProps) => (
   <Avatar
     className={cn(
@@ -28,6 +32,7 @@ const UserAvatar = ({
       siteRole === 'contributor' && 'ring-2 ring-sky-500 ring-offset-2 ring-offset-background shadow-[0_0_14px_hsl(199_89%_48%/0.25)]',
     )}
     title={siteRole === 'administrator' ? 'Администратор на сайта' : siteRole === 'contributor' ? 'Сътрудник на сайта' : undefined}
+    style={avatarFrameStyle(equippedRewards)}
   >
     {avatarUrl ? (
       <AvatarImage

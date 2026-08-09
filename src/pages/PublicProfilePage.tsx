@@ -46,6 +46,7 @@ import {
   type PublicDigitalReward,
 } from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { profileBorderStyle, profileThemeStyle, rewardIcon, rewardTitle } from '@/lib/digital-rewards';
 
 const iconMap: Record<string, LucideIcon> = {
   award: Award,
@@ -56,6 +57,7 @@ const iconMap: Record<string, LucideIcon> = {
   megaphone: Megaphone,
   'message-circle': MessageCircle,
   music: Music,
+  sparkles: Sparkles,
   sprout: Sprout,
   star: Star,
   trophy: Trophy,
@@ -127,6 +129,10 @@ export default function PublicProfilePage() {
   }
 
   const LevelIcon = profile.level ? iconMap[profile.level.icon] || Trophy : Trophy;
+  const equippedRewards = profile.rewards.filter((reward) => reward.selected);
+  const equippedTitle = rewardTitle(equippedRewards);
+  const equippedIcon = rewardIcon(equippedRewards);
+  const EquippedIcon = equippedIcon ? iconMap[equippedIcon] || Sparkles : null;
   const stats = [
     { label: 'Коментари', value: profile.stats.comments, Icon: MessageCircle },
     { label: 'Анкети', value: profile.stats.poll_answers, Icon: Vote },
@@ -139,14 +145,15 @@ export default function PublicProfilePage() {
   return (
     <InteriorPage>
       <InteriorSection className="pt-8 sm:pt-12" containerClassName="max-w-6xl">
-        <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-card shadow-xl shadow-primary/5">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,hsl(var(--primary)/0.24),transparent_38%),radial-gradient(circle_at_95%_100%,hsl(210_100%_55%/0.12),transparent_35%)]" />
+        <section className="relative overflow-hidden rounded-3xl border border-primary/20 bg-card shadow-xl shadow-primary/5" style={profileBorderStyle(equippedRewards)}>
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_0%,hsl(var(--primary)/0.24),transparent_38%),radial-gradient(circle_at_95%_100%,hsl(210_100%_55%/0.12),transparent_35%)]" style={profileThemeStyle(equippedRewards)} />
           <div className="relative flex flex-col gap-6 p-5 sm:p-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
               <UserAvatar
                 username={profile.user.username}
                 avatarUrl={profile.user.avatar_url}
                 siteRole={profile.user.site_role}
+                equippedRewards={equippedRewards}
                 className="h-24 w-24 border-4 border-background text-2xl shadow-xl sm:h-28 sm:w-28"
               />
               <div className="min-w-0">
@@ -159,6 +166,13 @@ export default function PublicProfilePage() {
                   </Badge>
                   <Badge variant="outline">{profile.points} точки</Badge>
                   <SiteRoleBadge role={profile.user.site_role} />
+                  {equippedTitle && <Badge className="border-violet-400/50 bg-violet-500/15 text-violet-700 dark:text-violet-200">{equippedTitle}</Badge>}
+                  {EquippedIcon && (
+                    <Badge variant="outline" title={`Специална икона: ${equippedIcon}`}>
+                      <EquippedIcon className="mr-1 h-3.5 w-3.5 text-violet-500" aria-hidden="true" />
+                      Специална икона
+                    </Badge>
+                  )}
                 </div>
                 {profile.bio ? (
                   <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground sm:text-base">{profile.bio}</p>
