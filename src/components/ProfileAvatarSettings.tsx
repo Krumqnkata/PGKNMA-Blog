@@ -177,6 +177,7 @@ const ProfileAvatarSettings = () => {
           <UserAvatar
             username={user?.username}
             avatarUrl={user?.avatar_url}
+            siteRole={user?.site_role}
             className="h-24 w-24 border-4 border-background shadow-lg"
           />
           <div className="min-w-0 flex-1">

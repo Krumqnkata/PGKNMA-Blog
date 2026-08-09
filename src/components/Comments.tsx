@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, MessageSquare, ReplyIcon, CornerDownRight } from 'lucide-react';
 import UserAvatar from '@/components/UserAvatar';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { toast } from 'sonner';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { Link } from 'react-router-dom';
@@ -71,14 +72,15 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
             <div className="flex items-start gap-4">
                 {comment.username ? (
                     <Link to={publicProfilePath(comment.username)} aria-label={`Профил на ${comment.username}`} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-                        <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} />
+                        <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} siteRole={comment.site_role} />
                     </Link>
-                ) : <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} />}
+                ) : <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} siteRole={comment.site_role} />}
                 <div className="w-full">
                     <div className="flex items-center gap-2 mb-1">
                         {comment.username ? (
                             <Link className="font-semibold hover:text-primary hover:underline" to={publicProfilePath(comment.username)}>{comment.username}</Link>
                         ) : <span className="font-semibold">Изтрит потребител</span>}
+                        <SiteRoleBadge role={comment.site_role} compact />
                         <span className="text-xs text-muted-foreground">
                             {new Date(comment.created_at).toLocaleString('bg-BG')}
                         </span>
@@ -109,6 +111,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
                             <UserAvatar
                                 username={currentUser?.username}
                                 avatarUrl={currentUser?.avatar_url}
+                                siteRole={currentUser?.site_role}
                                 className="h-7 w-7 text-xs"
                             />
                             <div className="w-full">
@@ -249,7 +252,7 @@ const Comments = ({ postId }: CommentsProps) => {
             {isAuthenticated ? (
                 <div className="mb-8">
                     <div className="flex items-start gap-4">
-                        <UserAvatar username={user?.username} avatarUrl={user?.avatar_url} />
+                        <UserAvatar username={user?.username} avatarUrl={user?.avatar_url} siteRole={user?.site_role} />
                         <div className="w-full">
                             <p className="text-sm text-muted-foreground mb-2">
                                 Моля, спазвайте добрия тон. Обидно съдържание и спам ще бъдат премахвани.

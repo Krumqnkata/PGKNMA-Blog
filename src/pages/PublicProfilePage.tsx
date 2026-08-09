@@ -28,6 +28,7 @@ import { Link, useParams } from 'react-router-dom';
 import { InteriorPage, InteriorSection, SectionHeading } from '@/components/InteriorPage';
 import { QueryErrorState } from '@/components/query/QueryStates';
 import UserAvatar from '@/components/UserAvatar';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -145,6 +146,7 @@ export default function PublicProfilePage() {
               <UserAvatar
                 username={profile.user.username}
                 avatarUrl={profile.user.avatar_url}
+                siteRole={profile.user.site_role}
                 className="h-24 w-24 border-4 border-background text-2xl shadow-xl sm:h-28 sm:w-28"
               />
               <div className="min-w-0">
@@ -156,6 +158,7 @@ export default function PublicProfilePage() {
                     Ниво {profile.level?.number ?? 1}: {profile.level?.title ?? 'Новак'}
                   </Badge>
                   <Badge variant="outline">{profile.points} точки</Badge>
+                  <SiteRoleBadge role={profile.user.site_role} />
                 </div>
                 {profile.bio ? (
                   <p className="mt-4 max-w-2xl whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground sm:text-base">{profile.bio}</p>

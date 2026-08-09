@@ -26,6 +26,7 @@ export interface Post {
     author: number;
     author_username: string; // ✅ Очакваме потребителско име на автора от Django
     author_avatar_url: string | null;
+    author_site_role: SiteRole;
     title: string;
     banner: string | null;
     hook: string; 
@@ -221,9 +222,11 @@ export interface User {
     avatar_source?: AvatarSource;
     avatar_preset?: string;
     email_verified?: boolean;
+    site_role?: SiteRole;
 }
 
 export type AvatarSource = 'initials' | 'upload' | 'preset' | 'google';
+export type SiteRole = 'administrator' | 'contributor' | null;
 
 export interface AvatarPreset {
     id: string;
@@ -260,11 +263,13 @@ export interface Comment {
     post_id: number;
     username: string;
     avatar_url: string | null;
+    site_role: SiteRole;
     content: string;
     created_at: string;
     parent?: number | null; // Optional, can be null for top-level comments
     parent_id: number | null;
     parent_username: string | null;
+    parent_site_role: SiteRole;
     reply_count: number;
     replies?: Comment[];    // Nested replies
 }
@@ -445,6 +450,7 @@ export interface PollStatistics {
         id: number;
         username: string;
         correct_answers: number;
+        site_role: SiteRole;
     }>;
 }
 
@@ -1336,6 +1342,7 @@ export interface LeaderboardEntry {
     username: string;
     avatar_url: string | null;
     points: number;
+    site_role: SiteRole;
 }
 
 export interface LeaderboardSection {
@@ -1404,6 +1411,7 @@ export interface PublicProfileUser {
     avatar_url: string | null;
     email: string | null;
     member_since: string;
+    site_role: SiteRole;
 }
 
 export interface PublicProfileBadge {
