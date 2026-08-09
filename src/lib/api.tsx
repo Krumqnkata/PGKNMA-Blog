@@ -241,10 +241,18 @@ export interface AvatarOptions {
 export interface CurrentProfileResponse {
     user: User;
     avatar_options: AvatarOptions;
+    public_profile: PublicProfileSettings;
 }
 
 export interface AvatarUpdateResponse {
     user: User;
+}
+
+export interface PublicProfileSettings {
+    bio: string;
+    public_profile_enabled: boolean;
+    show_email_on_profile: boolean;
+    show_comments_on_profile: boolean;
 }
 
 export interface Comment {
@@ -975,6 +983,12 @@ const resolveCurrentProfile = (data: CurrentProfileResponse): CurrentProfileResp
             url: resolveApiUrl(preset.url),
         })),
     },
+    public_profile: data.public_profile || {
+        bio: '',
+        public_profile_enabled: true,
+        show_email_on_profile: false,
+        show_comments_on_profile: true,
+    },
 });
 
 const resolveAvatarUpdate = (data: AvatarUpdateResponse): AvatarUpdateResponse => ({
@@ -990,6 +1004,22 @@ export async function getCurrentProfile(): Promise<CurrentProfileResponse> {
         ));
     }
     return resolveCurrentProfile(await response.json());
+}
+
+export async function updatePublicProfileSettings(
+    settings: PublicProfileSettings,
+): Promise<PublicProfileSettings> {
+    const response = await apiRequest('/api/profile/public-settings/', {
+        method: 'PATCH',
+        body: JSON.stringify(settings),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Настройките за публичния профил не могат да бъдат запазени.',
+        ));
+    }
+    return response.json();
 }
 
 export async function uploadProfileAvatar(file: File): Promise<AvatarUpdateResponse> {
@@ -1222,4 +1252,228 @@ export async function deleteMyMeme(memeId: number): Promise<void> {
     if (!response.ok) {
         throw new Error(await getApiErrorMessage(response, 'Неуспешно изтриване на мемето.'));
     }
+}
+
+export interface GamificationLevel {
+    number: number;
+    title: string;
+    icon: string;
+    minimum_points: number;
+}
+
+export type GamificationBadgeRarity = 'common' | 'rare' | 'epic' | 'seasonal';
+
+export interface GamificationBadge {
+    slug: string;
+    title: string;
+    description: string;
+    icon: string;
+    rarity: GamificationBadgeRarity;
+    hidden: boolean;
+    points_reward: number;
+    earned: boolean;
+    awarded_at: string | null;
+}
+
+export interface PointTransaction {
+    id: number;
+    action: string;
+    points: number;
+    balance_after: number;
+    description: string;
+    source: 'activity' | 'badge' | 'admin' | 'reversal';
+    created_at: string;
+}
+
+export interface MissionRequirementProgress {
+    key: string;
+    label: string;
+    current: number;
+    target: number;
+    complete: boolean;
+}
+
+export interface GamificationMission {
+    slug: string;
+    title: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    reward_points: number;
+    requirements: MissionRequirementProgress[];
+    progress_percent: number;
+    completed_at: string | null;
+    rewarded_at: string | null;
+}
+
+export interface GamificationProfile {
+    points: number;
+    level: GamificationLevel | null;
+    next_level: GamificationLevel | null;
+    progress_percent: number;
+    points_to_next: number;
+    leaderboard_opt_in: boolean;
+    badges: GamificationBadge[];
+    recent_transactions: PointTransaction[];
+    missions: GamificationMission[];
+}
+
+export async function getGamificationProfile(): Promise<GamificationProfile> {
+    const response = await apiRequest('/api/gamification/profile/', {
+        method: 'GET',
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Прогресът ви не може да бъде зареден.',
+        ));
+    }
+    return response.json();
+}
+
+export interface LeaderboardEntry {
+    rank: number;
+    username: string;
+    avatar_url: string | null;
+    points: number;
+}
+
+export interface LeaderboardSection {
+    top: LeaderboardEntry[];
+    current_user: LeaderboardEntry | null;
+}
+
+export interface GamificationLeaderboard {
+    weekly: LeaderboardSection;
+    monthly: LeaderboardSection;
+    all_time: LeaderboardSection;
+}
+
+export async function getGamificationLeaderboard(): Promise<GamificationLeaderboard> {
+    const response = await apiRequest('/api/gamification/leaderboard/', {
+        method: 'GET',
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Класацията не може да бъде заредена.',
+        ));
+    }
+    return response.json();
+}
+
+export async function updateLeaderboardPreference(
+    leaderboardOptIn: boolean,
+): Promise<{ leaderboard_opt_in: boolean }> {
+    const response = await apiRequest('/api/gamification/preferences/', {
+        method: 'PATCH',
+        body: JSON.stringify({ leaderboard_opt_in: leaderboardOptIn }),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Настройката за класацията не може да бъде запазена.',
+        ));
+    }
+    return response.json();
+}
+
+export async function recordGamificationActivity(
+    action: 'post_read' | 'calendar_visit',
+    options: { objectId?: number; engagementSeconds?: number } = {},
+): Promise<void> {
+    const response = await apiRequest('/api/gamification/activity/', {
+        method: 'POST',
+        body: JSON.stringify({
+            action,
+            object_id: options.objectId,
+            engagement_seconds: options.engagementSeconds,
+        }),
+    });
+    if (!response.ok && response.status !== 429) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            'Активността не може да бъде отчетена.',
+        ));
+    }
+}
+
+export interface PublicProfileUser {
+    id: number;
+    username: string;
+    avatar_url: string | null;
+    email: string | null;
+    member_since: string;
+}
+
+export interface PublicProfileBadge {
+    slug: string;
+    title: string;
+    description: string;
+    icon: string;
+    rarity: GamificationBadgeRarity;
+    awarded_at: string;
+}
+
+export interface PublicDigitalReward {
+    key: string;
+    title: string;
+    kind: 'avatar_frame' | 'profile_border' | 'profile_theme' | 'user_title' | 'special_icon';
+    config: Record<string, unknown>;
+    unlocked_at: string;
+    selected: boolean;
+}
+
+export interface PublicProfileComment {
+    id: number;
+    post_id: number;
+    post_title: string;
+    content: string;
+    created_at: string;
+}
+
+export interface PublicUserProfile {
+    user: PublicProfileUser;
+    is_owner: boolean;
+    profile_is_public: boolean;
+    email_is_public: boolean;
+    comments_are_public: boolean;
+    bio: string;
+    level: GamificationLevel | null;
+    points: number;
+    badges: PublicProfileBadge[];
+    rewards: PublicDigitalReward[];
+    stats: {
+        comments: number;
+        approved_memes: number;
+        approved_songs: number;
+        poll_answers: number;
+        badges: number;
+        rewards: number;
+    };
+    recent_comments: PublicProfileComment[];
+    comments_visible: boolean;
+}
+
+export async function getPublicUserProfile(username: string): Promise<PublicUserProfile> {
+    const response = await apiRequest(
+        `/api/users/${encodeURIComponent(username)}/profile/`,
+        { method: 'GET' },
+    );
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(
+            response,
+            response.status === 404
+                ? 'Профилът не съществува или е скрит.'
+                : 'Профилът не може да бъде зареден.',
+        ));
+    }
+    const data = await response.json() as PublicUserProfile;
+    return {
+        ...data,
+        user: {
+            ...data.user,
+            avatar_url: resolveApiUrl(data.user.avatar_url) || null,
+        },
+    };
 }

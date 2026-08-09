@@ -7,9 +7,10 @@ import MySongSuggestionsList from '@/components/MySongSuggestionsList';
 import MyMemesList from '@/components/MyMemesList';
 import RulesContent from '@/components/RulesContent'; // Import the new component
 import LoginSessions from '@/components/LoginSessions';
+import GamificationProgress from '@/components/GamificationProgress';
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { User, Music, MessageSquare, Image as ImageIcon, Shield, History } from 'lucide-react'; // Import Shield icon
+import { User, Music, MessageSquare, Image as ImageIcon, Shield, History, Trophy } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import UserAvatar from '@/components/UserAvatar';
 import { InteriorPage, InteriorSection } from '@/components/InteriorPage';
@@ -32,6 +33,7 @@ const MyProfilePage: React.FC = () => {
 
   const tabs = [
     { value: 'settings', label: 'Настройки', Icon: User },
+    { value: 'progress', label: 'Моят прогрес', Icon: Trophy },
     { value: 'songs', label: 'Моите песни', Icon: Music },
     { value: 'memes', label: 'Моите мемета', Icon: ImageIcon },
     { value: 'comments', label: 'Моите коментари', Icon: MessageSquare },
@@ -76,7 +78,7 @@ const MyProfilePage: React.FC = () => {
               </SelectContent>
             </Select>
           ) : (
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm xl:grid-cols-6">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm lg:grid-cols-4 xl:grid-cols-7">
               {tabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value} className="min-h-11 px-2">
                   <tab.Icon className="mr-1.5 h-4 w-4" />
@@ -89,6 +91,7 @@ const MyProfilePage: React.FC = () => {
           {tabs.map(tab => (
             <TabsContent key={tab.value} value={tab.value} className="mt-7 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2">
               {tab.value === 'settings' && <AccountSettings />}
+              {tab.value === 'progress' && <GamificationProgress />}
               {tab.value === 'songs' && <MySongSuggestionsList />}
               {tab.value === 'memes' && <MyMemesList />}
               {tab.value === 'comments' && <MyCommentsList />}

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/lib/api";
 import { getPostShareUrl } from "@/lib/share";
+import { publicProfilePath } from '@/lib/public-profile';
 
 interface NewsCardProps {
   article: Post;
@@ -67,7 +68,7 @@ const NewsCard = ({ article, priority = false }: NewsCardProps) => (
       <div className="mt-auto pt-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border/60 pt-4 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" aria-hidden="true" /><time dateTime={article.published_at || article.created_at}>{new Date(article.published_at || article.created_at).toLocaleDateString("bg-BG", { day: "numeric", month: "short", year: "numeric" })}</time></span>
-          {article.author_username && <span className="flex min-w-0 items-center gap-1.5"><UserRound className="h-3.5 w-3.5" aria-hidden="true" /><span className="truncate">{article.author_username}</span></span>}
+          {article.author_username && <Link to={publicProfilePath(article.author_username)} className="flex min-w-0 items-center gap-1.5 rounded hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><UserRound className="h-3.5 w-3.5" aria-hidden="true" /><span className="truncate">{article.author_username}</span></Link>}
         </div>
         <Link to={`/post/${article.id}`} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           Прочети публикацията <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" aria-hidden="true" />

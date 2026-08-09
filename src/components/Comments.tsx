@@ -8,6 +8,8 @@ import { Loader2, MessageSquare, ReplyIcon, CornerDownRight } from 'lucide-react
 import UserAvatar from '@/components/UserAvatar';
 import { toast } from 'sonner';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
+import { Link } from 'react-router-dom';
+import { publicProfilePath } from '@/lib/public-profile';
 
 interface CommentItemProps {
     comment: CommentType;
@@ -67,17 +69,23 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
                 <CornerDownRight className="absolute left-4 top-7 h-5 w-5 text-gray-400" />
             )}
             <div className="flex items-start gap-4">
-                <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} />
+                {comment.username ? (
+                    <Link to={publicProfilePath(comment.username)} aria-label={`Профил на ${comment.username}`} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                        <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} />
+                    </Link>
+                ) : <UserAvatar username={comment.username} avatarUrl={comment.avatar_url} />}
                 <div className="w-full">
                     <div className="flex items-center gap-2 mb-1">
-                        <span className="font-semibold">{comment.username}</span>
+                        {comment.username ? (
+                            <Link className="font-semibold hover:text-primary hover:underline" to={publicProfilePath(comment.username)}>{comment.username}</Link>
+                        ) : <span className="font-semibold">Изтрит потребител</span>}
                         <span className="text-xs text-muted-foreground">
                             {new Date(comment.created_at).toLocaleString('bg-BG')}
                         </span>
                     </div>
                      <p className="text-sm text-foreground">
                         {comment.parent_username && level > 0 && (
-                            <span className="text-primary font-medium mr-1">@{comment.parent_username}</span>
+                            <Link className="mr-1 font-medium text-primary hover:underline" to={publicProfilePath(comment.parent_username)}>@{comment.parent_username}</Link>
                         )}
                         {comment.content}
                     </p>

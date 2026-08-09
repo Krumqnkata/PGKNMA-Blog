@@ -6,6 +6,7 @@ import { AlertTriangle, Loader2, ShieldCheck } from "lucide-react";
 import AccountCredentialSettings from "@/components/account/AccountCredentialSettings";
 import PersonalDataExportCard from "@/components/PersonalDataExportCard";
 import ProfileAvatarSettings from "@/components/ProfileAvatarSettings";
+import PublicProfileSettingsCard from '@/components/PublicProfileSettingsCard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -69,6 +70,7 @@ const AccountSettings = () => {
         <p>Промените по данните за вход могат да прекратят активната ви сесия. Това предпазва профила от неоторизиран достъп.</p>
       </div>
       <ProfileAvatarSettings />
+      <PublicProfileSettingsCard />
       <AccountCredentialSettings />
 
       <div className="grid gap-6 xl:grid-cols-2">

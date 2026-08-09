@@ -46,7 +46,7 @@ const SEOManager = () => {
 
     // For dynamic paths like /post/:id, we don't set static titles here.
     // The individual Post component will use the useSEO hook to set the title dynamically.
-    if (path.startsWith("/post/")) {
+    if (path.startsWith("/post/") || path.startsWith("/users/")) {
       return;
     }
 

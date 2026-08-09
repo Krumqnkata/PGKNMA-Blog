@@ -39,6 +39,7 @@ const Developers = lazy(() => import("@/pages/Developers"));
 const Post = lazy(() => import("@/pages/Post"));
 const Program = lazy(() => import("@/pages/Program"));
 const MyProfilePage = lazy(() => import("@/pages/MyProfilePage"));
+const PublicProfilePage = lazy(() => import("@/pages/PublicProfilePage"));
 const ProtectedRoute = lazy(() => import("@/components/ProtectedRoute"));
 const Changelog = lazy(() => import("@/pages/Changelog"));
 const TVScreen = lazy(() => import("@/pages/TVScreen"));
@@ -106,6 +107,7 @@ const AppContent = () => {
                   <Route path="/meme-of-the-week" element={settingsData?.enable_meme_of_the_week ? <MemeOfTheWeek /> : <FeatureDisabledPage />} />
                   <Route path="/changelog" element={<Changelog />} />
                   <Route path="/profile" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
+                  <Route path="/users/:username" element={<PublicProfilePage />} />
 
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

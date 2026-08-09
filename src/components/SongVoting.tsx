@@ -8,6 +8,8 @@ import { ThumbsUp, Loader2, Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import SongMediaDisplay from './SongMediaDisplay';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
+import { Link } from 'react-router-dom';
+import { publicProfilePath } from '@/lib/public-profile';
 
 export function SongVoting() {
     const { isAuthenticated } = useAuth();
@@ -151,7 +153,7 @@ export function SongVoting() {
                             <div className="flex-1">
                                 <h3 className="font-semibold text-lg">{song.title}</h3>
                                 <p className="text-sm text-muted-foreground">
-                                    Предложена от: {song.user_username}
+                                    Предложена от: {song.user_username ? <Link className="font-medium hover:text-primary hover:underline" to={publicProfilePath(song.user_username)}>{song.user_username}</Link> : 'изтрит потребител'}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
                                     Времеви слот: {(() => {

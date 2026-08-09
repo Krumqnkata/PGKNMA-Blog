@@ -1,9 +1,9 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CalendarDays, MousePointerClick } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { getEvents, Event } from "@/lib/api";
+import { getEvents, Event, recordGamificationActivity } from "@/lib/api";
 import { format, parseISO } from "date-fns";
 import { bg } from "date-fns/locale";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
@@ -11,11 +11,18 @@ import EventCard from "@/components/events/EventCard";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
+import { useAuth } from '@/hooks/use-auth';
 
 const SchoolCalendar = () => {
+  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedCategory, setSelectedCategory] = useState("All");
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!user) return;
+    void recordGamificationActivity('calendar_visit').catch(() => undefined);
+  }, [user]);
 
   const { data: events, isLoading, isError, error, refetch } = useQuery<Event[]>({
     queryKey: ["events"],
