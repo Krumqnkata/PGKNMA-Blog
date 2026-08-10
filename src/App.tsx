@@ -24,6 +24,7 @@ import AccessibilityColorFilters from "@/components/accessibility/AccessibilityC
 import ReadingGuide from "@/components/accessibility/ReadingGuide";
 import SelectionReader from "@/components/accessibility/SelectionReader";
 import SkipToContent from "@/components/accessibility/SkipToContent";
+import PageViewTracker from "@/components/PageViewTracker";
 
 const Index = lazy(() => import("@/pages/Index"));
 const News = lazy(() => import("@/pages/News"));
@@ -92,6 +93,7 @@ const AppContent = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
+                <PageViewTracker />
                 <ScrollToTop />
                 <SEOManager />
               <Suspense fallback={<AppLoadingScreen />}>
