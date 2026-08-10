@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { getNotifications, Notification } from '@/lib/api';
-import { Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check } from 'lucide-react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import {
+  getNotifications,
+  markAllNotificationsRead,
+  markNotificationRead,
+  Notification,
+} from '@/lib/api';
+import { Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -40,13 +46,19 @@ const readMapFromStorage = (storageKey: string): ReadMap => {
 
 const NotificationBell: React.FC = () => {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const storageKey = `${STORAGE_KEY_PREFIX}:${user?.id ?? 'public'}`;
+  const notificationQueryKey = useMemo(
+    () => ['notifications', user?.id ?? 'public'] as const,
+    [user?.id],
+  );
   const { data: notifications, isLoading, error, refetch } = useQuery<Notification[], Error>({
-    queryKey: ['notifications', user?.id ?? 'public'],
+    queryKey: notificationQueryKey,
     queryFn: getNotifications,
     enabled: !authLoading,
     refetchInterval: 5 * 60 * 1000,
-    retry: false,
+    retry: 2,
   });
 
   const [isOpen, setIsOpen] = useState(false);
@@ -117,12 +129,13 @@ const NotificationBell: React.FC = () => {
   // или текущият hash на текста му се различава от последно прочетения
   // (значи текстът е бил редактиран след прочитането)
   const isNotificationUnread = useCallback(
-    (n: { id: number; html_text: string }) => {
+    (n: Notification) => {
+      if (isAuthenticated) return !n.is_read;
       const entry = readMap[n.id];
       if (!entry) return true;
       return entry.hash !== hashText(n.html_text);
     },
-    [readMap]
+    [isAuthenticated, readMap]
   );
 
   const unreadNotifications = useMemo(() => {
@@ -164,9 +177,37 @@ const NotificationBell: React.FC = () => {
     });
   }, [notifications, storageKey]);
 
+  const markCachedNotificationsRead = useCallback((ids: Set<number>) => {
+    queryClient.setQueryData<Notification[]>(notificationQueryKey, (current = []) => (
+      current.map((notification) => (
+        ids.has(notification.id)
+          ? { ...notification, is_read: true, read_at: new Date().toISOString() }
+          : notification
+      ))
+    ));
+  }, [notificationQueryKey, queryClient]);
+
+  const markOneMutation = useMutation({
+    mutationFn: markNotificationRead,
+    onMutate: (id) => markCachedNotificationsRead(new Set([id])),
+    onError: () => void queryClient.invalidateQueries({ queryKey: notificationQueryKey }),
+  });
+
+  const markAllMutation = useMutation({
+    mutationFn: markAllNotificationsRead,
+    onMutate: () => markCachedNotificationsRead(
+      new Set(enabledNotifications.map((notification) => notification.id)),
+    ),
+    onError: () => void queryClient.invalidateQueries({ queryKey: notificationQueryKey }),
+  });
+
   // Маркиране на едно известие като прочетено
-  const handleMarkOneAsRead = (n: { id: number; html_text: string }) => {
+  const handleMarkOneAsRead = (n: Notification) => {
     if (!isNotificationUnread(n)) return;
+    if (isAuthenticated) {
+      markOneMutation.mutate(n.id);
+      return;
+    }
     persistReadMap({
       ...readMap,
       [n.id]: { hash: hashText(n.html_text), readAt: Date.now() },
@@ -176,12 +217,30 @@ const NotificationBell: React.FC = () => {
   // Маркиране на всички като прочетени
   const handleMarkAllAsRead = (e: React.MouseEvent) => {
     e.stopPropagation();
+    if (isAuthenticated) {
+      markAllMutation.mutate(channel);
+      return;
+    }
     const now = Date.now();
     const newMap = { ...readMap };
     enabledNotifications.forEach(n => {
       newMap[n.id] = { hash: hashText(n.html_text), readAt: now };
     });
     persistReadMap(newMap);
+  };
+
+  const openNotificationAction = (notification: Notification) => {
+    handleMarkOneAsRead(notification);
+    if (!notification.action_url) return;
+
+    setIsOpen(false);
+    if (notification.action_url.startsWith('/') && !notification.action_url.startsWith('//')) {
+      navigate(notification.action_url);
+      return;
+    }
+    if (/^https:\/\//i.test(notification.action_url)) {
+      window.location.assign(notification.action_url);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -256,6 +315,7 @@ const NotificationBell: React.FC = () => {
                 size="sm" 
                 className="h-7 px-2 text-xs text-muted-foreground hover:text-primary gap-1 transition-colors rounded-md"
                 onClick={handleMarkAllAsRead}
+                disabled={markAllMutation.isPending}
               >
                 <CheckCheck className="h-3.5 w-3.5" />
                 <span>Прочети всички</span>
@@ -313,8 +373,16 @@ const NotificationBell: React.FC = () => {
                   return (
                     <div 
                       key={notification.id} 
-                      onClick={() => handleMarkOneAsRead(notification)}
-                      className={`relative p-4 flex gap-3 transition-colors duration-200 hover:bg-accent/40 ${isUnread ? 'bg-primary/5 cursor-pointer' : ''}`}
+                      onClick={() => notification.action_url ? openNotificationAction(notification) : handleMarkOneAsRead(notification)}
+                      onKeyDown={(event) => {
+                        if ((event.key === 'Enter' || event.key === ' ') && notification.action_url) {
+                          event.preventDefault();
+                          openNotificationAction(notification);
+                        }
+                      }}
+                      role={notification.action_url ? 'link' : undefined}
+                      tabIndex={notification.action_url ? 0 : undefined}
+                      className={`relative p-4 flex gap-3 transition-colors duration-200 hover:bg-accent/40 ${isUnread ? 'bg-primary/5' : ''} ${notification.action_url || isUnread ? 'cursor-pointer' : ''}`}
                     >
                       {isUnread && (
                         <span className="absolute left-1.5 top-5 w-2 h-2 bg-primary rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)] animate-pulse" />
@@ -330,7 +398,7 @@ const NotificationBell: React.FC = () => {
                           </p>
                         )}
                       </div>
-                      {isUnread && (
+                      {isUnread && !notification.action_url && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -341,6 +409,9 @@ const NotificationBell: React.FC = () => {
                         >
                           <Check className="h-3.5 w-3.5" />
                         </button>
+                      )}
+                      {notification.action_url && (
+                        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                       )}
                     </div>
                   );

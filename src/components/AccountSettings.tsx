@@ -7,6 +7,7 @@ import AccountCredentialSettings from "@/components/account/AccountCredentialSet
 import PersonalDataExportCard from "@/components/PersonalDataExportCard";
 import ProfileAvatarSettings from "@/components/ProfileAvatarSettings";
 import PublicProfileSettingsCard from '@/components/PublicProfileSettingsCard';
+import NotificationPreferencesCard from '@/components/NotificationPreferencesCard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -71,6 +72,7 @@ const AccountSettings = () => {
       </div>
       <ProfileAvatarSettings />
       <PublicProfileSettingsCard />
+      <NotificationPreferencesCard />
       <AccountCredentialSettings />
 
       <div className="grid gap-6 xl:grid-cols-2">

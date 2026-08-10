@@ -515,6 +515,8 @@ export interface Notification {
   category: string;
   action_url: string;
   is_gamification: boolean;
+  is_read: boolean;
+  read_at: string | null;
 }
 
 export async function getNotifications(): Promise<Notification[]> {
@@ -526,6 +528,69 @@ export async function getNotifications(): Promise<Notification[]> {
 
     const data = await response.json();
     return normalizeArray<Notification>(data);
+}
+
+export async function markNotificationRead(id: number): Promise<{ id: number; read_at: string }> {
+    const response = await apiRequest(`/api/notifications/${id}/read/`, { method: 'POST' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Известието не може да бъде маркирано като прочетено.'));
+    }
+    return response.json();
+}
+
+export async function markAllNotificationsRead(
+    channel?: 'general' | 'gamification',
+): Promise<{ marked_read: number }> {
+    const response = await apiRequest('/api/notifications/read-all/', {
+        method: 'POST',
+        body: JSON.stringify(channel ? { channel } : {}),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Известията не могат да бъдат маркирани като прочетени.'));
+    }
+    return response.json();
+}
+
+export interface NotificationPreferences {
+    general_enabled: boolean;
+    points_enabled: boolean;
+    levels_enabled: boolean;
+    badges_enabled: boolean;
+    missions_enabled: boolean;
+    rewards_enabled: boolean;
+    updated_at: string;
+}
+
+export async function getNotificationPreferences(): Promise<NotificationPreferences> {
+    const response = await apiRequest('/api/notifications/preferences/', { method: 'GET' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Настройките за известия не могат да бъдат заредени.'));
+    }
+    return response.json();
+}
+
+export async function updateNotificationPreferences(
+    values: Partial<Omit<NotificationPreferences, 'updated_at'>>,
+): Promise<NotificationPreferences> {
+    const response = await apiRequest('/api/notifications/preferences/', {
+        method: 'PATCH',
+        body: JSON.stringify(values),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Настройките за известия не могат да бъдат запазени.'));
+    }
+    return response.json();
+}
+
+export async function recordPageView(path: string): Promise<void> {
+    const response = await apiRequest('/api/analytics/page-view/', {
+        method: 'POST',
+        body: JSON.stringify({ path }),
+        keepalive: true,
+    });
+    if (!response.ok) {
+        throw new Error('Page view could not be recorded.');
+    }
 }
 
 
