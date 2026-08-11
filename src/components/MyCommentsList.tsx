@@ -59,11 +59,11 @@ const MyCommentsList: React.FC = () => {
       {comments.map((comment) => (
         <Card key={comment.id} className="transition-[box-shadow,border-color] hover:border-primary/25 hover:shadow-md">
           <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex-grow">
+            <div className="min-w-0 flex-grow">
               <p className="text-sm text-muted-foreground">
                 Публикуван на: {new Date(comment.created_at).toLocaleDateString('bg-BG')}
               </p>
-              <p className="mt-1">"{comment.content}"</p>
+              <p className="mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">"{comment.content}"</p>
             </div>
             <div className="flex items-center">
               <Button variant="ghost" size="icon" asChild>

@@ -188,9 +188,9 @@ export default function PublicProfilePage() {
                 В блога от {formatDate(profile.user.member_since)}
               </p>
               {profile.user.email && (
-                <p className="flex min-w-0 items-center gap-2">
+                <p className="flex min-w-0 items-start gap-2">
                   <Mail className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
-                  <a className="truncate font-medium hover:text-primary hover:underline" href={`mailto:${profile.user.email}`}>{profile.user.email}</a>
+                  <a className="min-w-0 break-all font-medium hover:text-primary hover:underline" href={`mailto:${profile.user.email}`}>{profile.user.email}</a>
                   {profile.is_owner && !profile.email_is_public && <Badge variant="outline" className="ml-auto shrink-0 text-[10px]">Само за вас</Badge>}
                 </p>
               )}

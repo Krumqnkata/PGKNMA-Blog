@@ -69,14 +69,14 @@ const MyMemesList: React.FC = () => {
       {memes.map((meme) => (
         <Card key={meme.id} className="transition-[box-shadow,border-color] hover:border-primary/25 hover:shadow-md">
           <CardHeader>
-            <div className="flex justify-between items-start">
-              <div>
-                <CardTitle>{meme.title}</CardTitle>
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:justify-between">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="break-words [overflow-wrap:anywhere]">{meme.title}</CardTitle>
                 <CardDescription>
                   Качено на: {new Date(meme.created_at).toLocaleDateString('bg-BG')} | Гласове: {meme.votes}
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex shrink-0 flex-wrap items-center gap-2">
                 {getStatusBadge(meme.status)}
                 {meme.status === 'pending' && (
                   <AlertDialog>
