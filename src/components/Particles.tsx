@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import Particles, { initParticlesEngine } from "@tsparticles/react";
 import { type Container, type ISourceOptions } from "@tsparticles/engine";
 import { loadSlim } from "@tsparticles/slim";
+import { isDarkTheme } from "@/lib/themes";
 
-const ParticlesComponent = (props: { id?: string; theme?: string }) => {
+const ParticlesComponent = (props: { id?: string; theme?: string; resolvedTheme?: string }) => {
   const [init, setInit] = useState(false);
 
   useEffect(() => {
@@ -14,7 +15,7 @@ const ParticlesComponent = (props: { id?: string; theme?: string }) => {
 
   const particlesLoaded = async (container?: Container): Promise<void> => {};
 
-const isDark = props.theme === "dark";
+const isDark = isDarkTheme(props.theme, props.resolvedTheme);
 
 const options: ISourceOptions = useMemo(
   () => ({

@@ -162,7 +162,7 @@ const LoginSessions = () => {
                 <div className="min-w-0 space-y-1">
                   <CardTitle className="flex flex-wrap items-center gap-2 text-lg">
                     <Laptop className="h-5 w-5 shrink-0" />
-                    <span>{session.device_label || 'Неизвестно устройство'}</span>
+                    <span className="break-words [overflow-wrap:anywhere]">{session.device_label || 'Неизвестно устройство'}</span>
                     <Badge
                       variant={session.status === 'revoked' ? 'destructive' : session.status === 'expired' ? 'outline' : 'default'}
                     >
@@ -188,7 +188,7 @@ const LoginSessions = () => {
                   <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
                   <div className="min-w-0">
                     <p className="text-muted-foreground">Мрежа</p>
-                    <p className="break-words font-medium">
+                    <p className="break-words font-medium [overflow-wrap:anywhere]">
                       {session.ip_address || 'Няма IP'}
                       {session.network_operator ? ` · ${session.network_operator}` : ''}
                       {session.network_asn ? ` (AS${session.network_asn})` : ''}

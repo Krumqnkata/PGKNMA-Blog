@@ -1,14 +1,14 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { HelpCircle, Moon, Sun, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { HelpCircle, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
-import { useTheme } from "next-themes";
 import logoDark from "/logo-dark.png";
 import { useAuth } from "@/hooks/use-auth";
 import { UserDropdown } from "./UserDropdown";
 import { useLocation } from "react-router-dom";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
 import FloatingFAQ from "@/components/FloatingFAQ";
+import ThemeSelector from "@/components/ThemeSelector";
 
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -24,13 +24,12 @@ const Header = () => {
   const location = useLocation();
   const isOnProfilePage = location.pathname === '/profile';
 
-  const { resolvedTheme, setTheme } = useTheme();
   const logo = logoDark;
 
   useEffect(() => setMobileMenuOpen(false), [location.pathname]);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#0a2e2e]/90 backdrop-blur-md shadow-sm text-white">
+    <header className="sticky top-0 z-50 w-full bg-[hsl(var(--header-background)/0.92)] text-[hsl(var(--header-foreground))] shadow-sm backdrop-blur-md">
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       <nav className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-4">
         {/* Logo */}
@@ -61,16 +60,7 @@ const Header = () => {
             <div className="[&_button]:h-[40px] [&_button]:w-[40px]"><NotificationBell /></div>
           </Suspense>
 
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="h-[40px] w-[40px] transition-transform hover:scale-105"
-            aria-label={resolvedTheme === "dark" ? "Включи светла тема" : "Включи тъмна тема"}
-          >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-          </Button>
+          <ThemeSelector />
 
           <div>
             {isAuthenticated ? (

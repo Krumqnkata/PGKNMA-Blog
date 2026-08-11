@@ -59,7 +59,7 @@ const MyProfilePage: React.FC = () => {
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Лично пространство</p>
             <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">Моят профил</h1>
             <SiteRoleBadge role={user?.site_role} className="mt-2" />
-            <p className="mt-1 truncate text-sm leading-relaxed text-muted-foreground sm:text-base">Добре дошли, <span className="font-bold text-foreground">{user?.username || 'потребител'}</span>. Управлявайте профила и активността си.</p>
+            <p className="mt-1 break-words text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere] sm:text-base">Добре дошли, <span className="font-bold text-foreground">{user?.username || 'потребител'}</span>. Управлявайте профила и активността си.</p>
           </div>
           </div>
         </div>
@@ -84,9 +84,9 @@ const MyProfilePage: React.FC = () => {
           ) : (
             <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm lg:grid-cols-4 xl:grid-cols-7">
               {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} className="min-h-11 px-2">
-                  <tab.Icon className="mr-1.5 h-4 w-4" />
-                  {tab.label}
+                <TabsTrigger key={tab.value} value={tab.value} className="min-h-12 whitespace-normal px-2 text-center leading-tight">
+                  <tab.Icon className="mr-1.5 h-4 w-4 shrink-0" />
+                  <span>{tab.label}</span>
                 </TabsTrigger>
               ))}
             </TabsList>

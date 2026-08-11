@@ -130,6 +130,134 @@ All colors MUST be HSL.
     --footer-background: 174 60% 30%;
     --footer-foreground: 180 20% 95%;
   }
+
+  html[data-theme="school"] {
+    --background: 43 45% 96%;
+    --foreground: 174 48% 14%;
+    --card: 42 55% 99%;
+    --card-foreground: 174 48% 14%;
+    --popover: 42 55% 99%;
+    --popover-foreground: 174 48% 14%;
+    --primary: 174 73% 31%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 43 55% 89%;
+    --secondary-foreground: 174 48% 14%;
+    --muted: 42 28% 89%;
+    --muted-foreground: 174 20% 36%;
+    --accent: 43 86% 87%;
+    --accent-foreground: 174 52% 16%;
+    --border: 43 27% 80%;
+    --input: 43 27% 80%;
+    --ring: 41 78% 47%;
+    --sidebar-background: 43 40% 97%;
+    --sidebar-foreground: 174 48% 14%;
+    --sidebar-primary: 174 73% 31%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 43 86% 87%;
+    --sidebar-accent-foreground: 174 52% 16%;
+    --sidebar-border: 43 27% 82%;
+    --sidebar-ring: 41 78% 47%;
+    --header-background: 174 64% 24%;
+    --header-foreground: 43 80% 96%;
+    --footer-background: 174 55% 19%;
+    --footer-foreground: 43 45% 94%;
+  }
+
+  html[data-theme="ocean"] {
+    --background: 216 48% 10%;
+    --foreground: 190 40% 94%;
+    --card: 215 42% 14%;
+    --card-foreground: 190 40% 94%;
+    --popover: 215 42% 14%;
+    --popover-foreground: 190 40% 94%;
+    --primary: 188 86% 48%;
+    --primary-foreground: 216 55% 10%;
+    --secondary: 213 36% 20%;
+    --secondary-foreground: 190 35% 94%;
+    --muted: 214 31% 20%;
+    --muted-foreground: 198 25% 72%;
+    --accent: 196 56% 24%;
+    --accent-foreground: 188 60% 94%;
+    --border: 207 34% 29%;
+    --input: 207 34% 29%;
+    --ring: 188 86% 48%;
+    --sidebar-background: 215 42% 13%;
+    --sidebar-foreground: 190 40% 94%;
+    --sidebar-primary: 188 86% 48%;
+    --sidebar-primary-foreground: 216 55% 10%;
+    --sidebar-accent: 196 56% 24%;
+    --sidebar-accent-foreground: 188 60% 94%;
+    --sidebar-border: 207 34% 27%;
+    --sidebar-ring: 188 86% 48%;
+    --header-background: 216 58% 12%;
+    --header-foreground: 188 55% 95%;
+    --footer-background: 219 55% 8%;
+    --footer-foreground: 190 35% 92%;
+  }
+
+  html[data-theme="forest"] {
+    --background: 96 28% 95%;
+    --foreground: 145 39% 14%;
+    --card: 90 35% 99%;
+    --card-foreground: 145 39% 14%;
+    --popover: 90 35% 99%;
+    --popover-foreground: 145 39% 14%;
+    --primary: 145 48% 32%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 99 25% 88%;
+    --secondary-foreground: 145 39% 16%;
+    --muted: 96 19% 88%;
+    --muted-foreground: 143 18% 37%;
+    --accent: 82 43% 87%;
+    --accent-foreground: 145 42% 18%;
+    --border: 104 19% 79%;
+    --input: 104 19% 79%;
+    --ring: 145 48% 32%;
+    --sidebar-background: 96 24% 97%;
+    --sidebar-foreground: 145 39% 14%;
+    --sidebar-primary: 145 48% 32%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 82 43% 87%;
+    --sidebar-accent-foreground: 145 42% 18%;
+    --sidebar-border: 104 19% 81%;
+    --sidebar-ring: 145 48% 32%;
+    --header-background: 145 43% 22%;
+    --header-foreground: 96 36% 95%;
+    --footer-background: 146 41% 17%;
+    --footer-foreground: 96 28% 94%;
+  }
+
+  html[data-theme="midnight"] {
+    --background: 238 31% 8%;
+    --foreground: 230 35% 95%;
+    --card: 238 27% 12%;
+    --card-foreground: 230 35% 95%;
+    --popover: 238 27% 12%;
+    --popover-foreground: 230 35% 95%;
+    --primary: 263 87% 71%;
+    --primary-foreground: 240 30% 10%;
+    --secondary: 238 25% 18%;
+    --secondary-foreground: 230 35% 95%;
+    --muted: 238 22% 19%;
+    --muted-foreground: 231 22% 72%;
+    --accent: 261 34% 25%;
+    --accent-foreground: 254 75% 93%;
+    --border: 240 22% 27%;
+    --input: 240 22% 27%;
+    --ring: 263 87% 71%;
+    --sidebar-background: 238 27% 11%;
+    --sidebar-foreground: 230 35% 95%;
+    --sidebar-primary: 263 87% 71%;
+    --sidebar-primary-foreground: 240 30% 10%;
+    --sidebar-accent: 261 34% 25%;
+    --sidebar-accent-foreground: 254 75% 93%;
+    --sidebar-border: 240 22% 25%;
+    --sidebar-ring: 263 87% 71%;
+    --header-background: 239 34% 11%;
+    --header-foreground: 254 60% 96%;
+    --footer-background: 240 36% 7%;
+    --footer-foreground: 230 30% 92%;
+  }
 }
 
 @layer base {

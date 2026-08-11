@@ -8,6 +8,7 @@ import PersonalDataExportCard from "@/components/PersonalDataExportCard";
 import ProfileAvatarSettings from "@/components/ProfileAvatarSettings";
 import PublicProfileSettingsCard from '@/components/PublicProfileSettingsCard';
 import NotificationPreferencesCard from '@/components/NotificationPreferencesCard';
+import ThemeSettingsCard from '@/components/ThemeSettingsCard';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,6 +71,7 @@ const AccountSettings = () => {
         <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" aria-hidden="true" />
         <p>Промените по данните за вход могат да прекратят активната ви сесия. Това предпазва профила от неоторизиран достъп.</p>
       </div>
+      <ThemeSettingsCard />
       <ProfileAvatarSettings />
       <PublicProfileSettingsCard />
       <NotificationPreferencesCard />

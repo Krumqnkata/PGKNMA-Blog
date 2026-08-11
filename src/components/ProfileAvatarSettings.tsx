@@ -259,7 +259,7 @@ const ProfileAvatarSettings = () => {
                     className="mx-auto aspect-square w-full max-w-20 rounded-lg"
                     loading="lazy"
                   />
-                  <span className="mt-1 block truncate text-xs font-medium">{preset.label}</span>
+                  <span className="mt-1 block break-words text-xs font-medium leading-4 [overflow-wrap:anywhere]">{preset.label}</span>
                 </button>
               );
             })}

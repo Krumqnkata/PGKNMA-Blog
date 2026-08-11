@@ -240,8 +240,8 @@ export default function GamificationProgress() {
       <Link to={publicProfilePath(entry.username)} aria-label={`Профил на ${entry.username}`} className="shrink-0 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
         <UserAvatar username={entry.username} avatarUrl={entry.avatar_url} siteRole={entry.site_role} equippedRewards={entry.equipped_rewards} className="h-9 w-9" />
       </Link>
-      <div className="flex min-w-0 flex-1 items-center gap-2">
-        <Link to={publicProfilePath(entry.username)} className="truncate font-semibold hover:text-primary hover:underline">{entry.username}</Link>
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
+        <Link to={publicProfilePath(entry.username)} className="min-w-0 break-words font-semibold [overflow-wrap:anywhere] hover:text-primary hover:underline">{entry.username}</Link>
         <SiteRoleBadge role={entry.site_role} compact />
       </div>
       <span className="shrink-0 font-black tabular-nums text-primary">{entry.points}</span>
@@ -323,8 +323,8 @@ export default function GamificationProgress() {
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-500/10 text-violet-600 dark:text-violet-300">
                         {reward.kind === 'profile_theme' ? <Palette className="h-5 w-5" /> : <Gift className="h-5 w-5" />}
                       </span>
-                      <div className="min-w-0">
-                        <CardTitle className="text-lg">{reward.title}</CardTitle>
+                      <div className="min-w-0 flex-1">
+                        <CardTitle className="break-words text-lg [overflow-wrap:anywhere]">{reward.title}</CardTitle>
                         <CardDescription>{rewardKindLabels[reward.kind]}</CardDescription>
                       </div>
                       {reward.selected && <Badge className="ml-auto bg-violet-600 text-white">Активна</Badge>}
@@ -362,10 +362,10 @@ export default function GamificationProgress() {
               <Card key={mission.slug} className="overflow-hidden">
                 <CardHeader className="border-b border-border/60 bg-gradient-to-r from-violet-500/10 to-transparent">
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <CardTitle className="flex items-center gap-2 text-xl">
-                        <Target className="h-5 w-5 text-violet-500" aria-hidden="true" />
-                        {mission.title}
+                    <div className="min-w-0 flex-1">
+                      <CardTitle className="flex items-start gap-2 break-words text-xl [overflow-wrap:anywhere]">
+                        <Target className="mt-0.5 h-5 w-5 shrink-0 text-violet-500" aria-hidden="true" />
+                        <span>{mission.title}</span>
                       </CardTitle>
                       <CardDescription className="mt-1">{mission.description}</CardDescription>
                     </div>
@@ -492,7 +492,7 @@ export default function GamificationProgress() {
                     {item.points > 0 ? '+' : ''}{item.points}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold leading-tight">{item.description}</p>
+                    <p className="break-words font-semibold leading-tight [overflow-wrap:anywhere]">{item.description}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{formatDate(item.created_at)}</p>
                   </div>
                   <span className="hidden text-xs tabular-nums text-muted-foreground sm:block">

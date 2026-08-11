@@ -25,6 +25,7 @@ import ReadingGuide from "@/components/accessibility/ReadingGuide";
 import SelectionReader from "@/components/accessibility/SelectionReader";
 import SkipToContent from "@/components/accessibility/SkipToContent";
 import PageViewTracker from "@/components/PageViewTracker";
+import { SITE_THEME_NAMES } from "@/lib/themes";
 
 const Index = lazy(() => import("@/pages/Index"));
 const News = lazy(() => import("@/pages/News"));
@@ -84,7 +85,13 @@ const AppContent = () => {
   }
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+    <ThemeProvider
+      attribute="data-theme"
+      defaultTheme="system"
+      enableSystem
+      themes={[...SITE_THEME_NAMES]}
+      disableTransitionOnChange
+    >
       <CustomCursor />
       <PwaInstallBanner />
       <OfflineStatusToast />

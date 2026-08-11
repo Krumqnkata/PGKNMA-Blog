@@ -8,12 +8,12 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import { useAccessibility } from "@/hooks/use-accessibility";
 
 const Index = () => {
-  const { theme } = useTheme();
+  const { theme, resolvedTheme } = useTheme();
   const { reduceMotion } = useAccessibility();
 
   return (
     <div className="w-full">
-      {!reduceMotion && <ParticlesComponent id="tsparticles" key={theme} theme={theme} />}
+      {!reduceMotion && <ParticlesComponent id="tsparticles" key={`${theme}-${resolvedTheme}`} theme={theme} resolvedTheme={resolvedTheme} />}
       <main className="relative z-10">
         <Hero />
         <RevealOnScroll><HomeQuickLinks /></RevealOnScroll>

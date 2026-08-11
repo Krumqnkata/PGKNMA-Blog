@@ -43,9 +43,9 @@ export const UserDropdown: React.FC = () => {
         </Button>
       </DropdownMenuTrigger>
       
-      <DropdownMenuContent className="w-56" align="end">
-        <DropdownMenuLabel className="flex items-center justify-between gap-2">
-          <span className="truncate">Здравей, {user.username}</span>
+      <DropdownMenuContent className="w-[min(18rem,calc(100vw-1rem))]" align="end">
+        <DropdownMenuLabel className="flex items-start justify-between gap-2">
+          <span className="min-w-0 flex-1 break-words leading-5 [overflow-wrap:anywhere]">Здравей, {user.username}</span>
           <SiteRoleBadge role={user.site_role} compact />
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
