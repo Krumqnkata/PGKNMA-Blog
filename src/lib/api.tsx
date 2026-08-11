@@ -582,6 +582,88 @@ export async function updateNotificationPreferences(
     return response.json();
 }
 
+export interface PushConfig {
+    enabled: boolean;
+    public_key: string;
+}
+
+export interface PushSubscriptionPayload {
+    endpoint: string;
+    p256dh: string;
+    auth: string;
+}
+
+export async function getPushConfig(): Promise<PushConfig> {
+    const response = await apiRequest('/api/push/config/', { method: 'GET' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Push известията не могат да бъдат проверени.'));
+    }
+    return response.json();
+}
+
+export async function savePushSubscription(values: PushSubscriptionPayload): Promise<void> {
+    const response = await apiRequest('/api/push/subscription/', {
+        method: 'POST',
+        body: JSON.stringify(values),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде запазен.'));
+    }
+}
+
+export async function getPushSubscriptionStatus(endpoint: string): Promise<{ subscribed: boolean }> {
+    const response = await apiRequest(
+        `/api/push/subscription/?endpoint=${encodeURIComponent(endpoint)}`,
+        { method: 'GET' },
+    );
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде потвърден.'));
+    }
+    return response.json();
+}
+
+export async function deletePushSubscription(endpoint: string): Promise<void> {
+    const response = await apiRequest('/api/push/subscription/', {
+        method: 'DELETE',
+        body: JSON.stringify({ endpoint }),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде премахнат.'));
+    }
+}
+
+export type GlobalSearchResultKind = 'post' | 'event' | 'song' | 'meme';
+
+export interface GlobalSearchResult {
+    kind: GlobalSearchResultKind;
+    id: number;
+    title: string;
+    description: string;
+    url: string;
+    image_url: string;
+    meta: string;
+}
+
+export interface GlobalSearchResponse {
+    query: string;
+    results: GlobalSearchResult[];
+}
+
+export async function globalSearch(query: string): Promise<GlobalSearchResponse> {
+    const response = await apiRequest(`/api/search/?q=${encodeURIComponent(query)}`, { method: 'GET' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Търсенето временно не е достъпно.'));
+    }
+    const data = await response.json() as GlobalSearchResponse;
+    return {
+        ...data,
+        results: data.results.map((result) => ({
+            ...result,
+            image_url: resolveApiUrl(result.image_url),
+        })),
+    };
+}
+
 export async function recordPageView(path: string): Promise<void> {
     const response = await apiRequest('/api/analytics/page-view/', {
         method: 'POST',

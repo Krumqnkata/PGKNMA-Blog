@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { bg } from "date-fns/locale";
@@ -64,16 +64,21 @@ interface EventCardProps {
   event: Event;
   isMobile: boolean;
   compact?: boolean;
+  initialOpen?: boolean;
 }
 
-const EventCard = ({ event, isMobile, compact = false }: EventCardProps) => {
-  const [open, setOpen] = useState(false);
+const EventCard = ({ event, isMobile, compact = false, initialOpen = false }: EventCardProps) => {
+  const [open, setOpen] = useState(initialOpen);
   const startDate = parseISO(event.start_datetime);
   const endDate = event.end_datetime ? parseISO(event.end_datetime) : null;
   const formattedSummary = `${format(startDate, "dd.MM.yyyy", { locale: bg })} • ${format(startDate, "HH:mm", { locale: bg })}`;
 
+  useEffect(() => {
+    if (initialOpen) setOpen(true);
+  }, [initialOpen]);
+
   const trigger = (
-    <Card className="group h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
+    <Card id={`event-${event.id}`} className="group h-full scroll-mt-24 overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
       <button type="button" onClick={() => setOpen(true)} className="h-full w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring" aria-haspopup="dialog">
         <CardContent className="p-3 sm:p-4">
           <div className="flex gap-3">

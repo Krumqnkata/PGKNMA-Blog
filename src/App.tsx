@@ -71,7 +71,7 @@ const AppContent = () => {
   // Disable inspect tools (right click, F12, etc.)
   useDisableInspect();
 
-  const { settings: settingsData, isLoading, error } = useSettings();
+  const { settings: settingsData, isLoading } = useSettings();
   const isTVRoute = window.location.pathname === "/tv";
 
   // Show loading screen if any critical data is still loading
@@ -79,9 +79,10 @@ const AppContent = () => {
     return <AppLoadingScreen />;
   }
 
-  // Show maintenance page if in maintenance mode or a critical error occurred
-  if (!isTVRoute && (settingsData?.maintenance_mode || error)) {
-    return <div id="main-content" tabIndex={-1} className="outline-none"><MaintenancePage isBackendError={Boolean(error)} /></div>;
+  // A transient status request failure must never replace the whole site.
+  // Maintenance is shown only when a successful or cached response explicitly enables it.
+  if (!isTVRoute && settingsData?.maintenance_mode) {
+    return <div id="main-content" tabIndex={-1} className="outline-none"><MaintenancePage isBackendError={false} /></div>;
   }
 
   return (

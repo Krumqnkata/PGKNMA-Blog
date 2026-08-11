@@ -1,4 +1,4 @@
-const CACHE_NAME = "pgknma-cache-v2";
+const CACHE_NAME = "pgknma-cache-v3";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -10,120 +10,136 @@ const STATIC_ASSETS = [
   "/logo-dark.png"
 ];
 
-// Install Event - Pre-cache Static Shell
+const PUBLIC_API_PATHS = [
+  /^\/api\/posts\/(?:\d+\/?)?$/,
+  /^\/api\/events\/?$/,
+  /^\/api\/program\/?$/,
+  /^\/api\/changelog\/?$/,
+  /^\/api\/terms-of-service\/?$/,
+  /^\/api\/privacy-policy\/?$/,
+  /^\/api\/site-status\/?$/
+];
+
+const offlineJson = () => new Response(JSON.stringify({ detail: "Offline" }), {
+  status: 503,
+  headers: { "Content-Type": "application/json" }
+});
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("[Service Worker] Pre-caching offline shell");
-      return cache.addAll(STATIC_ASSETS);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activate Event - Clean Up Old Caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            console.log("[Service Worker] Clearing old cache:", cache);
-            return caches.delete(cache);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then((names) => Promise.all(names.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))))
+      .then(() => self.clients.claim())
   );
 });
 
-// Helper: Check if request is an API call
-const isApiRequest = (url) => {
-  return url.includes("/api/") || url.includes("/status");
+const networkFirstPublicApi = async (request) => {
+  try {
+    const response = await fetch(request);
+    if (response.ok) {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    return (await caches.match(request)) || offlineJson();
+  }
 };
 
-// Fetch Event - Caching Strategies
 self.addEventListener("fetch", (event) => {
   const { request } = event;
+  if (request.method !== "GET") return;
+
   const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
 
-  // Skip non-GET requests (POST comments, votes, Turnstile validation)
-  if (request.method !== "GET") {
-    return;
-  }
-
-  // Strategy 1: API requests (Network First, Cache Fallback)
-  if (isApiRequest(request.url)) {
+  if (url.pathname.startsWith("/api/")) {
+    const isPublicCacheable = !request.headers.has("Authorization")
+      && PUBLIC_API_PATHS.some((pattern) => pattern.test(url.pathname));
     event.respondWith(
-      fetch(request)
-        .then((response) => {
-          // Cache successful API responses
-          if (response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(async () => {
-          // If offline, try serving from cache
-          const cached = await caches.match(request);
-          return cached || new Response(JSON.stringify({ detail: 'Offline' }), {
-            status: 503,
-            headers: { 'Content-Type': 'application/json' },
-          });
-        })
+      isPublicCacheable
+        ? networkFirstPublicApi(request)
+        : fetch(request).catch(offlineJson)
     );
     return;
   }
 
-  // Strategy 2: SPA Navigation request (serve index.html if offline/network fails)
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
-        .then((response) => {
-          // Cache page shell for offline
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put("/index.html", responseClone);
-          });
+        .then(async (response) => {
+          if (response.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put("/index.html", response.clone());
+          }
           return response;
         })
-        .catch(async () => {
-          const cached = await caches.match("/index.html");
-          if (cached) return cached;
-          const root = await caches.match("/");
-          if (root) return root;
-          return new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/plain' } });
-        })
+        .catch(async () => (
+          (await caches.match("/index.html"))
+          || (await caches.match("/"))
+          || new Response("Offline", { status: 503, headers: { "Content-Type": "text/plain" } })
+        ))
     );
     return;
   }
 
-  // Strategy 3: Static Assets, Fonts, and Images (Stale-While-Revalidate)
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
-          const responseClone = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        // Network failed — return cached version if available
-        return cachedResponse ? cachedResponse.clone() : new Response('', { status: 503 });
-      });
-
-      return cachedResponse || fetchPromise;
+    caches.match(request).then((cached) => {
+      const fromNetwork = fetch(request)
+        .then(async (response) => {
+          if (response.ok) {
+            const cache = await caches.open(CACHE_NAME);
+            await cache.put(request, response.clone());
+          }
+          return response;
+        })
+        .catch(() => cached || new Response("", { status: 503 }));
+      return cached || fromNetwork;
     })
   );
 });
 
-// Update event listener from message
-self.addEventListener("message", (event) => {
-  if (event.data && event.data.type === "SKIP_WAITING") {
-    self.skipWaiting();
+self.addEventListener("push", (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch {
+    data = { body: event.data ? event.data.text() : "Имате ново известие." };
   }
+
+  event.waitUntil(self.registration.showNotification(data.title || "ПГКНМА Блог", {
+    body: data.body || "Имате ново известие.",
+    icon: data.icon || "/icon-192.png",
+    badge: data.badge || "/icon-192.png",
+    tag: data.tag || "pgknma-notification",
+    data: { url: data.url || "/" }
+  }));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const requestedUrl = new URL(event.notification.data?.url || "/", self.location.origin);
+  const targetUrl = requestedUrl.origin === self.location.origin ? requestedUrl.href : self.location.origin;
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(async (clients) => {
+      for (const client of clients) {
+        if ("navigate" in client) await client.navigate(targetUrl);
+        if ("focus" in client) return client.focus();
+      }
+      return self.clients.openWindow ? self.clients.openWindow(targetUrl) : undefined;
+    })
+  );
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data?.type === "SKIP_WAITING") self.skipWaiting();
 });

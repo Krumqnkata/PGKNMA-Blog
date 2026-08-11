@@ -122,7 +122,7 @@ export function SongVoting() {
     }
 
     return (
-        <section className="container mx-auto px-4 py-12 relative">
+        <section id="approved-songs" className="container relative mx-auto scroll-mt-24 px-4 py-12">
             <div className="absolute right-4 top-4 md:right-8 md:top-8">
                 <Button 
                     onClick={() => void exportToPDF()}

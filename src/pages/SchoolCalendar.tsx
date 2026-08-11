@@ -12,11 +12,13 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
 import { useAuth } from '@/hooks/use-auth';
+import { useSearchParams } from 'react-router-dom';
 
 const SchoolCalendar = () => {
   const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -29,6 +31,17 @@ const SchoolCalendar = () => {
     queryFn: getEvents,
     staleTime: 5 * 60 * 1000,
   });
+
+  const requestedEventId = Number(searchParams.get('event')) || null;
+  useEffect(() => {
+    if (!requestedEventId || !events?.length) return;
+    const requestedEvent = events.find((event) => event.id === requestedEventId);
+    if (!requestedEvent) return;
+    setSelectedDate(parseISO(requestedEvent.start_datetime));
+    requestAnimationFrame(() => {
+      document.getElementById(`event-${requestedEventId}`)?.scrollIntoView({ block: 'center' });
+    });
+  }, [events, requestedEventId]);
 
   // Events for selected date - use date string comparison to avoid timezone issues
   const selectedDateEvents = useMemo(() => {
@@ -143,7 +156,7 @@ const SchoolCalendar = () => {
                   <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">Няма публикувани събития за тази дата. Изберете ден, отбелязан с точка.</p>
                 </div>
               ) : (
-                <div className="space-y-3">{selectedDateEvents.map((event) => <EventCard key={event.id} event={event} isMobile={isMobile} />)}</div>
+                <div className="space-y-3">{selectedDateEvents.map((event) => <EventCard key={event.id} event={event} isMobile={isMobile} initialOpen={event.id === requestedEventId} />)}</div>
               )}
             </CardContent>
           </Card>
