@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { HelpCircle, Menu, X, LogIn, LogOut, User as UserIcon } from "lucide-react";
+import { HelpCircle, Menu, X, LogIn, LogOut, Search, User as UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
 import logoDark from "/logo-dark.png";
@@ -13,6 +13,7 @@ import ThemeSelector from "@/components/ThemeSelector";
 const Header = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const { 
     isAuthenticated, 
     logout,
@@ -27,6 +28,17 @@ const Header = () => {
   const logo = logoDark;
 
   useEffect(() => setMobileMenuOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    const openSearch = (event: KeyboardEvent) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        setSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", openSearch);
+    return () => window.removeEventListener("keydown", openSearch);
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[hsl(var(--header-background)/0.92)] text-[hsl(var(--header-foreground))] shadow-sm backdrop-blur-md">
@@ -54,6 +66,17 @@ const Header = () => {
 
         {/* Right Actions */}
         <div className="flex items-center gap-1 sm:gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            className="h-10 gap-2 rounded-full border border-white/10 px-2.5 text-white/85 hover:bg-white/10 hover:text-white 2xl:px-3"
+            onClick={() => setSearchOpen(true)}
+            aria-label="Отвори глобалното търсене"
+          >
+            <Search className="h-4.5 w-4.5" aria-hidden="true" />
+            <span className="hidden 2xl:inline">Търсене</span>
+            <kbd className="hidden rounded border border-white/15 bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/60 2xl:inline">Ctrl K</kbd>
+          </Button>
           <FloatingFAQ />
           <AccessibilityWidget />
           <Suspense fallback={<div className="h-[40px] w-[40px]" aria-hidden="true" />}>
@@ -91,6 +114,15 @@ const Header = () => {
       {mobileMenuOpen && (
         <div id="mobile-navigation" className="border-b border-border bg-background text-foreground shadow-xl animate-in slide-in-from-top-2 duration-200 lg:hidden">
           <div className="container mx-auto space-y-1 px-4 py-4">
+            <Button
+              type="button"
+              variant="outline"
+              className="mb-3 w-full justify-start gap-3 rounded-xl"
+              onClick={() => { setMobileMenuOpen(false); setSearchOpen(true); }}
+            >
+              <Search className="h-4 w-4" aria-hidden="true" />
+              Търсене в сайта
+            </Button>
             {navLinks.map((link) => (
                 <NavLink
                   key={link.path}
@@ -143,6 +175,7 @@ const Header = () => {
       )}
 
       <Suspense fallback={null}>
+        {searchOpen && <SearchDialog open onOpenChange={setSearchOpen} />}
         {loginDialogOpen && <LoginDialog open onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />}
         {registerOpen && <RegisterDialog open onOpenChange={setRegisterOpen} onOpenLogin={openLoginDialog} />}
       </Suspense>
@@ -155,6 +188,7 @@ export default Header;
 const NotificationBell = lazy(() => import("@/components/NotificationBell"));
 const LoginDialog = lazy(() => import("@/components/LoginDialog"));
 const RegisterDialog = lazy(() => import("@/components/RegisterDialog"));
+const SearchDialog = lazy(() => import("@/components/SearchDialog"));
 
 const navLinks = [
   { name: "Начало", path: "/" },

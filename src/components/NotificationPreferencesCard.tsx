@@ -4,6 +4,7 @@ import { Award, BellRing, Flag, Sparkles, Star, Trophy } from 'lucide-react';
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import BrowserPushSettings from '@/components/BrowserPushSettings';
 import { useToast } from '@/hooks/use-toast';
 import {
   getNotificationPreferences,
@@ -137,6 +138,7 @@ export default function NotificationPreferencesCard() {
             })}
           </div>
         )}
+        <BrowserPushSettings />
       </CardContent>
     </Card>
   );
