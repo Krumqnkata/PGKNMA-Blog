@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Award, BellRing, Flag, Sparkles, Star, Trophy } from 'lucide-react';
+import { Award, BellRing, CalendarDays, Flag, Inbox, MessageCircleReply, Newspaper, ShieldCheck, Sparkles, Star, Timer, Trophy, Vote } from 'lucide-react';
 
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +25,48 @@ const options: Array<{
     title: 'Официални известия',
     description: 'Важни съобщения и промени от училищния блог.',
     icon: BellRing,
+  },
+  {
+    key: 'posts_enabled',
+    title: 'Нови публикации',
+    description: 'Когато в блога бъде публикувана нова новина или статия.',
+    icon: Newspaper,
+  },
+  {
+    key: 'events_enabled',
+    title: 'Събития и напомняния',
+    description: 'Нови събития и напомняне преди началото им.',
+    icon: CalendarDays,
+  },
+  {
+    key: 'polls_enabled',
+    title: 'Нови анкети',
+    description: 'Когато започне нова активна анкета.',
+    icon: Vote,
+  },
+  {
+    key: 'comment_replies_enabled',
+    title: 'Отговори на коментари',
+    description: 'Когато някой отговори на Ваш коментар.',
+    icon: MessageCircleReply,
+  },
+  {
+    key: 'submissions_enabled',
+    title: 'Моите предложения',
+    description: 'Решения за предложени песни и мемета.',
+    icon: Inbox,
+  },
+  {
+    key: 'mission_available_enabled',
+    title: 'Нови мисии',
+    description: 'Нови мисии с ограничен срок за участие.',
+    icon: Timer,
+  },
+  {
+    key: 'security_enabled',
+    title: 'Сигурност на профила',
+    description: 'Нов вход и важни промени по профила.',
+    icon: ShieldCheck,
   },
   {
     key: 'points_enabled',

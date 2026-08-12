@@ -1,14 +1,17 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BellOff, BellRing, Loader2, Smartphone } from 'lucide-react';
+import { BellOff, BellRing, CalendarDays, Loader2, Megaphone, Newspaper, Smartphone, Vote } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { getPushConfig } from '@/lib/api';
+import { getPushConfig, type PushDevicePreferences } from '@/lib/api';
 import {
   currentPushRegistration,
+  defaultPushDevicePreferences,
   isPushSupported,
   subscribeToPush,
   unsubscribeFromPush,
+  updatePushDevicePreferences,
 } from '@/lib/push-notifications';
 
 const statusKey = ['browser-push-subscription'] as const;
@@ -31,6 +34,8 @@ export default function BrowserPushSettings() {
   const hasLocalSubscription = Boolean(subscriptionQuery.data?.subscription);
   const isSubscribed = Boolean(hasLocalSubscription && subscriptionQuery.data?.registered);
   const needsRepair = hasLocalSubscription && !subscriptionQuery.data?.registered;
+  const permissionDenied = supported && Notification.permission === 'denied';
+  const devicePreferences = subscriptionQuery.data?.status?.preferences ?? defaultPushDevicePreferences;
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -54,11 +59,27 @@ export default function BrowserPushSettings() {
     },
   });
 
+  const preferenceMutation = useMutation({
+    mutationFn: updatePushDevicePreferences,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: statusKey });
+      toast({ title: 'Настройките за това устройство са запазени' });
+    },
+    onError: (error: Error) => {
+      toast({ title: 'Настройката не е запазена', description: error.message, variant: 'destructive' });
+    },
+  });
+
+  const updatePreference = (key: keyof PushDevicePreferences, enabled: boolean) => {
+    preferenceMutation.mutate({ ...devicePreferences, [key]: enabled });
+  };
+
   const serverEnabled = Boolean(configQuery.data?.enabled);
   const unavailable = !supported || (configQuery.isSuccess && !serverEnabled);
 
   return (
-    <div className="mt-5 flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/[0.045] p-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="mt-5 rounded-2xl border border-primary/20 bg-primary/[0.045] p-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex min-w-0 items-start gap-3">
         <span className="rounded-xl bg-primary/10 p-2.5 text-primary" aria-hidden="true">
           <Smartphone className="h-5 w-5" />
@@ -67,12 +88,14 @@ export default function BrowserPushSettings() {
           <p className="font-bold text-foreground">Известия от браузъра</p>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
             {isSubscribed
-              ? 'Активни са на това устройство. Видовете известия се управляват от настройките по-горе.'
+              ? 'Активни са на това устройство. Изберете темите за този браузър по-долу.'
               : needsRepair
                 ? 'Браузърът е разрешил известията, но устройството не е свързано с профила. Натиснете за повторно свързване.'
               : unavailable
                 ? 'Функцията не е налична в този браузър или още не е активирана от администратора.'
-                : 'Получавайте важните известия дори когато блогът не е отворен.'}
+                : permissionDenied
+                  ? 'Известията са блокирани от браузъра. Разрешете ги от иконата до адреса на сайта и опитайте отново.'
+                  : 'Получавайте важните известия дори когато блогът не е отворен.'}
           </p>
         </div>
       </div>
@@ -92,6 +115,29 @@ export default function BrowserPushSettings() {
         )}
         {isSubscribed ? 'Изключи за устройството' : needsRepair ? 'Свържи отново' : 'Включи известията'}
       </Button>
+      </div>
+
+      {isSubscribed && (
+        <div className="mt-4 grid gap-2 border-t border-border/60 pt-4 sm:grid-cols-2">
+          {([
+            ['general_enabled', 'Официални съобщения', Megaphone],
+            ['posts_enabled', 'Нови публикации', Newspaper],
+            ['events_enabled', 'Събития и напомняния', CalendarDays],
+            ['polls_enabled', 'Нови анкети', Vote],
+          ] as const).map(([key, label, Icon]) => (
+            <label key={key} className="flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/70 p-3 text-sm font-semibold">
+              <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+              <span className="min-w-0 flex-1">{label}</span>
+              <Switch
+                checked={devicePreferences[key]}
+                disabled={preferenceMutation.isPending}
+                onCheckedChange={(enabled) => updatePreference(key, enabled)}
+                aria-label={`${label} на това устройство`}
+              />
+            </label>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

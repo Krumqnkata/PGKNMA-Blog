@@ -2,7 +2,7 @@ import { Facebook, Instagram, Youtube, Mail, Phone, MapPin, Globe, Code, Sparkle
 import { Link } from "react-router-dom";
 import type React from "react";
 import PageLoadStats from "./PageLoadStats";
-import { Button } from "@/components/ui/button"; // Import Button
+import DevicePushSettingsDialog from "@/components/DevicePushSettingsDialog";
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -74,6 +74,7 @@ const Footer: React.FC = () => {
                 </li>
               ))}
             </ul>
+            <DevicePushSettingsDialog />
           </div>
 
           {/* Resources Column */}

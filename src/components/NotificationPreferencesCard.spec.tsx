@@ -24,6 +24,13 @@ const preferences: NotificationPreferences = {
   badges_enabled: true,
   missions_enabled: true,
   rewards_enabled: true,
+  posts_enabled: true,
+  events_enabled: true,
+  polls_enabled: true,
+  comment_replies_enabled: true,
+  submissions_enabled: true,
+  mission_available_enabled: true,
+  security_enabled: true,
   updated_at: '2026-08-10T12:00:00Z',
 };
 
