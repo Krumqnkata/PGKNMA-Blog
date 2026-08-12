@@ -1,8 +1,8 @@
 import type { ReactNode } from "react";
 import { AlertTriangle, Calendar, Clock, LoaderCircle, MapPin, RefreshCw, Users } from "lucide-react";
-import { format, parseISO } from "date-fns";
 
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { formatSiteDate, formatSiteDateTime, siteDateKey } from "@/lib/date-time";
 
 export interface ApprovedSong {
   id: number;
@@ -131,22 +131,22 @@ export function PollUsersSection({ users }: { users: LeaderboardEntry[] }) {
 }
 
 export function EventsSection({ events }: { events: TVEvent[] }) {
-  const today = format(new Date(), "yyyy-MM-dd");
+  const today = siteDateKey(new Date());
   return (
     <SectionShell title="📅 Предстоящи Събития" titleClassName="text-green-400" info="За да видите всички събития и да участвате, посетете:">
       {events.length ? (
         <div className="grid w-full max-w-7xl grid-cols-1 gap-6 px-2 md:grid-cols-2 lg:grid-cols-3 lg:px-4">
           {events.map((event, index) => {
-            const startDate = parseISO(event.start_datetime);
-            const endDate = event.end_datetime ? parseISO(event.end_datetime) : null;
-            const isToday = format(startDate, "yyyy-MM-dd") === today;
+            const startDate = event.start_datetime;
+            const endDate = event.end_datetime;
+            const isToday = siteDateKey(startDate) === today;
             return (
               <article key={event.id} className={`relative flex flex-col items-start rounded-xl bg-gradient-to-br from-gray-900/90 to-gray-800/90 p-5 text-left shadow-2xl backdrop-blur-sm md:p-6 ${isToday ? "border-4 border-green-400" : "border-2 border-gray-700"} ${index === 0 ? "lg:scale-105 lg:z-10" : ""}`}>
                 <span className={`mb-4 rounded-full px-3 py-1 text-sm font-semibold ${CATEGORY_STYLES[event.category] ?? "bg-gray-500 text-gray-100"}`}>{event.category}</span>
                 <h3 className="mb-4 text-2xl font-bold leading-tight text-white md:text-3xl">{event.title}</h3>
                 <div className="mb-4 w-full space-y-3 text-lg text-gray-300 md:text-xl">
-                  <p className="flex items-center gap-3"><Calendar className="h-6 w-6 shrink-0 text-green-400" /><span>{format(startDate, "dd.MM.yyyy")}{endDate && ` - ${format(endDate, "dd.MM.yyyy")}`}</span></p>
-                  <p className="flex items-center gap-3"><Clock className="h-6 w-6 shrink-0 text-green-400" /><span>{format(startDate, "HH:mm")}{endDate && ` - ${format(endDate, "HH:mm")}`}</span></p>
+                  <p className="flex items-center gap-3"><Calendar className="h-6 w-6 shrink-0 text-green-400" /><span>{formatSiteDate(startDate)}{endDate && ` - ${formatSiteDate(endDate)}`}</span></p>
+                  <p className="flex items-center gap-3"><Clock className="h-6 w-6 shrink-0 text-green-400" /><span>{formatSiteDateTime(startDate, { hour: "2-digit", minute: "2-digit" })}{endDate && ` - ${formatSiteDateTime(endDate, { hour: "2-digit", minute: "2-digit" })}`}</span></p>
                   <p className="flex items-center gap-3"><MapPin className="h-6 w-6 shrink-0 text-green-400" /><span className="break-words">{event.location}</span></p>
                   {event.attendees_text && <p className="flex items-center gap-3"><Users className="h-6 w-6 shrink-0 text-green-400" /><span>{event.attendees_text}</span></p>}
                 </div>

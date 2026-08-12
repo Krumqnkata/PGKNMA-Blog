@@ -13,6 +13,7 @@ import { PollStatistics } from "@/components/PollStatistics";
 import hljs from '@/lib/syntax-highlighter';
 import { BrainCircuit } from 'lucide-react';
 import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
+import { formatSiteDateTime } from '@/lib/date-time';
 
 type AnswerKey = "a" | "b" | "c" | "d";
 
@@ -70,7 +71,7 @@ const WeeklyPollContent = () => {
 
   const unlockLabel = useMemo(() => {
     if (!pollStatus?.unlocks_at) return null;
-    return new Date(pollStatus.unlocks_at).toLocaleString("bg-BG", {
+    return formatSiteDateTime(pollStatus.unlocks_at, {
       day: "numeric",
       month: "long",
       hour: "2-digit",

@@ -8,6 +8,7 @@ import SongMediaDisplay from './SongMediaDisplay';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { formatSiteDate } from '@/lib/date-time';
 
 const MySongSuggestionsList: React.FC = () => {
   const { toast } = useToast();
@@ -75,7 +76,7 @@ const MySongSuggestionsList: React.FC = () => {
               <div className="min-w-0 flex-1">
                 <CardTitle className="break-words [overflow-wrap:anywhere]">{song.title}</CardTitle>
                 <CardDescription>
-                  Предложено на: {new Date(song.submitted_at).toLocaleDateString('bg-BG')} | Гласове: {song.votes}
+                  Предложено на: {formatSiteDate(song.submitted_at)} | Гласове: {song.votes}
                 </CardDescription>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-2">

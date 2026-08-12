@@ -1,10 +1,12 @@
-import { ArrowUpRight, Calendar, Share2, Tag, UserRound } from "lucide-react";
+import { ArrowUpRight, Calendar, Eye, Share2, Tag, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/lib/api";
+import { formatSiteDate } from "@/lib/date-time";
+import { formatMonthlyViews } from "@/lib/post-analytics";
 import { getPostShareUrl } from "@/lib/share";
 import { publicProfilePath } from '@/lib/public-profile';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
@@ -68,7 +70,8 @@ const NewsCard = ({ article, priority = false }: NewsCardProps) => (
       <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-muted-foreground">{article.hook}</p>
       <div className="mt-auto pt-5">
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border/60 pt-4 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" aria-hidden="true" /><time dateTime={article.published_at || article.created_at}>{new Date(article.published_at || article.created_at).toLocaleDateString("bg-BG", { day: "numeric", month: "short", year: "numeric" })}</time></span>
+          <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" aria-hidden="true" /><time dateTime={article.published_at || article.created_at}>{formatSiteDate(article.published_at || article.created_at, { day: "numeric", month: "short", year: "numeric" })}</time></span>
+          <span className="flex items-center gap-1.5"><Eye className="h-3.5 w-3.5" aria-hidden="true" />{formatMonthlyViews(article.views_this_month)}</span>
           {article.author_username && <Link to={publicProfilePath(article.author_username)} className="flex min-w-0 items-center gap-1.5 rounded hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"><UserRound className="h-3.5 w-3.5" aria-hidden="true" /><span className="truncate">{article.author_username}</span><SiteRoleBadge role={article.author_site_role} compact /></Link>}
         </div>
         <Link to={`/post/${article.id}`} className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-primary transition-colors hover:text-primary/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">

@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Clock, Instagram } from "lucide-react";
+import { formatSiteDate, formatSiteDateTime } from "@/lib/date-time";
 
 const BACKGROUND_CHANGE_DURATION = 8_000;
 const LANDSCAPE_IMAGES = Array.from({ length: 50 }, (_, index) => `/Landscape/${index + 1}.jpg`);
-const DAYS_OF_WEEK = ["Неделя", "Понеделник", "Вторник", "Сряда", "Четвъртък", "Петък", "Събота"];
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" {...props}>
@@ -80,20 +80,22 @@ export function TVScreenFooter() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const formattedTime = currentTime.toLocaleTimeString("bg-BG", {
+  const formattedTime = formatSiteDateTime(currentTime, {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
   });
+  const weekday = formatSiteDate(currentTime, { weekday: "long" });
+  const year = formatSiteDate(currentTime, { year: "numeric" });
 
   return (
     <footer className="fixed inset-x-0 bottom-0 z-50 h-14 border-t border-gray-800 bg-gray-900/30 px-3 py-3 text-xs text-gray-400 shadow-lg backdrop-blur-sm md:h-16 md:p-4 md:text-sm">
       <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 md:px-4">
         <div className="flex min-w-0 items-center gap-4">
-          <p className="hidden lg:block">&copy; {currentTime.getFullYear()} ПГКНМА Блог</p>
+          <p className="hidden lg:block">&copy; {year} ПГКНМА Блог</p>
           <div className="flex items-center gap-2 whitespace-nowrap">
             <Clock className="h-4 w-4" />
-            <span>{DAYS_OF_WEEK[currentTime.getDay()]}, {formattedTime}</span>
+            <span>{weekday}, {formattedTime}</span>
           </div>
         </div>
         <div className="flex items-center gap-4 md:gap-6">

@@ -5,6 +5,7 @@ import { ShieldCheck } from "lucide-react";
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
+import { formatSiteDate } from "@/lib/date-time";
 
 const PrivacyPolicy = () => {
   const [policy, setPolicy] = useState<PrivacyPolicyContent | null>(null);
@@ -33,7 +34,7 @@ const PrivacyPolicy = () => {
 
   const formatDate = (dateString: string) => {
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('bg-BG', options);
+    return formatSiteDate(dateString, options);
   };
 
   if (loading) {

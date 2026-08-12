@@ -8,6 +8,7 @@ import { Trash2, Loader2, MessageSquareOff, ArrowUpRightFromSquare } from 'lucid
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { formatSiteDate } from '@/lib/date-time';
 
 const MyCommentsList: React.FC = () => {
   const { toast } = useToast();
@@ -61,7 +62,7 @@ const MyCommentsList: React.FC = () => {
           <CardContent className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0 flex-grow">
               <p className="text-sm text-muted-foreground">
-                Публикуван на: {new Date(comment.created_at).toLocaleDateString('bg-BG')}
+                Публикуван на: {formatSiteDate(comment.created_at)}
               </p>
               <p className="mt-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere]">"{comment.content}"</p>
             </div>

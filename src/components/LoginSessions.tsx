@@ -37,11 +37,12 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatSiteDateTime } from '@/lib/date-time';
 
-const formatDateTime = (value: string) => new Intl.DateTimeFormat('bg-BG', {
+const formatDateTime = (value: string) => formatSiteDateTime(value, {
   dateStyle: 'medium',
   timeStyle: 'short',
-}).format(new Date(value));
+});
 
 const statusLabel = (session: BlogLoginSession) => {
   if (session.is_current) return 'Това устройство';

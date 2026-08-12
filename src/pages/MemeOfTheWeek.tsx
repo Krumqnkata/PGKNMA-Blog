@@ -13,6 +13,7 @@ import { Heart, Images, Laugh, UploadCloud } from 'lucide-react';
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from '@/components/InteriorPage';
 import { Link } from 'react-router-dom';
 import { publicProfilePath } from '@/lib/public-profile';
+import { formatSiteDate } from '@/lib/date-time';
 
 
 const MemeOfTheWeek: React.FC = () => {
@@ -194,7 +195,7 @@ const MemeOfTheWeek: React.FC = () => {
                         </CardContent>
                         <div className="p-5">
                           <CardTitle className="text-lg">{meme.title}</CardTitle>
-                          <CardDescription>Качено от: {meme.user_username ? <Link className="font-medium hover:text-primary hover:underline" to={publicProfilePath(meme.user_username)}>{meme.user_username}</Link> : 'изтрит потребител'} на {new Date(meme.created_at).toLocaleDateString('bg-BG')}</CardDescription>
+                          <CardDescription>Качено от: {meme.user_username ? <Link className="font-medium hover:text-primary hover:underline" to={publicProfilePath(meme.user_username)}>{meme.user_username}</Link> : 'изтрит потребител'} на {formatSiteDate(meme.created_at)}</CardDescription>
                           <div className="flex items-center justify-between mt-4">
                             <div className="flex items-center gap-2 text-muted-foreground">
                                 <Heart className="h-4 w-4 text-rose-500" aria-hidden="true" />

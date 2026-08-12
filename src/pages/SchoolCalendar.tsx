@@ -13,10 +13,11 @@ import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
 import { useAuth } from '@/hooks/use-auth';
 import { useSearchParams } from 'react-router-dom';
+import { siteDateKey, toSiteCalendarDate } from '@/lib/date-time';
 
 const SchoolCalendar = () => {
   const { user } = useAuth();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(() => toSiteCalendarDate(new Date()) ?? new Date());
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
@@ -37,7 +38,7 @@ const SchoolCalendar = () => {
     if (!requestedEventId || !events?.length) return;
     const requestedEvent = events.find((event) => event.id === requestedEventId);
     if (!requestedEvent) return;
-    setSelectedDate(parseISO(requestedEvent.start_datetime));
+    setSelectedDate(toSiteCalendarDate(requestedEvent.start_datetime) ?? undefined);
     requestAnimationFrame(() => {
       document.getElementById(`event-${requestedEventId}`)?.scrollIntoView({ block: 'center' });
     });
@@ -48,7 +49,7 @@ const SchoolCalendar = () => {
     if (!Array.isArray(events) || !selectedDate) return [];
     const selectedDateStr = format(selectedDate, "yyyy-MM-dd");
     return events.filter((event) => {
-      const eventDateStr = format(parseISO(event.start_datetime), "yyyy-MM-dd");
+      const eventDateStr = siteDateKey(event.start_datetime);
       return eventDateStr === selectedDateStr;
     });
   }, [events, selectedDate]);
@@ -58,7 +59,7 @@ const SchoolCalendar = () => {
     if (!Array.isArray(events)) return new Map<string, number>();
     const map = new Map<string, number>();
     events.forEach((event) => {
-      const dateKey = format(parseISO(event.start_datetime), "yyyy-MM-dd");
+      const dateKey = siteDateKey(event.start_datetime);
       map.set(dateKey, (map.get(dateKey) || 0) + 1);
     });
     return map;

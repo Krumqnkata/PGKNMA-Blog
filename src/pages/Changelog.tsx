@@ -8,6 +8,7 @@ import MainLayout from '@/components/MainLayout';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { History } from 'lucide-react';
 import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
+import { formatSiteDateTime } from '@/lib/date-time';
 interface ChangelogEntry {
   content: string;
   updated_at: string;
@@ -20,7 +21,7 @@ const Changelog: React.FC = () => {
   });
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('bg-BG', {
+    return formatSiteDateTime(dateString, {
       year: 'numeric',
       month: 'long',
       day: 'numeric',

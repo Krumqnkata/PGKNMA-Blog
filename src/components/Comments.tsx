@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { Link } from 'react-router-dom';
 import { publicProfilePath } from '@/lib/public-profile';
+import { formatSiteDateTime } from '@/lib/date-time';
 
 interface CommentItemProps {
     comment: CommentType;
@@ -112,7 +113,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
                         ) : <span className="font-semibold">Изтрит потребител</span>}
                         <SiteRoleBadge role={comment.site_role} compact />
                         <span className="text-xs text-muted-foreground">
-                            {new Date(comment.created_at).toLocaleString('bg-BG')}
+                            {formatSiteDateTime(comment.created_at)}
                         </span>
                     </div>
                      <p className="text-sm text-foreground">
