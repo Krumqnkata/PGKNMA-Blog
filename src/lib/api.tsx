@@ -34,6 +34,7 @@ export interface Post {
     content: string;
     created_at: string;
     published_at: string | null;
+    views_this_month: number;
     published: boolean;
     allowed: boolean;
     images: string[];

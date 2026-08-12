@@ -22,6 +22,7 @@ import MarkdownRenderer from '@/components/MarkdownRenderer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
+import { formatSiteDateTime } from '@/lib/date-time';
 
 const STORAGE_KEY_PREFIX = 'read-notifications-v4';
 const ARCHIVE_STORAGE_KEY = 'archived-notifications-v1:public';
@@ -360,7 +361,7 @@ const NotificationBell: React.FC = () => {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('bg-BG', {
+      return formatSiteDateTime(dateString, {
         month: 'short',
         day: 'numeric',
         hour: '2-digit',

@@ -4,8 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import { useQuery } from "@tanstack/react-query"; // Import useQuery
 import { getEvents, Event as EventType } from "@/lib/api"; // Import getEvents and EventType
-import { format, parseISO } from 'date-fns'; // For date formatting
+import { parseISO } from 'date-fns';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
+import { formatSiteDate, formatSiteDateTime } from "@/lib/date-time";
 
 const Events = () => {
   const { data: events, isLoading, isError, error, refetch } = useQuery<EventType[]>({
@@ -89,8 +90,8 @@ const Events = () => {
                   {/* Date Badge */}
                   <div className="flex items-center gap-4">
                     <div className="flex h-16 w-16 flex-shrink-0 flex-col items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 transition-transform group-hover:scale-110 group-hover:rotate-3">
-                      <span className="text-2xl font-black leading-none">{format(parseISO(event.start_datetime), 'dd')}</span>
-                      <span className="text-xs font-bold uppercase tracking-wider opacity-80">{format(parseISO(event.start_datetime), 'MMM')}</span>
+                      <span className="text-2xl font-black leading-none">{formatSiteDate(event.start_datetime, { day: '2-digit' })}</span>
+                      <span className="text-xs font-bold uppercase tracking-wider opacity-80">{formatSiteDate(event.start_datetime, { month: 'short' })}</span>
                     </div>
                     <div className="h-px flex-1 bg-border group-hover:bg-primary/20 transition-colors" />
                   </div>
@@ -105,8 +106,8 @@ const Events = () => {
                            <Clock className="h-4 w-4" />
                         </div>
                         <span>
-                           {format(parseISO(event.start_datetime), 'dd.MM.yyyy HH:mm')}
-                           {event.end_datetime && <span className="block text-xs opacity-60">до {format(parseISO(event.end_datetime), 'dd.MM.yyyy HH:mm')}</span>}
+                           {formatSiteDateTime(event.start_datetime)}
+                           {event.end_datetime && <span className="block text-xs opacity-60">до {formatSiteDateTime(event.end_datetime)}</span>}
                         </span>
                       </div>
                       <div className="flex items-center gap-3">

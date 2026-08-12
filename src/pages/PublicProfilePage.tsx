@@ -47,6 +47,7 @@ import {
 } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { profileBorderStyle, profileThemeStyle, rewardIcon, rewardTitle } from '@/lib/digital-rewards';
+import { formatSiteDate } from '@/lib/date-time';
 
 const iconMap: Record<string, LucideIcon> = {
   award: Award,
@@ -80,9 +81,9 @@ const rewardLabels: Record<PublicDigitalReward['kind'], string> = {
   special_icon: 'Специална икона',
 };
 
-const formatDate = (value: string) => new Intl.DateTimeFormat('bg-BG', {
+const formatDate = (value: string) => formatSiteDate(value, {
   dateStyle: 'medium',
-}).format(new Date(value));
+});
 
 export default function PublicProfilePage() {
   const { username = '' } = useParams<{ username: string }>();

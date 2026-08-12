@@ -3,8 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Calendar, ArrowRight, Loader2 } from "lucide-react";
+import { Calendar, ArrowRight, Eye } from "lucide-react";
 import { getPosts, Post } from "@/lib/api";
+import { formatSiteDate } from "@/lib/date-time";
+import { formatMonthlyViews } from "@/lib/post-analytics";
 
 const NewsGrid = () => {
   const navigate = useNavigate();
@@ -105,10 +107,13 @@ const NewsGrid = () => {
                           </Badge>
                           <span className="flex items-center gap-1 opacity-80 whitespace-nowrap">
                             <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
-                            {new Date(posts[0].published_at || posts[0].created_at).toLocaleDateString('bg-BG', { day: 'numeric', month: 'long', year: 'numeric' })}
-                            <span className="mx-2">•</span>
-                            {getReadTime(posts[0].content, posts[0].hook)} мин. четене
+                            {formatSiteDate(posts[0].published_at || posts[0].created_at, { day: 'numeric', month: 'long', year: 'numeric' })}
                           </span>
+                          <span className="flex items-center gap-1 opacity-80 whitespace-nowrap">
+                            <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
+                            {formatMonthlyViews(posts[0].views_this_month)}
+                          </span>
+                          <span className="opacity-80 whitespace-nowrap">{getReadTime(posts[0].content, posts[0].hook)} мин. четене</span>
                         </div>
                         
                         <h3 className="mb-2 sm:mb-4 text-xl sm:text-4xl lg:text-5xl font-black leading-tight tracking-tighter group-hover:text-primary transition-colors">
@@ -150,11 +155,12 @@ const NewsGrid = () => {
                         <p className="line-clamp-2 text-xs text-muted-foreground mt-1 mb-1">
                           {item.hook}
                         </p>
-                        <div className="mt-1 sm:mt-2 flex items-center gap-2 text-[10px] sm:text-xs font-medium text-muted-foreground">
+                        <div className="mt-1 sm:mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] sm:text-xs font-medium text-muted-foreground">
                           <Calendar className="h-3 w-3" />
-                          <span>{new Date(item.published_at || item.created_at).toLocaleDateString('bg-BG')}</span>
+                          <span>{formatSiteDate(item.published_at || item.created_at)}</span>
                           <span className="mx-1">•</span>
                           {getReadTime(item.content, item.hook)} мин. четене
+                          <span className="flex basis-full items-center gap-1"><Eye className="h-3 w-3" />{formatMonthlyViews(item.views_this_month)}</span>
                         </div>
                       </div>
                       

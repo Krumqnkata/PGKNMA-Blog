@@ -6,7 +6,7 @@ import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2, Newspaper } from "lucide-react";
+import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Eye, Share2, Newspaper } from "lucide-react";
 import { getPost, Post as PostType, recordGamificationActivity } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import { getPostShareUrl } from '@/lib/share';
 import Comments from '@/components/Comments';
@@ -25,6 +25,8 @@ import "yet-another-react-lightbox/plugins/counter.css";
 import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
 import { useAuth } from '@/hooks/use-auth';
 import { publicProfilePath } from '@/lib/public-profile';
+import { formatSiteDate } from '@/lib/date-time';
+import { formatMonthlyViews } from '@/lib/post-analytics';
 
 const getReadTime = (content: string, hook: string) => {
     const wordCount = `${content} ${hook}`.split(/\s+/).filter(Boolean).length;
@@ -201,11 +203,15 @@ const Post = () => {
                                     </Link> : <span>User ID: {post.author}</span>}
                                     <div className="flex items-center gap-1.5">
                                         <Calendar className="h-4 w-4" />
-                                        <span>{new Date(post.published_at || post.created_at).toLocaleDateString('bg-BG')}</span>
+                                        <span>{formatSiteDate(post.published_at || post.created_at)}</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Clock className="h-4 w-4" />
                                         <span>{readTime} мин. четене</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <Eye className="h-4 w-4" />
+                                        <span>{formatMonthlyViews(post.views_this_month)}</span>
                                     </div>
                                     <ShareDropdown url={getPostShareUrl(post.id)} title={post.title}>
                                         <button 
@@ -297,7 +303,7 @@ const Post = () => {
                                                             {decodeURIComponent(doc.file_url.split('/').pop() || '')}
                                                         </span>
                                                         <span className="text-sm text-muted-foreground shrink-0 whitespace-nowrap sm:ml-auto">
-                                                            Качено на: {new Date(doc.uploaded_at).toLocaleDateString('bg-BG')}
+                                                            Качено на: {formatSiteDate(doc.uploaded_at)}
                                                         </span>
                                                     </div>
                                                 </button>

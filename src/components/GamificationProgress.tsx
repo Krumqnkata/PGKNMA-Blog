@@ -57,6 +57,7 @@ import {
 import { cn } from '@/lib/utils';
 import { publicProfilePath } from '@/lib/public-profile';
 import { safeRewardColor } from '@/lib/digital-rewards';
+import { formatSiteDateTime } from '@/lib/date-time';
 import { useAuth } from '@/hooks/use-auth';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -90,10 +91,10 @@ const rarityStyles: Record<GamificationBadgeRarity, string> = {
   seasonal: 'border-amber-500/40 bg-amber-500/[0.07]',
 };
 
-const formatDate = (value: string) => new Intl.DateTimeFormat('bg-BG', {
+const formatDate = (value: string) => formatSiteDateTime(value, {
   dateStyle: 'medium',
   timeStyle: 'short',
-}).format(new Date(value));
+});
 
 const rewardKindLabels: Record<PublicDigitalReward['kind'], string> = {
   avatar_frame: 'Рамка за аватар',

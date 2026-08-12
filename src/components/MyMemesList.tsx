@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { AuthenticatedImage } from '@/components/AuthenticatedImage';
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { formatSiteDate } from '@/lib/date-time';
 
 const MyMemesList: React.FC = () => {
   const { toast } = useToast();
@@ -73,7 +74,7 @@ const MyMemesList: React.FC = () => {
               <div className="min-w-0 flex-1">
                 <CardTitle className="break-words [overflow-wrap:anywhere]">{meme.title}</CardTitle>
                 <CardDescription>
-                  Качено на: {new Date(meme.created_at).toLocaleDateString('bg-BG')} | Гласове: {meme.votes}
+                  Качено на: {formatSiteDate(meme.created_at)} | Гласове: {meme.votes}
                 </CardDescription>
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-2">

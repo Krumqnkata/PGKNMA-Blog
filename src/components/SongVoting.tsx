@@ -10,6 +10,7 @@ import SongMediaDisplay from './SongMediaDisplay';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { Link } from 'react-router-dom';
 import { publicProfilePath } from '@/lib/public-profile';
+import { formatSiteDate } from '@/lib/date-time';
 
 export function SongVoting() {
     const { isAuthenticated } = useAuth();
@@ -67,7 +68,7 @@ export function SongVoting() {
         doc.setFontSize(18);
         doc.text("Predlozheniya za zvunets - PGKNMA", 14, 20);
         doc.setFontSize(10);
-        doc.text(`Generirano na: ${new Date().toLocaleDateString()}`, 14, 28);
+        doc.text(`Generirano na: ${formatSiteDate(new Date())}`, 14, 28);
 
         autoTable(doc, {
             head: [["Pesen", "Predlozhena ot", "Glasove", "Data", "Link"]],
@@ -75,7 +76,7 @@ export function SongVoting() {
                 transliterate(song.title),
                 transliterate(song.user_username || ""),
                 song.votes,
-                new Date(song.submitted_at).toLocaleDateString(),
+                formatSiteDate(song.submitted_at),
                 "Link Pesen"
             ]) : [],
             startY: 35,
@@ -169,7 +170,7 @@ export function SongVoting() {
                                     })()}
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                    Изпратена на: {new Date(song.submitted_at).toLocaleDateString('bg-BG')}
+                                    Изпратена на: {formatSiteDate(song.submitted_at)}
                                 </p>
                             </div>
                             

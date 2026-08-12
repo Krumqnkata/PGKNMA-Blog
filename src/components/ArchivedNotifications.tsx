@@ -10,10 +10,11 @@ import {
   restoreNotification,
   type Notification,
 } from '@/lib/api';
+import { formatSiteDateTime } from '@/lib/date-time';
 
 function formatDate(value: string | null) {
   if (!value) return '';
-  return new Date(value).toLocaleDateString('bg-BG', {
+  return formatSiteDateTime(value, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
