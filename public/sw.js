@@ -1,4 +1,4 @@
-const CACHE_NAME = "pgknma-cache-v3";
+const CACHE_NAME = "pgknma-cache-v4";
 const STATIC_ASSETS = [
   "/",
   "/index.html",
@@ -25,6 +25,19 @@ const offlineJson = () => new Response(JSON.stringify({ detail: "Offline" }), {
   headers: { "Content-Type": "application/json" }
 });
 
+const cacheCompleteResponse = async (request, response) => {
+  const cacheControl = response.headers.get("Cache-Control") || "";
+  if (response.status !== 200 || cacheControl.includes("no-store")) return;
+
+  try {
+    const cache = await caches.open(CACHE_NAME);
+    await cache.put(request, response.clone());
+  } catch (error) {
+    // A cache quota/write error must never replace a valid network response.
+    console.warn("[Service Worker] Response could not be cached:", error);
+  }
+};
+
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -44,10 +57,7 @@ self.addEventListener("activate", (event) => {
 const networkFirstPublicApi = async (request) => {
   try {
     const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(CACHE_NAME);
-      await cache.put(request, response.clone());
-    }
+    await cacheCompleteResponse(request, response);
     return response;
   } catch {
     return (await caches.match(request)) || offlineJson();
@@ -60,6 +70,14 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  // CacheStorage cannot store HTTP 206 responses. Media elements use Range
+  // requests, so let the browser stream them directly from the web server.
+  if (
+    request.headers.has("range")
+    || request.destination === "video"
+    || request.destination === "audio"
+  ) return;
 
   if (url.pathname.startsWith("/api/")) {
     const isPublicCacheable = !request.headers.has("Authorization")
@@ -76,10 +94,7 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then(async (response) => {
-          if (response.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            await cache.put("/index.html", response.clone());
-          }
+          await cacheCompleteResponse("/index.html", response);
           return response;
         })
         .catch(async () => (
@@ -95,10 +110,7 @@ self.addEventListener("fetch", (event) => {
     caches.match(request).then((cached) => {
       const fromNetwork = fetch(request)
         .then(async (response) => {
-          if (response.ok) {
-            const cache = await caches.open(CACHE_NAME);
-            await cache.put(request, response.clone());
-          }
+          await cacheCompleteResponse(request, response);
           return response;
         })
         .catch(() => cached || new Response("", { status: 503 }));
