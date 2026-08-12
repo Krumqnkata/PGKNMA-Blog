@@ -6,7 +6,7 @@ import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2 } from "lucide-react";
+import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Share2, Newspaper } from "lucide-react";
 import { getPost, Post as PostType, recordGamificationActivity } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import { getPostShareUrl } from '@/lib/share';
 import Comments from '@/components/Comments';
@@ -19,7 +19,7 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import Counter from "yet-another-react-lightbox/plugins/counter";
-import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 import "yet-another-react-lightbox/plugins/counter.css";
 import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
@@ -311,8 +311,18 @@ const Post = () => {
 
                         </article>
                     ) : (
-                        <div className="text-center">
-                            <p className="text-lg text-muted-foreground">Публикацията не е намерена.</p>
+                        <div className="mx-auto max-w-2xl text-center">
+                            <QueryEmptyState
+                                icon={Newspaper}
+                                title="Публикацията вече не е налична"
+                                description="Възможно е да е била изтрита, скрита или все още да не е публикувана."
+                            />
+                            <Link
+                                to="/news"
+                                className="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-5 font-semibold text-primary-foreground shadow-sm transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            >
+                                Виж актуалните новини
+                            </Link>
                         </div>
                     )}
             </InteriorSection>

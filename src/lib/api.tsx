@@ -536,6 +536,31 @@ export interface Notification {
 
 export type NotificationChannel = 'official' | 'updates' | 'gamification';
 
+export interface NotificationTarget {
+    available: boolean;
+    action_url: string;
+    detail: string;
+}
+
+export async function getNotificationTarget(id: string): Promise<NotificationTarget> {
+    const response = await apiRequest(`/api/notifications/${id}/target/`, { method: 'GET' });
+    if (response.status === 404 || response.status === 410) {
+        const data = await response.json().catch(() => ({})) as Partial<NotificationTarget>;
+        return {
+            available: false,
+            action_url: '',
+            detail: data.detail || 'Това съдържание вече не е налично.',
+        };
+    }
+    if (!response.ok) {
+        throw await createApiResponseError(
+            response,
+            'Не може да се провери съдържанието на известието.',
+        );
+    }
+    return response.json();
+}
+
 export async function getNotifications(options?: { archived?: boolean }): Promise<Notification[]> {
     const query = options?.archived ? '?archived=true' : '';
     const response = await apiRequest(`/api/notifications/${query}`, { method: 'GET' });

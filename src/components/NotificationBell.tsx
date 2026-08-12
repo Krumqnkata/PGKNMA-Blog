@@ -355,13 +355,7 @@ const NotificationBell: React.FC = () => {
     if (!notification.action_url) return;
 
     setIsOpen(false);
-    if (notification.action_url.startsWith('/') && !notification.action_url.startsWith('//')) {
-      navigate(notification.action_url);
-      return;
-    }
-    if (/^https:\/\//i.test(notification.action_url)) {
-      window.location.assign(notification.action_url);
-    }
+    navigate(`/notification/${notification.id}`);
   };
 
   const formatDate = (dateString: string) => {
