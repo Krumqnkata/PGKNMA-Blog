@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import type React from "react";
 import PageLoadStats from "./PageLoadStats";
 import DevicePushSettingsDialog from "@/components/DevicePushSettingsDialog";
-import { apiUrl } from "@/lib/api_auth";
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -35,7 +34,6 @@ const Footer: React.FC = () => {
     { label: "Политика за поверителност", href: "/privacy-policy" },
     { label: "Условия за ползване", href: "/terms-of-service" },
     { label: "История на промени", href: "/changelog" },
-    { label: "RSS канал за новини", href: apiUrl("/api/rss/news.xml") },
   ];
   
   const socialLinks = [
