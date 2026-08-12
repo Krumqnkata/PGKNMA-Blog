@@ -5,6 +5,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { AuthContext } from '@/contexts/auth-context';
 import type { AuthContextValue } from '@/contexts/auth-context';
+import { detachCurrentPushSubscription, syncCurrentPushSubscription } from '@/lib/push-notifications';
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const { toast } = useToast();
@@ -54,6 +55,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     useEffect(() => {
+        if (loading) return;
+        const synchronize = accessToken
+            ? syncCurrentPushSubscription
+            : detachCurrentPushSubscription;
+        void synchronize().catch((error) => {
+            console.warn('Push устройството не можа да бъде синхронизирано с профила:', error);
+        });
+    }, [accessToken, loading]);
+
+    useEffect(() => {
         const handleSessionEnded = (event: Event) => {
             const detail = (event as CustomEvent<{ message?: string }>).detail;
             setUser(null);
@@ -61,6 +72,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             localStorage.removeItem('accessToken');
             localStorage.removeItem('refreshToken');
             localStorage.removeItem('user');
+            void detachCurrentPushSubscription().catch((error) => {
+                console.warn('Push устройството не можа да бъде откачено от изтеклата сесия:', error);
+            });
             queryClient.removeQueries({ queryKey: ['notifications'] });
             setLoginDialogOpen(true);
             toast({
@@ -122,6 +136,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     const logout = useCallback(async () => {
+        try {
+            await detachCurrentPushSubscription();
+        } catch (error) {
+            console.warn('Push устройството не можа да бъде откачено от профила:', error);
+        }
         try {
             await logoutCurrentBlogSession();
         } catch (error) {

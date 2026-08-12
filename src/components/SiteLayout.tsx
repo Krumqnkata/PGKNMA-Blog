@@ -5,6 +5,7 @@ import CookieConsent from "@/components/CookieConsent";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
+import PushOptInPrompt from "@/components/PushOptInPrompt";
 
 const SiteLayout = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const SiteLayout = () => {
       <Footer />
       <BackToTop />
       <CookieConsent />
+      <PushOptInPrompt />
     </div>
   );
 };

@@ -68,6 +68,17 @@ export class ApiResponseError extends Error {
     }
 }
 
+const BLOG_DEVICE_ID_KEY = 'pgknma-blog-device-id-v1';
+
+const getOrCreateBlogDeviceId = () => {
+    const existing = localStorage.getItem(BLOG_DEVICE_ID_KEY);
+    if (existing) return existing;
+    const generated = window.crypto?.randomUUID?.()
+        ?? `${Date.now()}-${Math.random().toString(36).slice(2)}-${Math.random().toString(36).slice(2)}`;
+    localStorage.setItem(BLOG_DEVICE_ID_KEY, generated);
+    return generated;
+};
+
 const errorValueToText = (value: unknown): string[] => {
     if (typeof value === "string") return [value];
     if (Array.isArray(value)) return value.flatMap(errorValueToText);
@@ -296,6 +307,7 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Blog-Device-ID': getOrCreateBlogDeviceId(),
             },
             body: JSON.stringify(credentials),
         });
@@ -328,6 +340,7 @@ export async function loginWithGoogle(credential: string): Promise<GoogleLoginRe
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Blog-Device-ID': getOrCreateBlogDeviceId(),
             },
             body: JSON.stringify({ credential }),
         });
@@ -558,6 +571,13 @@ export interface NotificationPreferences {
     badges_enabled: boolean;
     missions_enabled: boolean;
     rewards_enabled: boolean;
+    posts_enabled: boolean;
+    events_enabled: boolean;
+    polls_enabled: boolean;
+    comment_replies_enabled: boolean;
+    submissions_enabled: boolean;
+    mission_available_enabled: boolean;
+    security_enabled: boolean;
     updated_at: string;
 }
 
@@ -591,6 +611,25 @@ export interface PushSubscriptionPayload {
     endpoint: string;
     p256dh: string;
     auth: string;
+    management_token?: string;
+    general_enabled?: boolean;
+    posts_enabled?: boolean;
+    events_enabled?: boolean;
+    polls_enabled?: boolean;
+}
+
+export interface PushDevicePreferences {
+    general_enabled: boolean;
+    posts_enabled: boolean;
+    events_enabled: boolean;
+    polls_enabled: boolean;
+}
+
+export interface PushSubscriptionStatus {
+    subscribed: boolean;
+    linked_to_account?: boolean;
+    management_token?: string;
+    preferences?: PushDevicePreferences;
 }
 
 export async function getPushConfig(): Promise<PushConfig> {
@@ -601,7 +640,7 @@ export async function getPushConfig(): Promise<PushConfig> {
     return response.json();
 }
 
-export async function savePushSubscription(values: PushSubscriptionPayload): Promise<void> {
+export async function savePushSubscription(values: PushSubscriptionPayload): Promise<PushSubscriptionStatus> {
     const response = await apiRequest('/api/push/subscription/', {
         method: 'POST',
         body: JSON.stringify(values),
@@ -609,12 +648,19 @@ export async function savePushSubscription(values: PushSubscriptionPayload): Pro
     if (!response.ok) {
         throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде запазен.'));
     }
+    return response.json();
 }
 
-export async function getPushSubscriptionStatus(endpoint: string): Promise<{ subscribed: boolean }> {
+export async function getPushSubscriptionStatus(
+    endpoint: string,
+    managementToken?: string,
+): Promise<PushSubscriptionStatus> {
     const response = await apiRequest(
         `/api/push/subscription/?endpoint=${encodeURIComponent(endpoint)}`,
-        { method: 'GET' },
+        {
+            method: 'GET',
+            headers: managementToken ? { 'X-Push-Management-Token': managementToken } : undefined,
+        },
     );
     if (!response.ok) {
         throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде потвърден.'));
@@ -622,14 +668,30 @@ export async function getPushSubscriptionStatus(endpoint: string): Promise<{ sub
     return response.json();
 }
 
-export async function deletePushSubscription(endpoint: string): Promise<void> {
+export async function deletePushSubscription(endpoint: string, managementToken?: string): Promise<void> {
     const response = await apiRequest('/api/push/subscription/', {
         method: 'DELETE',
+        headers: managementToken ? { 'X-Push-Management-Token': managementToken } : undefined,
         body: JSON.stringify({ endpoint }),
     });
     if (!response.ok) {
         throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде премахнат.'));
     }
+}
+
+export async function detachPushSubscription(
+    endpoint: string,
+    managementToken?: string,
+): Promise<PushSubscriptionStatus> {
+    const response = await apiRequest('/api/push/subscription/', {
+        method: 'POST',
+        headers: managementToken ? { 'X-Push-Management-Token': managementToken } : undefined,
+        body: JSON.stringify({ endpoint, detach: true }),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Push абонаментът не може да бъде откачен от профила.'));
+    }
+    return response.json();
 }
 
 export type GlobalSearchResultKind = 'post' | 'event' | 'song' | 'meme';
