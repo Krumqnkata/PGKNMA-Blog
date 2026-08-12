@@ -48,6 +48,7 @@ const TVScreen = lazy(() => import("@/pages/TVScreen"));
 const FAQ = lazy(() => import("@/pages/FAQ"));
 const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
 const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
+const NotificationTarget = lazy(() => import("@/pages/NotificationTarget"));
 
 const AppLoadingScreen = () => (
   <div id="main-content" tabIndex={-1} className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-foreground outline-none" role="status" aria-live="polite">
@@ -110,6 +111,7 @@ const AppContent = () => {
                   <Route path="/" element={<Index />} />
                   <Route path="/news" element={<News />} />
                   <Route path="/post/:id" element={<Post />} />
+                  <Route path="/notification/:id" element={<NotificationTarget />} />
                   <Route path="/events" element={<SchoolCalendar />} />
                   <Route path="/program" element={<Program />} />
                   <Route path="/bell-suggest" element={settingsData?.enable_bell_suggestions ? <BellSuggest /> : <FeatureDisabledPage />} />

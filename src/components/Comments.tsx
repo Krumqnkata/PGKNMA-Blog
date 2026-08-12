@@ -22,12 +22,27 @@ interface CommentItemProps {
     openLoginDialog: () => void;
 }
 
+const requestedCommentId = () => {
+    if (typeof window === 'undefined') return null;
+    const match = window.location.hash.match(/^#comment-(\d+)$/);
+    return match ? Number(match[1]) : null;
+};
+
+const containsComment = (comment: CommentType, targetId: number | null): boolean => (
+    targetId !== null && (
+        comment.id === targetId
+        || Boolean(comment.replies?.some((reply) => containsComment(reply, targetId)))
+    )
+);
+
 const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthenticated, currentUser, openLoginDialog }: CommentItemProps) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [submittingReply, setSubmittingReply] = useState(false);
-    const [showReplies, setShowReplies] = useState(false);
+    const targetCommentId = requestedCommentId();
+    const [showReplies, setShowReplies] = useState(() => containsComment(comment, targetCommentId));
     const replyFormRef = useRef<HTMLTextAreaElement>(null);
+    const commentRef = useRef<HTMLDivElement>(null);
 
     const handleReplySubmit = async () => {
         if (!replyContent.trim()) {
@@ -62,10 +77,25 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
         }
     }, [showReplyForm]);
 
+    useEffect(() => {
+        if (containsComment(comment, targetCommentId)) setShowReplies(true);
+        if (comment.id !== targetCommentId || !commentRef.current) return;
+        const frame = window.requestAnimationFrame(() => {
+            commentRef.current?.scrollIntoView({ block: 'center' });
+            commentRef.current?.focus({ preventScroll: true });
+        });
+        return () => window.cancelAnimationFrame(frame);
+    }, [comment, targetCommentId]);
+
     const hasReplies = comment.replies && comment.replies.length > 0;
 
     return (
-        <div className={`py-4 border-b last:border-b-0 ${level > 0 ? 'pl-12 relative' : ''}`}>
+        <div
+            id={`comment-${comment.id}`}
+            ref={commentRef}
+            tabIndex={comment.id === targetCommentId ? -1 : undefined}
+            className={`scroll-mt-24 rounded-xl py-4 border-b last:border-b-0 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring ${level > 0 ? 'pl-12 relative' : ''}`}
+        >
              {level > 0 && (
                 <CornerDownRight className="absolute left-4 top-7 h-5 w-5 text-gray-400" />
             )}
