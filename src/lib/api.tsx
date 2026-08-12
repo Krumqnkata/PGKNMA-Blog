@@ -530,10 +530,13 @@ export interface Notification {
   is_gamification: boolean;
   is_read: boolean;
   read_at: string | null;
+  is_archived: boolean;
+  archived_at: string | null;
 }
 
-export async function getNotifications(): Promise<Notification[]> {
-    const response = await apiRequest(`/api/notifications/`, { method: 'GET' });
+export async function getNotifications(options?: { archived?: boolean }): Promise<Notification[]> {
+    const query = options?.archived ? '?archived=true' : '';
+    const response = await apiRequest(`/api/notifications/${query}`, { method: 'GET' });
 
     if (!response.ok) {
         throw new Error(await getApiErrorMessage(response, 'Не може да се заредят известията.'));
@@ -541,6 +544,39 @@ export async function getNotifications(): Promise<Notification[]> {
 
     const data = await response.json();
     return normalizeArray<Notification>(data);
+}
+
+export async function archiveNotification(
+    id: number,
+): Promise<{ id: number; is_archived: boolean; archived_at: string }> {
+    const response = await apiRequest(`/api/notifications/${id}/archive/`, { method: 'POST' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Известието не може да бъде архивирано.'));
+    }
+    return response.json();
+}
+
+export async function restoreNotification(
+    id: number,
+): Promise<{ id: number; is_archived: boolean; archived_at: null }> {
+    const response = await apiRequest(`/api/notifications/${id}/archive/`, { method: 'DELETE' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Известието не може да бъде възстановено.'));
+    }
+    return response.json();
+}
+
+export async function archiveReadNotifications(
+    channel?: 'general' | 'gamification',
+): Promise<{ archived: number }> {
+    const response = await apiRequest('/api/notifications/archive-read/', {
+        method: 'POST',
+        body: JSON.stringify(channel ? { channel } : {}),
+    });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Прочетените известия не могат да бъдат архивирани.'));
+    }
+    return response.json();
 }
 
 export async function markNotificationRead(id: number): Promise<{ id: number; read_at: string }> {

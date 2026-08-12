@@ -9,12 +9,16 @@ const apiMocks = vi.hoisted(() => ({
   getNotifications: vi.fn(),
   markNotificationRead: vi.fn(),
   markAllNotificationsRead: vi.fn(),
+  archiveNotification: vi.fn(),
+  archiveReadNotifications: vi.fn(),
 }));
 
 vi.mock('@/lib/api', () => ({
   getNotifications: apiMocks.getNotifications,
   markNotificationRead: apiMocks.markNotificationRead,
   markAllNotificationsRead: apiMocks.markAllNotificationsRead,
+  archiveNotification: apiMocks.archiveNotification,
+  archiveReadNotifications: apiMocks.archiveReadNotifications,
 }));
 
 vi.mock('@/hooks/use-auth', () => ({
@@ -39,6 +43,8 @@ describe('NotificationBell', () => {
         is_gamification: true,
         is_read: false,
         read_at: null,
+        is_archived: false,
+        archived_at: null,
       },
     ]);
     apiMocks.markNotificationRead.mockResolvedValue({
@@ -46,6 +52,12 @@ describe('NotificationBell', () => {
       read_at: '2026-08-10T12:01:00Z',
     });
     apiMocks.markAllNotificationsRead.mockResolvedValue({ marked_read: 1 });
+    apiMocks.archiveNotification.mockResolvedValue({
+      id: 12,
+      is_archived: true,
+      archived_at: '2026-08-10T12:02:00Z',
+    });
+    apiMocks.archiveReadNotifications.mockResolvedValue({ archived: 1 });
   });
 
   it('uses the server read endpoint and opens the notification action', async () => {
@@ -60,6 +72,20 @@ describe('NotificationBell', () => {
     await waitFor(() => {
       expect(apiMocks.markNotificationRead).toHaveBeenCalled();
       expect(apiMocks.markNotificationRead.mock.calls[0][0]).toBe(12);
+    });
+  });
+
+  it('archives a notification from the bell', async () => {
+    const user = userEvent.setup();
+    renderWithProviders(<NotificationBell />);
+
+    await user.click(screen.getByRole('button', { name: 'Известия' }));
+    await user.click(screen.getByRole('tab', { name: /Постижения/ }));
+    await user.click(await screen.findByRole('button', { name: 'Архивирай известието' }));
+
+    await waitFor(() => {
+      expect(apiMocks.archiveNotification).toHaveBeenCalled();
+      expect(apiMocks.archiveNotification.mock.calls[0][0]).toBe(12);
     });
   });
 });

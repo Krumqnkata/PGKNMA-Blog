@@ -8,9 +8,10 @@ import MyMemesList from '@/components/MyMemesList';
 import RulesContent from '@/components/RulesContent'; // Import the new component
 import LoginSessions from '@/components/LoginSessions';
 import GamificationProgress from '@/components/GamificationProgress';
+import ArchivedNotifications from '@/components/ArchivedNotifications';
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { User, Music, MessageSquare, Image as ImageIcon, Shield, History, Trophy } from 'lucide-react'; // Import Shield icon
+import { Archive, User, Music, MessageSquare, Image as ImageIcon, Shield, History, Trophy } from 'lucide-react'; // Import Shield icon
 import { useLocation } from 'react-router-dom'; // Import useLocation
 import UserAvatar from '@/components/UserAvatar';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
@@ -39,6 +40,7 @@ const MyProfilePage: React.FC = () => {
     { value: 'memes', label: 'Моите мемета', Icon: ImageIcon },
     { value: 'comments', label: 'Моите коментари', Icon: MessageSquare },
     { value: 'sessions', label: 'Сесии', Icon: History },
+    { value: 'notifications', label: 'Архив известия', Icon: Archive },
     { value: 'rules', label: 'Правила', Icon: Shield }, // Add the new tab
   ];
 
@@ -82,7 +84,7 @@ const MyProfilePage: React.FC = () => {
               </SelectContent>
             </Select>
           ) : (
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm lg:grid-cols-4 xl:grid-cols-7">
+            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm lg:grid-cols-4 xl:grid-cols-8">
               {tabs.map(tab => (
                 <TabsTrigger key={tab.value} value={tab.value} className="min-h-12 whitespace-normal px-2 text-center leading-tight">
                   <tab.Icon className="mr-1.5 h-4 w-4 shrink-0" />
@@ -100,6 +102,7 @@ const MyProfilePage: React.FC = () => {
               {tab.value === 'memes' && <MyMemesList />}
               {tab.value === 'comments' && <MyCommentsList />}
               {tab.value === 'sessions' && <LoginSessions />}
+              {tab.value === 'notifications' && <ArchivedNotifications />}
               {tab.value === 'rules' && <RulesContent />} 
             </TabsContent>
           ))}

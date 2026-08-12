@@ -2,12 +2,14 @@ import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import {
+  archiveNotification,
+  archiveReadNotifications,
   getNotifications,
   markAllNotificationsRead,
   markNotificationRead,
   Notification,
 } from '@/lib/api';
-import { Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check, ChevronRight } from 'lucide-react';
+import { Archive, Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -21,6 +23,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
 
 const STORAGE_KEY_PREFIX = 'read-notifications-v4';
+const ARCHIVE_STORAGE_KEY = 'archived-notifications-v1:public';
 
 // Малка бърза hash функция (djb2), за да не пазим целия html_text
 // в localStorage - само "отпечатък" от него. По-леко, по-бързо сравнение.
@@ -44,6 +47,17 @@ const readMapFromStorage = (storageKey: string): ReadMap => {
   }
 };
 
+type ArchiveMap = Record<string, number>;
+
+const archiveMapFromStorage = (): ArchiveMap => {
+  try {
+    const saved = localStorage.getItem(ARCHIVE_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+};
+
 const NotificationBell: React.FC = () => {
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -55,7 +69,7 @@ const NotificationBell: React.FC = () => {
   );
   const { data: notifications, isLoading, error, refetch } = useQuery<Notification[], Error>({
     queryKey: notificationQueryKey,
-    queryFn: getNotifications,
+    queryFn: () => getNotifications(),
     enabled: !authLoading,
     refetchInterval: 5 * 60 * 1000,
     retry: 2,
@@ -81,9 +95,11 @@ const NotificationBell: React.FC = () => {
   }, [isOpen]);
 
   const [readMap, setReadMap] = useState<ReadMap>({});
+  const [archiveMap, setArchiveMap] = useState<ArchiveMap>({});
 
   useEffect(() => {
     setReadMap(readMapFromStorage(storageKey));
+    if (!isAuthenticated) setArchiveMap(archiveMapFromStorage());
     if (!isAuthenticated) setChannel('general');
   }, [isAuthenticated, storageKey]);
 
@@ -96,6 +112,16 @@ const NotificationBell: React.FC = () => {
     }
   }, [storageKey]);
 
+  const persistArchiveMap = useCallback((map: ArchiveMap) => {
+    setArchiveMap(map);
+    try {
+      localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(map));
+    } catch {
+      // Архивът за анонимни посетители е удобство; при недостъпно
+      // localStorage известията просто ще се покажат отново.
+    }
+  }, []);
+
   // Синхронизация между отворени табове/прозорци: ако известие се
   // маркира като прочетено в един таб, останалите да се обновят веднага.
   useEffect(() => {
@@ -103,15 +129,22 @@ const NotificationBell: React.FC = () => {
       if (e.key === storageKey) {
         setReadMap(readMapFromStorage(storageKey));
       }
+      if (e.key === ARCHIVE_STORAGE_KEY && !isAuthenticated) {
+        setArchiveMap(archiveMapFromStorage());
+      }
     };
     window.addEventListener('storage', onStorage);
     return () => window.removeEventListener('storage', onStorage);
-  }, [storageKey]);
+  }, [isAuthenticated, storageKey]);
 
   const visibleNotifications = useMemo(() => {
     const notifArray = Array.isArray(notifications) ? notifications : [];
-    return notifArray.filter(n => n.enabled && (isAuthenticated || !n.is_gamification));
-  }, [isAuthenticated, notifications]);
+    return notifArray.filter(n => (
+      n.enabled
+      && !n.is_archived
+      && (isAuthenticated || (!n.is_gamification && !archiveMap[n.id]))
+    ));
+  }, [archiveMap, isAuthenticated, notifications]);
 
   const generalNotifications = useMemo(
     () => visibleNotifications.filter((notification) => !notification.is_gamification),
@@ -175,7 +208,27 @@ const NotificationBell: React.FC = () => {
       }
       return prev;
     });
-  }, [notifications, storageKey]);
+
+    if (!isAuthenticated) {
+      setArchiveMap((previous) => {
+        let entries = Object.entries(previous).filter(([id]) => existingIds.has(id));
+        if (entries.length > MAX_STORED_ENTRIES) {
+          entries = entries
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, MAX_STORED_ENTRIES);
+        }
+        if (entries.length === Object.keys(previous).length) return previous;
+
+        const pruned = Object.fromEntries(entries);
+        try {
+          localStorage.setItem(ARCHIVE_STORAGE_KEY, JSON.stringify(pruned));
+        } catch {
+          // ignore
+        }
+        return pruned;
+      });
+    }
+  }, [isAuthenticated, notifications, storageKey]);
 
   const markCachedNotificationsRead = useCallback((ids: Set<number>) => {
     queryClient.setQueryData<Notification[]>(notificationQueryKey, (current = []) => (
@@ -199,6 +252,33 @@ const NotificationBell: React.FC = () => {
       new Set(enabledNotifications.map((notification) => notification.id)),
     ),
     onError: () => void queryClient.invalidateQueries({ queryKey: notificationQueryKey }),
+  });
+
+  const archiveOneMutation = useMutation({
+    mutationFn: archiveNotification,
+    onMutate: (id) => {
+      queryClient.setQueryData<Notification[]>(notificationQueryKey, (current = []) => (
+        current.filter((notification) => notification.id !== id)
+      ));
+    },
+    onError: () => void queryClient.invalidateQueries({ queryKey: notificationQueryKey }),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ['notifications'] }),
+  });
+
+  const archiveReadMutation = useMutation({
+    mutationFn: archiveReadNotifications,
+    onMutate: () => {
+      const readIds = new Set(
+        enabledNotifications
+          .filter((notification) => !isNotificationUnread(notification))
+          .map((notification) => notification.id),
+      );
+      queryClient.setQueryData<Notification[]>(notificationQueryKey, (current = []) => (
+        current.filter((notification) => !readIds.has(notification.id))
+      ));
+    },
+    onError: () => void queryClient.invalidateQueries({ queryKey: notificationQueryKey }),
+    onSettled: () => void queryClient.invalidateQueries({ queryKey: ['notifications'] }),
   });
 
   // Маркиране на едно известие като прочетено
@@ -227,6 +307,33 @@ const NotificationBell: React.FC = () => {
       newMap[n.id] = { hash: hashText(n.html_text), readAt: now };
     });
     persistReadMap(newMap);
+  };
+
+  const handleArchiveOne = (notification: Notification, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (isAuthenticated) {
+      archiveOneMutation.mutate(notification.id);
+      return;
+    }
+    persistArchiveMap({ ...archiveMap, [notification.id]: Date.now() });
+  };
+
+  const readNotifications = enabledNotifications.filter(
+    (notification) => !isNotificationUnread(notification),
+  );
+
+  const handleArchiveRead = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (isAuthenticated) {
+      archiveReadMutation.mutate(channel);
+      return;
+    }
+    const archivedAt = Date.now();
+    const nextArchiveMap = { ...archiveMap };
+    readNotifications.forEach((notification) => {
+      nextArchiveMap[notification.id] = archivedAt;
+    });
+    persistArchiveMap(nextArchiveMap);
   };
 
   const openNotificationAction = (notification: Notification) => {
@@ -309,18 +416,33 @@ const NotificationBell: React.FC = () => {
                 </span>
               )}
             </div>
-            {activeUnreadCount > 0 && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-7 px-2 text-xs text-muted-foreground hover:text-primary gap-1 transition-colors rounded-md"
-                onClick={handleMarkAllAsRead}
-                disabled={markAllMutation.isPending}
-              >
-                <CheckCheck className="h-3.5 w-3.5" />
-                <span>Прочети всички</span>
-              </Button>
-            )}
+            <div className="flex items-center gap-1">
+              {readNotifications.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-primary"
+                  onClick={handleArchiveRead}
+                  disabled={archiveReadMutation.isPending}
+                  aria-label="Архивирай прочетените"
+                  title="Архивирай прочетените"
+                >
+                  <Archive className="h-3.5 w-3.5" />
+                </Button>
+              )}
+              {activeUnreadCount > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 px-2 text-xs text-muted-foreground hover:text-primary gap-1 transition-colors rounded-md"
+                  onClick={handleMarkAllAsRead}
+                  disabled={markAllMutation.isPending}
+                >
+                  <CheckCheck className="h-3.5 w-3.5" />
+                  <span>Прочети всички</span>
+                </Button>
+              )}
+            </div>
           </div>
 
           {isAuthenticated && (
@@ -398,21 +520,35 @@ const NotificationBell: React.FC = () => {
                           </p>
                         )}
                       </div>
-                      {isUnread && !notification.action_url && (
+                      <div className="mt-0.5 flex shrink-0 flex-col items-center gap-1">
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleMarkOneAsRead(notification);
-                          }}
-                          title="Маркирай като прочетено"
-                          className="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full text-muted-foreground/60 hover:text-primary hover:bg-primary/10 transition-colors self-start mt-0.5"
+                          type="button"
+                          onClick={(event) => handleArchiveOne(notification, event)}
+                          title="Архивирай известието"
+                          aria-label="Архивирай известието"
+                          disabled={archiveOneMutation.isPending}
+                          className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:bg-primary/10 hover:text-primary disabled:opacity-50"
                         >
-                          <Check className="h-3.5 w-3.5" />
+                          <Archive className="h-3.5 w-3.5" />
                         </button>
-                      )}
-                      {notification.action_url && (
-                        <ChevronRight className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" aria-hidden="true" />
-                      )}
+                        {isUnread && !notification.action_url && (
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleMarkOneAsRead(notification);
+                            }}
+                            title="Маркирай като прочетено"
+                            aria-label="Маркирай като прочетено"
+                            className="flex h-7 w-7 items-center justify-center rounded-full text-muted-foreground/60 transition-colors hover:bg-primary/10 hover:text-primary"
+                          >
+                            <Check className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        {notification.action_url && (
+                          <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                        )}
+                      </div>
                     </div>
                   );
                 })}
