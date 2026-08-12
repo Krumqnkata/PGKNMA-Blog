@@ -55,10 +55,10 @@
 </script>
 
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
+    <script type="module">
+      if (import.meta.env.PROD && 'serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
+          navigator.serviceWorker.register('/sw.js?v=4', { updateViaCache: 'none' })
             .then((reg) => {
               console.log('[Service Worker] Registered successfully:', reg.scope);
             })
@@ -66,6 +66,30 @@
               console.error('[Service Worker] Registration failed:', err);
             });
         });
+      } else if (import.meta.env.DEV && 'serviceWorker' in navigator) {
+        // A production worker left on localhost can cache Vite assets and
+        // intercept media requests. Remove it automatically in development.
+        const unregisterWorkers = navigator.serviceWorker.getRegistrations()
+          .then((registrations) => Promise.all(registrations.map((registration) => registration.unregister())));
+        const clearSiteCaches = 'caches' in window
+          ? caches.keys().then((names) => Promise.all(
+              names
+                .filter((name) => name.startsWith('pgknma-cache-'))
+                .map((name) => caches.delete(name)),
+            ))
+          : Promise.resolve([]);
+
+        Promise.all([unregisterWorkers, clearSiteCaches])
+          .then(() => {
+            const cleanupKey = 'pgknma-dev-service-worker-cleanup';
+            if (navigator.serviceWorker.controller && !sessionStorage.getItem(cleanupKey)) {
+              sessionStorage.setItem(cleanupKey, '1');
+              window.location.reload();
+            } else if (!navigator.serviceWorker.controller) {
+              sessionStorage.removeItem(cleanupKey);
+            }
+          })
+          .catch(() => undefined);
       }
     </script>
   </body>
