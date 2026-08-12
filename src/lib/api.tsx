@@ -534,6 +534,8 @@ export interface Notification {
   archived_at: string | null;
 }
 
+export type NotificationChannel = 'official' | 'updates' | 'gamification';
+
 export async function getNotifications(options?: { archived?: boolean }): Promise<Notification[]> {
     const query = options?.archived ? '?archived=true' : '';
     const response = await apiRequest(`/api/notifications/${query}`, { method: 'GET' });
@@ -567,7 +569,7 @@ export async function restoreNotification(
 }
 
 export async function archiveReadNotifications(
-    channel?: 'general' | 'gamification',
+    channel?: NotificationChannel,
 ): Promise<{ archived: number }> {
     const response = await apiRequest('/api/notifications/archive-read/', {
         method: 'POST',
@@ -588,7 +590,7 @@ export async function markNotificationRead(id: number): Promise<{ id: number; re
 }
 
 export async function markAllNotificationsRead(
-    channel?: 'general' | 'gamification',
+    channel?: NotificationChannel,
 ): Promise<{ marked_read: number }> {
     const response = await apiRequest('/api/notifications/read-all/', {
         method: 'POST',
@@ -610,6 +612,7 @@ export interface NotificationPreferences {
     posts_enabled: boolean;
     events_enabled: boolean;
     polls_enabled: boolean;
+    changelog_enabled: boolean;
     comment_replies_enabled: boolean;
     submissions_enabled: boolean;
     mission_available_enabled: boolean;
@@ -652,6 +655,7 @@ export interface PushSubscriptionPayload {
     posts_enabled?: boolean;
     events_enabled?: boolean;
     polls_enabled?: boolean;
+    changelog_enabled?: boolean;
 }
 
 export interface PushDevicePreferences {
@@ -659,6 +663,7 @@ export interface PushDevicePreferences {
     posts_enabled: boolean;
     events_enabled: boolean;
     polls_enabled: boolean;
+    changelog_enabled: boolean;
 }
 
 export interface PushSubscriptionStatus {

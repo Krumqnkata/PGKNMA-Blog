@@ -13,6 +13,7 @@ export const defaultPushDevicePreferences: PushDevicePreferences = {
   posts_enabled: true,
   events_enabled: true,
   polls_enabled: true,
+  changelog_enabled: true,
 };
 
 const getManagementToken = () => localStorage.getItem(MANAGEMENT_TOKEN_KEY) || '';
