@@ -8,6 +8,7 @@ import {
   markAllNotificationsRead,
   markNotificationRead,
   Notification,
+  type NotificationChannel,
 } from '@/lib/api';
 import { Archive, Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -76,7 +77,7 @@ const NotificationBell: React.FC = () => {
   });
 
   const [isOpen, setIsOpen] = useState(false);
-  const [channel, setChannel] = useState<'general' | 'gamification'>('general');
+  const [channel, setChannel] = useState<NotificationChannel>('official');
   const popoverContentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,7 +101,9 @@ const NotificationBell: React.FC = () => {
   useEffect(() => {
     setReadMap(readMapFromStorage(storageKey));
     if (!isAuthenticated) setArchiveMap(archiveMapFromStorage());
-    if (!isAuthenticated) setChannel('general');
+    if (!isAuthenticated) {
+      setChannel((current) => current === 'gamification' ? 'official' : current);
+    }
   }, [isAuthenticated, storageKey]);
 
   const persistReadMap = useCallback((map: ReadMap) => {
@@ -146,8 +149,14 @@ const NotificationBell: React.FC = () => {
     ));
   }, [archiveMap, isAuthenticated, notifications]);
 
-  const generalNotifications = useMemo(
-    () => visibleNotifications.filter((notification) => !notification.is_gamification),
+  const officialNotifications = useMemo(
+    () => visibleNotifications.filter((notification) => notification.category === 'general'),
+    [visibleNotifications],
+  );
+  const updateNotifications = useMemo(
+    () => visibleNotifications.filter((notification) => (
+      notification.category !== 'general' && !notification.is_gamification
+    )),
     [visibleNotifications],
   );
   const gamificationNotifications = useMemo(
@@ -156,7 +165,9 @@ const NotificationBell: React.FC = () => {
   );
   const enabledNotifications = channel === 'gamification'
     ? gamificationNotifications
-    : generalNotifications;
+    : channel === 'updates'
+      ? updateNotifications
+      : officialNotifications;
 
   // Известието е непрочетено ако: никога не е било маркирано,
   // или текущият hash на текста му се различава от последно прочетения
@@ -178,6 +189,9 @@ const NotificationBell: React.FC = () => {
   const unreadCount = unreadNotifications.length;
   const totalCount = visibleNotifications.length;
   const activeUnreadCount = enabledNotifications.filter(isNotificationUnread).length;
+  const officialUnreadCount = officialNotifications.filter(isNotificationUnread).length;
+  const updateUnreadCount = updateNotifications.filter(isNotificationUnread).length;
+  const gamificationUnreadCount = gamificationNotifications.filter(isNotificationUnread).length;
 
   // Почистваме записи за известия, които вече изобщо не съществуват
   // (нито enabled, нито disabled) - за да не расте localStorage безкрайно.
@@ -445,28 +459,71 @@ const NotificationBell: React.FC = () => {
             </div>
           </div>
 
-          {isAuthenticated && (
-            <div className="grid grid-cols-2 gap-1 border-b border-border bg-muted/20 p-1.5" role="tablist" aria-label="Вид известия">
+          <div
+            className={cn(
+              'grid gap-1 border-b border-border bg-muted/20 p-1.5',
+              isAuthenticated ? 'grid-cols-3' : 'grid-cols-2',
+            )}
+            role="tablist"
+            aria-label="Вид известия"
+          >
               <button
                 type="button"
                 role="tab"
-                aria-selected={channel === 'general'}
-                onClick={() => setChannel('general')}
-                className={cn('rounded-lg px-3 py-2 text-xs font-bold transition-colors', channel === 'general' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}
+                aria-selected={channel === 'official'}
+                aria-label={`Официални: ${officialNotifications.length} общо, ${officialUnreadCount} непрочетени`}
+                onClick={() => setChannel('official')}
+                className={cn('min-w-0 rounded-lg px-1.5 py-2 text-[11px] font-bold transition-colors sm:px-2 sm:text-xs', channel === 'official' ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}
               >
-                Общи ({generalNotifications.length})
+                <span className="block truncate">Официални</span>
+                <span className="mt-1 flex items-center justify-center gap-1 text-[9px] font-semibold leading-none sm:text-[10px]">
+                  <span className="opacity-75">{officialNotifications.length} общо</span>
+                  {officialUnreadCount > 0 && (
+                    <span className="rounded-full bg-destructive px-1.5 py-0.5 text-white">
+                      {officialUnreadCount} нови
+                    </span>
+                  )}
+                </span>
               </button>
               <button
                 type="button"
                 role="tab"
-                aria-selected={channel === 'gamification'}
-                onClick={() => setChannel('gamification')}
-                className={cn('rounded-lg px-3 py-2 text-xs font-bold transition-colors', channel === 'gamification' ? 'bg-violet-600 text-white shadow-sm' : 'text-muted-foreground hover:text-foreground')}
+                aria-selected={channel === 'updates'}
+                aria-label={`Актуализации: ${updateNotifications.length} общо, ${updateUnreadCount} непрочетени`}
+                onClick={() => setChannel('updates')}
+                className={cn('min-w-0 rounded-lg px-1.5 py-2 text-[11px] font-bold transition-colors sm:px-2 sm:text-xs', channel === 'updates' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground')}
               >
-                Постижения ({gamificationNotifications.length})
+                <span className="block truncate">Актуализации</span>
+                <span className="mt-1 flex items-center justify-center gap-1 text-[9px] font-semibold leading-none sm:text-[10px]">
+                  <span className="opacity-75">{updateNotifications.length} общо</span>
+                  {updateUnreadCount > 0 && (
+                    <span className="rounded-full bg-destructive px-1.5 py-0.5 text-white">
+                      {updateUnreadCount} нови
+                    </span>
+                  )}
+                </span>
               </button>
-            </div>
-          )}
+              {isAuthenticated && (
+                <button
+                  type="button"
+                  role="tab"
+                  aria-selected={channel === 'gamification'}
+                  aria-label={`Постижения: ${gamificationNotifications.length} общо, ${gamificationUnreadCount} непрочетени`}
+                  onClick={() => setChannel('gamification')}
+                  className={cn('min-w-0 rounded-lg px-1.5 py-2 text-[11px] font-bold transition-colors sm:px-2 sm:text-xs', channel === 'gamification' ? 'bg-violet-600 text-white shadow-sm' : 'text-muted-foreground hover:text-foreground')}
+                >
+                  <span className="block truncate">Постижения</span>
+                  <span className="mt-1 flex items-center justify-center gap-1 text-[9px] font-semibold leading-none sm:text-[10px]">
+                    <span className="opacity-75">{gamificationNotifications.length} общо</span>
+                    {gamificationUnreadCount > 0 && (
+                      <span className="rounded-full bg-destructive px-1.5 py-0.5 text-white">
+                        {gamificationUnreadCount} нови
+                      </span>
+                    )}
+                  </span>
+                </button>
+              )}
+          </div>
 
           {isLoading ? (
             <div role="status" aria-label="Зареждане на известията" className="space-y-4 p-4">

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Award, BellRing, CalendarDays, Flag, Inbox, MessageCircleReply, Newspaper, ShieldCheck, Sparkles, Star, Timer, Trophy, Vote } from 'lucide-react';
+import { Award, BellRing, CalendarDays, Flag, History, Inbox, MessageCircleReply, Newspaper, ShieldCheck, Sparkles, Star, Timer, Trophy, Vote } from 'lucide-react';
 
 import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -43,6 +43,12 @@ const options: Array<{
     title: 'Нови анкети',
     description: 'Когато започне нова активна анкета.',
     icon: Vote,
+  },
+  {
+    key: 'changelog_enabled',
+    title: 'Промени по сайта',
+    description: 'Когато бъде публикуван нов запис в дневника на промените.',
+    icon: History,
   },
   {
     key: 'comment_replies_enabled',

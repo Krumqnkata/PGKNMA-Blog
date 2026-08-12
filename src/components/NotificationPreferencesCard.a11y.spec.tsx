@@ -17,6 +17,7 @@ vi.mock('@/lib/api', async (importOriginal) => ({
     posts_enabled: true,
     events_enabled: true,
     polls_enabled: true,
+    changelog_enabled: true,
     comment_replies_enabled: true,
     submissions_enabled: true,
     mission_available_enabled: true,
