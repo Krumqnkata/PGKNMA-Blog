@@ -531,8 +531,12 @@ export interface Notification {
   is_gamification: boolean;
   is_read: boolean;
   read_at: string | null;
+  important: boolean;
+  expires_at: string | null;
   is_archived: boolean;
   archived_at: string | null;
+  is_auto_archived: boolean;
+  can_restore: boolean;
 }
 
 export type NotificationChannel = 'official' | 'updates' | 'gamification';
