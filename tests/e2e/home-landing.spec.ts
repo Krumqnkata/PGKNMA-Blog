@@ -61,3 +61,31 @@ test("home page follows the landing flow without horizontal overflow", async ({ 
   );
   expect(hasHorizontalOverflow).toBe(false);
 });
+
+test("desktop hero video retries a temporary error and starts playing", async ({ page }) => {
+  let videoRequests = 0;
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.route("**/front-page-loop.webm*", async (route) => {
+    videoRequests += 1;
+    if (videoRequests === 1) {
+      await route.fulfill({ status: 503, contentType: "text/plain", body: "Temporary error" });
+      return;
+    }
+    await route.continue();
+  });
+
+  await page.goto("/");
+  const video = page.locator("#home-hero video");
+  await expect(video).toBeVisible();
+  await expect(video).not.toHaveAttribute("poster");
+  await expect.poll(() => videoRequests, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
+  await expect.poll(
+    () => video.evaluate((element: HTMLVideoElement) => element.readyState),
+    { timeout: 15_000 },
+  ).toBeGreaterThanOrEqual(2);
+  await expect.poll(
+    () => video.evaluate((element: HTMLVideoElement) => element.paused),
+    { timeout: 15_000 },
+  ).toBe(false);
+  await expect(video).toHaveJSProperty("loop", true);
+});

@@ -104,6 +104,8 @@ const rewardKindLabels: Record<PublicDigitalReward['kind'], string> = {
   special_icon: 'Специална икона',
 };
 
+const MAX_SELECTED_USER_TITLES = 3;
+
 function BadgeCard({ badge }: { badge: GamificationBadge }) {
   const Icon = iconMap[badge.icon] || CircleHelp;
   return (
@@ -219,6 +221,9 @@ export default function GamificationProgress() {
 
   const data = progressQuery.data;
   const earnedCount = data.badges.filter((badge) => badge.earned).length;
+  const selectedTitleCount = data.rewards.filter(
+    (reward) => reward.kind === 'user_title' && reward.selected,
+  ).length;
   const LevelIcon = data.level ? iconMap[data.level.icon] || Trophy : Trophy;
   const leaderboard = leaderboardQuery.data?.[leaderboardPeriod];
   const periodLabels = {
@@ -309,13 +314,20 @@ export default function GamificationProgress() {
         <div className="mb-4">
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">Персонализация</p>
           <h2 id="rewards-title" className="mt-1 text-2xl font-black tracking-tight">Моите дигитални награди</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Изберете по една активна награда от всеки вид. Промяната се вижда веднага в профила и аватара.</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Изберете по една активна награда от всеки вид и до 3 титли. Промяната се вижда веднага в профила и аватара. Активни титли: {selectedTitleCount}/3.
+          </p>
         </div>
         {data.rewards.length ? (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {data.rewards.map((reward) => {
               const color = safeRewardColor(reward.config.color, '#8b5cf6');
               const secondary = safeRewardColor(reward.config.secondary_color, '#22d3ee');
+              const titleLimitReached = (
+                reward.kind === 'user_title'
+                && !reward.selected
+                && selectedTitleCount >= MAX_SELECTED_USER_TITLES
+              );
               return (
                 <Card key={reward.key} className={cn('overflow-hidden transition-colors', reward.selected && 'border-violet-500/60 bg-violet-500/[0.05]')}>
                   <div className="h-1.5" style={{ background: `linear-gradient(90deg, ${color}, ${secondary})` }} />
@@ -337,10 +349,15 @@ export default function GamificationProgress() {
                       type="button"
                       variant={reward.selected ? 'outline' : 'default'}
                       className="w-full"
-                      disabled={rewardMutation.isPending}
+                      disabled={rewardMutation.isPending || titleLimitReached}
+                      title={titleLimitReached ? 'Първо свалете една от активните титли.' : undefined}
                       onClick={() => rewardMutation.mutate({ key: reward.key, selected: !reward.selected })}
                     >
-                      {reward.selected ? 'Свали наградата' : 'Използвай наградата'}
+                      {reward.selected
+                        ? 'Свали наградата'
+                        : titleLimitReached
+                          ? 'Максимум 3 титли'
+                          : 'Използвай наградата'}
                     </Button>
                   </CardContent>
                 </Card>

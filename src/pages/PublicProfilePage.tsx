@@ -46,7 +46,7 @@ import {
   type PublicDigitalReward,
 } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { profileBorderStyle, profileThemeStyle, rewardIcon, rewardTitle } from '@/lib/digital-rewards';
+import { profileBorderStyle, profileThemeStyle, rewardIcon, rewardTitles } from '@/lib/digital-rewards';
 import { formatSiteDate } from '@/lib/date-time';
 
 const iconMap: Record<string, LucideIcon> = {
@@ -131,7 +131,7 @@ export default function PublicProfilePage() {
 
   const LevelIcon = profile.level ? iconMap[profile.level.icon] || Trophy : Trophy;
   const equippedRewards = profile.rewards.filter((reward) => reward.selected);
-  const equippedTitle = rewardTitle(equippedRewards);
+  const equippedTitles = rewardTitles(equippedRewards);
   const equippedIcon = rewardIcon(equippedRewards);
   const EquippedIcon = equippedIcon ? iconMap[equippedIcon] || Sparkles : null;
   const stats = [
@@ -167,7 +167,14 @@ export default function PublicProfilePage() {
                   </Badge>
                   <Badge variant="outline">{profile.points} точки</Badge>
                   <SiteRoleBadge role={profile.user.site_role} />
-                  {equippedTitle && <Badge className="border-violet-400/50 bg-violet-500/15 text-violet-700 dark:text-violet-200">{equippedTitle}</Badge>}
+                  {equippedTitles.map((title, index) => (
+                    <Badge
+                      key={`${title}-${index}`}
+                      className="border-violet-400/50 bg-violet-500/15 text-violet-700 dark:text-violet-200"
+                    >
+                      {title}
+                    </Badge>
+                  ))}
                   {EquippedIcon && (
                     <Badge variant="outline" title={`Специална икона: ${equippedIcon}`}>
                       <EquippedIcon className="mr-1 h-3.5 w-3.5 text-violet-500" aria-hidden="true" />
@@ -210,20 +217,25 @@ export default function PublicProfilePage() {
           </div>
         </section>
 
-        <section aria-label="Статистика на профила" className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-          {stats.map(({ label, value, Icon }) => (
-            <Card key={label} className="transition-[transform,box-shadow,border-color] duration-300 motion-safe:hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md">
-              <CardContent className="flex items-center gap-3 p-4 sm:p-5">
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                  <Icon className="h-5 w-5" aria-hidden="true" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-xl font-black tabular-nums">{value}</span>
-                  <span className="block text-xs leading-tight text-muted-foreground">{label}</span>
-                </span>
-              </CardContent>
-            </Card>
-          ))}
+        <section aria-label="Статистика на профила" className="mt-6">
+          <p className="mb-3 text-xs text-muted-foreground">
+            Активността се запазва и след архивиране или изтриване на съдържанието.
+          </p>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+            {stats.map(({ label, value, Icon }) => (
+              <Card key={label} className="transition-[transform,box-shadow,border-color] duration-300 motion-safe:hover:-translate-y-0.5 hover:border-primary/25 hover:shadow-md">
+                <CardContent className="flex items-center gap-3 p-4 sm:p-5">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Icon className="h-5 w-5" aria-hidden="true" />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-xl font-black tabular-nums">{value}</span>
+                    <span className="block text-xs leading-tight text-muted-foreground">{label}</span>
+                  </span>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </section>
 
         <section className="mt-12" aria-labelledby="profile-badges-title">

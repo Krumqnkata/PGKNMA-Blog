@@ -68,11 +68,19 @@ export const profileThemeStyle = (
   };
 };
 
-export const rewardTitle = (rewards: PublicDigitalReward[] | null | undefined) => {
-  const reward = selectedReward(rewards, 'user_title');
-  const text = reward?.config.text;
-  return typeof text === 'string' && text.trim() ? text.trim().slice(0, 60) : null;
-};
+export const rewardTitles = (
+  rewards: PublicDigitalReward[] | null | undefined,
+) => (rewards ?? [])
+  .filter((reward) => reward.selected && reward.kind === 'user_title')
+  .map((reward) => {
+    const configuredText = reward.config.text;
+    const text = typeof configuredText === 'string' && configuredText.trim()
+      ? configuredText
+      : reward.title;
+    return text.trim().slice(0, 60);
+  })
+  .filter(Boolean)
+  .slice(0, 3);
 
 export const rewardIcon = (rewards: PublicDigitalReward[] | null | undefined) => {
   const reward = selectedReward(rewards, 'special_icon');
