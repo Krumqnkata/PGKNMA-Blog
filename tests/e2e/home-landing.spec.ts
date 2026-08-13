@@ -89,3 +89,16 @@ test("desktop hero video retries a temporary error and starts playing", async ({
   ).toBe(false);
   await expect(video).toHaveJSProperty("loop", true);
 });
+
+test("reduced motion keeps the hero video visible and pauses it", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+
+  const hero = page.locator("#home-hero");
+  const video = hero.locator("video");
+  await expect(video).toBeVisible();
+  await expect(hero.locator('img[src="/social-preview.jpg"]')).toHaveCount(0);
+  await expect.poll(
+    () => video.evaluate((element: HTMLVideoElement) => element.paused),
+  ).toBe(true);
+});
