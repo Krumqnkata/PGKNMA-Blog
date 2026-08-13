@@ -60,7 +60,7 @@ export default function Hero() {
   }, []);
 
   const retryVideo = () => {
-    if (reduceMotion || videoRetryTimerRef.current !== null) return;
+    if (videoRetryTimerRef.current !== null) return;
     setVideoPlaybackBlocked(false);
     const retryIndex = videoRetryCountRef.current;
     if (retryIndex >= VIDEO_RETRY_DELAYS.length) {
@@ -87,6 +87,8 @@ export default function Hero() {
       void videoRef.current?.play()
         .then(() => setVideoPlaybackBlocked(false))
         .catch(() => setVideoPlaybackBlocked(true));
+    } else {
+      videoRef.current?.pause();
     }
   };
 
@@ -177,33 +179,25 @@ export default function Hero() {
           <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-primary/30 via-sky-500/10 to-violet-500/20 blur-3xl" aria-hidden="true" />
 
           <div className="relative aspect-[5/6] overflow-hidden rounded-[2rem] border border-white/15 bg-slate-950 shadow-2xl shadow-slate-950/25 sm:aspect-[4/3] lg:aspect-[4/5]">
-            {reduceMotion ? (
-              <img
-                src="/social-preview.jpg"
-                alt="ПГКНМА – училищна общност, новини и събития"
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <video
-                key={videoAttempt}
-                ref={videoRef}
-                autoPlay
-                loop
-                muted
-                playsInline
-                preload="metadata"
-                className="h-full w-full object-cover"
-                aria-hidden="true"
-                tabIndex={-1}
-                onCanPlay={confirmVideoAvailable}
-                onError={retryVideo}
-                onPlaying={() => setVideoPlaybackBlocked(false)}
-              >
-                <source media="(min-width: 768px)" src={videoSource} type="video/webm" />
-              </video>
-            )}
+            <video
+              key={videoAttempt}
+              ref={videoRef}
+              autoPlay={!reduceMotion}
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className="h-full w-full object-cover"
+              aria-hidden="true"
+              tabIndex={-1}
+              onCanPlay={confirmVideoAvailable}
+              onError={retryVideo}
+              onPlaying={() => setVideoPlaybackBlocked(false)}
+            >
+              <source media="(min-width: 768px)" src={videoSource} type="video/webm" />
+            </video>
 
-            {!reduceMotion && (videoPlaybackBlocked || videoLoadFailed) && (
+            {(videoLoadFailed || (!reduceMotion && videoPlaybackBlocked)) && (
               <Button
                 type="button"
                 variant="secondary"
@@ -214,7 +208,11 @@ export default function Hero() {
                 {videoLoadFailed
                   ? <RefreshCw className="h-4 w-4" aria-hidden="true" />
                   : <Play className="h-4 w-4" aria-hidden="true" />}
-                {videoLoadFailed ? "Опитай видеото отново" : "Пусни видеото"}
+                {videoLoadFailed
+                  ? reduceMotion
+                    ? "Зареди кадъра отново"
+                    : "Опитай видеото отново"
+                  : "Пусни видеото"}
               </Button>
             )}
 
