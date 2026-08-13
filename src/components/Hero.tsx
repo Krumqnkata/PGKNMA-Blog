@@ -4,6 +4,8 @@ import {
   ArrowRight,
   CalendarDays,
   CheckCircle2,
+  Play,
+  RefreshCw,
   Sparkles,
 } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -18,10 +20,16 @@ const HERO_SIGNALS = [
   "Гласът на общността",
 ];
 
+const VIDEO_RETRY_DELAYS = [1_000, 3_000, 8_000];
+
 export default function Hero() {
   const { reduceMotion } = useAccessibility();
-  const [videoUnavailable, setVideoUnavailable] = useState(false);
+  const [videoAttempt, setVideoAttempt] = useState(0);
+  const [videoLoadFailed, setVideoLoadFailed] = useState(false);
+  const [videoPlaybackBlocked, setVideoPlaybackBlocked] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRetryCountRef = useRef(0);
+  const videoRetryTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -32,8 +40,76 @@ export default function Hero() {
       return;
     }
 
-    void video.play().catch(() => undefined);
-  }, [reduceMotion]);
+    let active = true;
+    void video.play()
+      .then(() => {
+        if (active) setVideoPlaybackBlocked(false);
+      })
+      .catch(() => {
+        if (active) setVideoPlaybackBlocked(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [reduceMotion, videoAttempt]);
+
+  useEffect(() => () => {
+    if (videoRetryTimerRef.current !== null) {
+      window.clearTimeout(videoRetryTimerRef.current);
+    }
+  }, []);
+
+  const retryVideo = () => {
+    if (reduceMotion || videoRetryTimerRef.current !== null) return;
+    setVideoPlaybackBlocked(false);
+    const retryIndex = videoRetryCountRef.current;
+    if (retryIndex >= VIDEO_RETRY_DELAYS.length) {
+      setVideoLoadFailed(true);
+      return;
+    }
+
+    videoRetryCountRef.current += 1;
+    videoRetryTimerRef.current = window.setTimeout(() => {
+      videoRetryTimerRef.current = null;
+      setVideoLoadFailed(false);
+      setVideoAttempt((current) => current + 1);
+    }, VIDEO_RETRY_DELAYS[retryIndex]);
+  };
+
+  const confirmVideoAvailable = () => {
+    videoRetryCountRef.current = 0;
+    setVideoLoadFailed(false);
+    if (videoRetryTimerRef.current !== null) {
+      window.clearTimeout(videoRetryTimerRef.current);
+      videoRetryTimerRef.current = null;
+    }
+    if (!reduceMotion) {
+      void videoRef.current?.play()
+        .then(() => setVideoPlaybackBlocked(false))
+        .catch(() => setVideoPlaybackBlocked(true));
+    }
+  };
+
+  const playVideoManually = () => {
+    void videoRef.current?.play()
+      .then(() => setVideoPlaybackBlocked(false))
+      .catch(() => setVideoPlaybackBlocked(true));
+  };
+
+  const retryVideoManually = () => {
+    if (videoRetryTimerRef.current !== null) {
+      window.clearTimeout(videoRetryTimerRef.current);
+      videoRetryTimerRef.current = null;
+    }
+    videoRetryCountRef.current = 0;
+    setVideoLoadFailed(false);
+    setVideoPlaybackBlocked(false);
+    setVideoAttempt((current) => current + 1);
+  };
+
+  const videoSource = videoAttempt === 0
+    ? "/front-page-loop.webm"
+    : `/front-page-loop.webm?retry=${videoAttempt}`;
 
   return (
     <section
@@ -101,7 +177,7 @@ export default function Hero() {
           <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-primary/30 via-sky-500/10 to-violet-500/20 blur-3xl" aria-hidden="true" />
 
           <div className="relative aspect-[5/6] overflow-hidden rounded-[2rem] border border-white/15 bg-slate-950 shadow-2xl shadow-slate-950/25 sm:aspect-[4/3] lg:aspect-[4/5]">
-            {reduceMotion || videoUnavailable ? (
+            {reduceMotion ? (
               <img
                 src="/social-preview.jpg"
                 alt="ПГКНМА – училищна общност, новини и събития"
@@ -109,20 +185,37 @@ export default function Hero() {
               />
             ) : (
               <video
+                key={videoAttempt}
                 ref={videoRef}
                 autoPlay
                 loop
                 muted
                 playsInline
                 preload="metadata"
-                poster="/social-preview.jpg"
                 className="h-full w-full object-cover"
                 aria-hidden="true"
                 tabIndex={-1}
-                onError={() => setVideoUnavailable(true)}
+                onCanPlay={confirmVideoAvailable}
+                onError={retryVideo}
+                onPlaying={() => setVideoPlaybackBlocked(false)}
               >
-                <source media="(min-width: 768px)" src="/front-page-loop.webm" type="video/webm" />
+                <source media="(min-width: 768px)" src={videoSource} type="video/webm" />
               </video>
+            )}
+
+            {!reduceMotion && (videoPlaybackBlocked || videoLoadFailed) && (
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/95 px-5 text-slate-950 shadow-xl hover:bg-white"
+                onClick={videoLoadFailed ? retryVideoManually : playVideoManually}
+              >
+                {videoLoadFailed
+                  ? <RefreshCw className="h-4 w-4" aria-hidden="true" />
+                  : <Play className="h-4 w-4" aria-hidden="true" />}
+                {videoLoadFailed ? "Опитай видеото отново" : "Пусни видеото"}
+              </Button>
             )}
 
             <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-slate-950/5" aria-hidden="true" />
