@@ -36,7 +36,7 @@ export default function Hero() {
     if (!video) return;
 
     if (reduceMotion) {
-      video.pause();
+      if (!video.paused) video.pause();
       return;
     }
 
@@ -88,7 +88,8 @@ export default function Hero() {
         .then(() => setVideoPlaybackBlocked(false))
         .catch(() => setVideoPlaybackBlocked(true));
     } else {
-      videoRef.current?.pause();
+      const video = videoRef.current;
+      if (video && !video.paused) video.pause();
     }
   };
 
