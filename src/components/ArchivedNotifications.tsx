@@ -54,7 +54,7 @@ export default function ArchivedNotifications() {
           <div>
             <h2 className="text-xl font-black tracking-tight">Архивирани известия</h2>
             <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-              Скритите известия не се показват в камбанката, но остават достъпни тук на всичките ви устройства.
+              Ръчно скритите и изтеклите известия не се показват в камбанката. Автоматичният архив се пази още 90 дни.
             </p>
           </div>
         </div>
@@ -85,7 +85,7 @@ export default function ArchivedNotifications() {
           <div>
             <p className="font-bold">Архивът е празен</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Известията, които скриете от камбанката, ще се появят тук.
+              Скритите или изтеклите известия ще се появят тук.
             </p>
           </div>
         </div>
@@ -99,20 +99,25 @@ export default function ArchivedNotifications() {
                   className="prose prose-sm max-w-none break-words dark:prose-invert [&_p]:my-0"
                 />
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Архивирано {formatDate(notification.archived_at)}
+                  {notification.is_auto_archived
+                    ? 'Автоматично архивирано'
+                    : 'Архивирано'}{' '}
+                  {formatDate(notification.archived_at)}
                 </p>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="shrink-0"
-                disabled={restoreMutation.isPending}
-                onClick={() => restoreMutation.mutate(notification.id)}
-              >
-                <ArchiveRestore className="mr-2 h-4 w-4" />
-                Възстанови
-              </Button>
+              {notification.can_restore && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="shrink-0"
+                  disabled={restoreMutation.isPending}
+                  onClick={() => restoreMutation.mutate(notification.id)}
+                >
+                  <ArchiveRestore className="mr-2 h-4 w-4" />
+                  Възстанови
+                </Button>
+              )}
             </article>
           ))}
         </div>
