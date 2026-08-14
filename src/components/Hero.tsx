@@ -195,7 +195,7 @@ export default function Hero() {
               onError={retryVideo}
               onPlaying={() => setVideoPlaybackBlocked(false)}
             >
-              <source media="(min-width: 768px)" src={videoSource} type="video/webm" />
+              <source src={videoSource} type="video/webm" />
             </video>
 
             {(videoLoadFailed || (!reduceMotion && videoPlaybackBlocked)) && (
