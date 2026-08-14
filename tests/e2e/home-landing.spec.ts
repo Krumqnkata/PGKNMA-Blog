@@ -62,7 +62,7 @@ test("home page follows the landing flow without horizontal overflow", async ({ 
   expect(hasHorizontalOverflow).toBe(false);
 });
 
-test("desktop hero video retries a temporary error and starts playing", async ({ page }) => {
+test("hero video loads and retries on desktop and mobile", async ({ page }) => {
   let videoRequests = 0;
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.route("**/front-page-loop.webm*", async (route) => {
@@ -77,6 +77,7 @@ test("desktop hero video retries a temporary error and starts playing", async ({
   await page.goto("/");
   const video = page.locator("#home-hero video");
   await expect(video).toBeVisible();
+  await expect(video.locator("source")).not.toHaveAttribute("media");
   await expect(video).not.toHaveAttribute("poster");
   await expect.poll(() => videoRequests, { timeout: 15_000 }).toBeGreaterThanOrEqual(2);
   await expect.poll(
