@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+import { requiresDocumentNavigation } from '@/lib/notification-navigation';
 import NotificationTarget from '@/pages/NotificationTarget';
 
 const apiMocks = vi.hoisted(() => ({
@@ -64,5 +65,9 @@ describe('NotificationTarget', () => {
 
     expect(await screen.findByText('Страницата с новини')).toBeInTheDocument();
   });
-});
 
+  it('uses a full document navigation for Django admin destinations', () => {
+    expect(requiresDocumentNavigation('/admin/team-chat/discussions/12/')).toBe(true);
+    expect(requiresDocumentNavigation('/news')).toBe(false);
+  });
+});

@@ -7,6 +7,7 @@ import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 import { Button } from "@/components/ui/button";
 import { getNotificationTarget } from "@/lib/api";
+import { requiresDocumentNavigation } from "@/lib/notification-navigation";
 import { useSEO } from "@/hooks/use-seo";
 
 const NotificationTarget = () => {
@@ -32,6 +33,10 @@ const NotificationTarget = () => {
       : "";
     if (!actionUrl || actionUrl === `/notification/${id}`) return;
     if (actionUrl.startsWith("/") && !actionUrl.startsWith("//")) {
+      if (requiresDocumentNavigation(actionUrl)) {
+        window.location.replace(actionUrl);
+        return;
+      }
       navigate(actionUrl, { replace: true });
       return;
     }
@@ -93,4 +98,3 @@ const NotificationTarget = () => {
 };
 
 export default NotificationTarget;
-
