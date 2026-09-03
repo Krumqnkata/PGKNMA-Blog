@@ -8,6 +8,7 @@ import { format, parseISO } from "date-fns";
 import { bg } from "date-fns/locale";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import EventCard from "@/components/events/EventCard";
+import { getEventCategoryLabel } from "@/lib/event-categories";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
@@ -172,7 +173,7 @@ const SchoolCalendar = () => {
           />
           <div className="mb-7 flex flex-wrap gap-2 rounded-2xl border border-border/60 bg-card/60 p-3">
             {categories.map((category) => (
-              <Button key={category} variant={category === selectedCategory ? "default" : "outline"} size="sm" aria-pressed={category === selectedCategory} onClick={() => setSelectedCategory(category)}>{category === "All" ? "Всички" : category}</Button>
+              <Button key={category} variant={category === selectedCategory ? "default" : "outline"} size="sm" aria-pressed={category === selectedCategory} onClick={() => setSelectedCategory(category)}>{category === "All" ? "Всички" : (getEventCategoryLabel(category))}</Button>
             ))}
           </div>
           {upcomingEvents.length > 0 ? (

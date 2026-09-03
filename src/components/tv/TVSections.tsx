@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import { AlertTriangle, Calendar, Clock, LoaderCircle, MapPin, RefreshCw, Users } from "lucide-react";
 
 import MarkdownRenderer from "@/components/MarkdownRenderer";
+import { getEventCategoryLabel } from "@/lib/event-categories";
 import { formatSiteDate, formatSiteDateTime, siteDateKey } from "@/lib/date-time";
 
 export interface ApprovedSong {
@@ -142,7 +143,7 @@ export function EventsSection({ events }: { events: TVEvent[] }) {
             const isToday = siteDateKey(startDate) === today;
             return (
               <article key={event.id} className={`relative flex flex-col items-start rounded-xl bg-gradient-to-br from-gray-900/90 to-gray-800/90 p-5 text-left shadow-2xl backdrop-blur-sm md:p-6 ${isToday ? "border-4 border-green-400" : "border-2 border-gray-700"} ${index === 0 ? "lg:scale-105 lg:z-10" : ""}`}>
-                <span className={`mb-4 rounded-full px-3 py-1 text-sm font-semibold ${CATEGORY_STYLES[event.category] ?? "bg-gray-500 text-gray-100"}`}>{event.category}</span>
+                <span className={`mb-4 rounded-full px-3 py-1 text-sm font-semibold ${CATEGORY_STYLES[event.category] ?? "bg-gray-500 text-gray-100"}`}>{getEventCategoryLabel(event.category)}</span>
                 <h3 className="mb-4 text-2xl font-bold leading-tight text-white md:text-3xl">{event.title}</h3>
                 <div className="mb-4 w-full space-y-3 text-lg text-gray-300 md:text-xl">
                   <p className="flex items-center gap-3"><Calendar className="h-6 w-6 shrink-0 text-green-400" /><span>{formatSiteDate(startDate)}{endDate && ` - ${formatSiteDate(endDate)}`}</span></p>

@@ -8,16 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Event } from "@/lib/api";
 import { formatSiteDate, formatSiteDateTime } from "@/lib/date-time";
-
-const categoryStyles: Record<string, string> = {
-  Academic: "border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400",
-  Sports: "border-green-500/20 bg-green-500/10 text-green-600 dark:text-green-400",
-  Arts: "border-purple-500/20 bg-purple-500/10 text-purple-600 dark:text-purple-400",
-  Community: "border-orange-500/20 bg-orange-500/10 text-orange-600 dark:text-orange-400",
-  Holiday: "border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400",
-};
-
-const getCategoryStyle = (category: string) => categoryStyles[category] ?? "bg-muted text-muted-foreground";
+import { getEventCategoryStyle, getEventCategoryLabel } from "@/lib/event-categories";
 
 const EventDetails = ({ event }: { event: Event }) => {
   const startDate = event.start_datetime;
@@ -25,7 +16,7 @@ const EventDetails = ({ event }: { event: Event }) => {
 
   return (
     <div className="mt-4 space-y-4">
-      <Badge className={getCategoryStyle(event.category)}>{event.category}</Badge>
+      <Badge className={getEventCategoryStyle(event.category)}>{getEventCategoryLabel(event.category)}</Badge>
       <dl className="space-y-2 text-sm">
         <DetailRow icon={Calendar} label="Дата">
           {formatSiteDate(startDate)}
@@ -88,9 +79,9 @@ const EventCard = ({ event, isMobile, compact = false, initialOpen = false }: Ev
             <div className="min-w-0 flex-1 space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <h3 className="line-clamp-2 text-base font-bold leading-snug sm:text-lg">{event.title}</h3>
-                {!compact && <Badge className={`flex-shrink-0 text-[10px] sm:text-xs ${getCategoryStyle(event.category)}`}>{event.category}</Badge>}
+                {!compact && <Badge className={`flex-shrink-0 text-[10px] sm:text-xs ${getEventCategoryStyle(event.category)}`}>{getEventCategoryLabel(event.category)}</Badge>}
               </div>
-              {compact && <Badge className={`text-[10px] sm:text-xs ${getCategoryStyle(event.category)}`}>{event.category}</Badge>}
+              {compact && <Badge className={`text-[10px] sm:text-xs ${getEventCategoryStyle(event.category)}`}>{getEventCategoryLabel(event.category)}</Badge>}
               <div className="space-y-1 text-xs text-muted-foreground">
                 <p className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5 flex-shrink-0" />{formatSiteDate(startDate)}{endDate && ` – ${formatSiteDate(endDate)}`}</p>
                 <p className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 flex-shrink-0" />{formatSiteDateTime(startDate, { hour: "2-digit", minute: "2-digit" })}{endDate && ` – ${formatSiteDateTime(endDate, { hour: "2-digit", minute: "2-digit" })}`}</p>
