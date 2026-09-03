@@ -11,18 +11,32 @@
 
 ---
 
+## 📚 Техническа документация
+
+Подробната и поддържана документация за frontend-а е в [docs/README.md](docs/README.md):
+
+- [Архитектура, routing и компоненти](docs/FRONTEND.md)
+- [State, JWT и API интеграция](docs/STATE_AND_API.md)
+- [UI, accessibility, SEO и PWA](docs/UI_ACCESSIBILITY_AND_PWA.md)
+- [Разработка, тестове и build](docs/DEVELOPMENT_AND_TESTING.md)
+
+Backend/API/deployment документацията е в отделния backend repository, в
+неговата папка `docs/`.
+
+---
+
 ## 🛠️ Технологичен стек (Deep Dive)
 
 ### Ядро (Core)
 - **React 18**: Компонентно-базирана архитектура с Hooks.
-- **TypeScript**: Пълна типова безопасност за по-стабилен код.
+- **TypeScript**: Типова проверка за по-стабилен код; виж `docs/STATE_AND_API.md` за текущите настройки и ограничения.
 - **Vite**: Ултра бърз инструмент за разработка и компилация.
 
 ### Потребителски интерфейс (UI/UX)
 - **Tailwind CSS**: Системен дизайн чрез utility класове.
 - **Shadcn UI**: Премиум компоненти (базирани на Radix UI).
 - **Lucide React**: Библиотека с векторни икони.
-- **Framer Motion**: За сложни и плавни анимации.
+- **Tailwind animations & tsParticles**: За плавни преходи, scroll ефекти и интерактивни частици.
 - **Next Themes**: Автоматична синхронизация на Dark/Light режим.
 
 ### Управление на данни
