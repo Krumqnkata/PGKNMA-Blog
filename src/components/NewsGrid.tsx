@@ -8,6 +8,13 @@ import { getPosts, Post } from "@/lib/api";
 import { formatSiteDate } from "@/lib/date-time";
 import { formatMonthlyViews } from "@/lib/post-analytics";
 
+const displayCategories = (post: Post) => {
+  const names = post.categories.map((c) => c.full_name);
+  if (names.length === 0) return "Без категория";
+  if (names.length <= 2) return names.join(" · ");
+  return `${names[0]} · ${names[1]} · +${names.length - 2}`;
+};
+
 const NewsGrid = () => {
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
@@ -103,7 +110,7 @@ const NewsGrid = () => {
                       <div className="relative z-10 flex flex-col items-center text-center lg:items-start lg:text-left text-white w-full">
                         <div className="mb-3 flex flex-wrap justify-center lg:justify-start items-center gap-2 sm:gap-4 text-[9px] sm:text-sm font-bold uppercase tracking-wider w-full">
                           <Badge className="bg-primary px-2 py-0.5 sm:px-4 sm:py-1.5 text-[9px] sm:text-xs font-bold uppercase tracking-widest text-primary-foreground shadow-lg shrink-0">
-                            {posts[0].category_name}
+                            {displayCategories(posts[0])}
                           </Badge>
                           <span className="flex items-center gap-1 opacity-80 whitespace-nowrap">
                             <Calendar className="h-3 w-3 sm:h-4 sm:w-4" />
@@ -147,7 +154,7 @@ const NewsGrid = () => {
                       
                       <div className="flex flex-col justify-center min-w-0 flex-1">
                         <Badge variant="outline" className="mb-1 sm:mb-2 w-fit border-primary/20 bg-primary/5 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-primary">
-                          {item.category_name}
+                          {displayCategories(item)}
                         </Badge>
                         <h4 className="line-clamp-2 text-base font-bold leading-tight group-hover:text-primary transition-colors sm:text-xl">
                           {item.title}

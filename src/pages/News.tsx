@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Newspaper, Search, SlidersHorizontal } from "lucide-react";
@@ -13,7 +14,7 @@ import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from 
 const ITEMS_PER_PAGE = 9;
 
 const News = () => {
-    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [searchParams, setSearchParams] = useSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearch = useDebouncedValue(searchQuery, 300);
     const [currentPage, setCurrentPage] = useState(1);
@@ -23,23 +24,38 @@ const News = () => {
       staleTime: 5 * 60 * 1000,
     });
 
-    const categories = useMemo(
-      () => [...new Set(posts.map((post) => post.category_name).filter(Boolean))].sort((a, b) => a.localeCompare(b, 'bg')),
-      [posts],
-    );
+    const categorySlug = searchParams.get('category') || null;
+
+    const categories = useMemo(() => {
+      const names = new Set<string>();
+      for (const post of posts) {
+        for (const c of post.categories) {
+          names.add(c.full_name);
+        }
+      }
+      return [...names].sort((a, b) => a.localeCompare(b, 'bg'));
+    }, [posts]);
+
+    const setSelectedCategory = (name: string | null) => {
+      if (name) {
+        setSearchParams({ category: name });
+      } else {
+        setSearchParams({});
+      }
+    };
 
     const filteredPosts = useMemo(() => {
       const normalizedSearch = debouncedSearch.trim().toLocaleLowerCase('bg');
       return posts.filter((post) => {
-        const matchesCategory = !selectedCategory || post.category_name === selectedCategory;
+        const matchesCategory = !categorySlug || post.categories.some((c) => c.full_name === categorySlug);
         if (!matchesCategory || !normalizedSearch) return matchesCategory;
 
         return [post.title, post.content, post.author_username]
           .some((value) => value?.toLocaleLowerCase('bg').includes(normalizedSearch));
       });
-    }, [debouncedSearch, posts, selectedCategory]);
+    }, [debouncedSearch, posts, categorySlug]);
 
-    useEffect(() => setCurrentPage(1), [debouncedSearch, selectedCategory]);
+    useEffect(() => setCurrentPage(1), [debouncedSearch, categorySlug]);
 
     const pageCount = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
     const visiblePosts = useMemo(
@@ -86,9 +102,8 @@ const News = () => {
                 <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden="true" />Категории
               </div>
               <div className="flex flex-wrap gap-2 lg:max-w-[52%]">
-                <Button size="sm" variant={selectedCategory === null ? "default" : "outline"} aria-pressed={selectedCategory === null} onClick={() => setSelectedCategory(null)}>Всички</Button>
                 {categories.map((category) => (
-                  <Button key={category} size="sm" variant={selectedCategory === category ? "default" : "outline"} aria-pressed={selectedCategory === category} onClick={() => setSelectedCategory(category)}>{category}</Button>
+                  <Button key={category} size="sm" variant={categorySlug === category ? "default" : "outline"} aria-pressed={categorySlug === category} onClick={() => setSelectedCategory(categorySlug === category ? null : category)}>{category}</Button>
                 ))}
               </div>
             </div>
@@ -97,7 +112,7 @@ const News = () => {
           <div id="news-results" className="scroll-mt-24" />
           <SectionHeading
             eyebrow="Архив"
-            title={debouncedSearch || selectedCategory ? "Резултати от филтрирането" : "Всички публикации"}
+            title={debouncedSearch || categorySlug ? "Резултати от филтрирането" : "Всички публикации"}
             description={`${filteredPosts.length} ${filteredPosts.length === 1 ? "намерена публикация" : "намерени публикации"}`}
           />
           {isLoading ? (
