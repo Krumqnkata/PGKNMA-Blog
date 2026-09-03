@@ -33,6 +33,13 @@ async function shareArticle(article: Post) {
   }
 }
 
+const displayCategories = (article: Post) => {
+  const names = article.categories.map((c) => c.full_name);
+  if (names.length === 0) return "Без категория";
+  if (names.length <= 2) return names.join(" · ");
+  return `${names[0]} · ${names[1]} · +${names.length - 2}`;
+};
+
 const NewsCard = ({ article, priority = false }: NewsCardProps) => (
   <Card className="group h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-2xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
     <article className="flex h-full flex-col">
@@ -49,7 +56,7 @@ const NewsCard = ({ article, priority = false }: NewsCardProps) => (
       </Link>
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent opacity-80" />
       <Badge className="absolute bottom-3 left-3 border-white/20 bg-slate-950/65 text-white shadow-lg backdrop-blur-md hover:bg-slate-950/75">
-        <Tag className="mr-1.5 h-3 w-3" aria-hidden="true" />{article.category_name || "Без категория"}
+        <Tag className="mr-1.5 h-3 w-3" aria-hidden="true" />{displayCategories(article)}
       </Badge>
       <button
         type="button"

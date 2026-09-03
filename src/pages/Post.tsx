@@ -186,7 +186,11 @@ const Post = () => {
                     ) : post && id ? (
                         <article className="mx-auto max-w-4xl">
                             <div ref={contentRef} className="overflow-hidden rounded-3xl border border-border/70 bg-card p-5 shadow-xl shadow-primary/5 sm:p-8 lg:p-10">
-                                <Badge variant="secondary" className="mb-4"><Tag className="h-3.5 w-3.5" aria-hidden="true" />{post.category_name}</Badge>
+                                <div className="mb-4 flex flex-wrap gap-2">
+                                    {post.categories.map((c) => (
+                                        <Badge key={c.id} variant="secondary"><Tag className="mr-1 h-3.5 w-3.5" aria-hidden="true" />{c.full_name}</Badge>
+                                    ))}
+                                </div>
                                 <h1 className="text-balance text-3xl font-black leading-[1.08] tracking-[-0.035em] sm:text-4xl md:text-5xl">{post.title}</h1>
                                 <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">{post.hook}</p>
                                 <div className="mb-8 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-border/60 py-4 text-sm text-muted-foreground">

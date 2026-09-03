@@ -18,11 +18,17 @@ export interface PostGalleryImage {
     focus_y: number;
 }
 
+export interface Category {
+    id: number;
+    full_name: string;
+    short_name: string;
+}
+
 // ❗ Препоръчително: Дефинирайте типа на един пост, ако използвате TypeScript
 export interface Post {
     id: number;
-    category: number;
-    category_name: string; // ✅ Очакваме име на категорията от Django
+    category_name: string;
+    categories: Category[];
     author: number;
     author_username: string; // ✅ Очакваме потребителско име на автора от Django
     author_avatar_url: string | null;
