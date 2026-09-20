@@ -10,6 +10,8 @@ export interface PostDocument {
 export interface PostGalleryImage {
     id: number;
     image_url: string;
+    display_url?: string;
+    thumbnail_url?: string;
     title: string;
     alt_text: string;
     position: number;
@@ -135,10 +137,14 @@ const withResolvedPostMedia = (post: Post): Post => {
             ? post.gallery.map((image) => ({
                 ...image,
                 image_url: resolveApiUrl(image.image_url),
+                display_url: resolveApiUrl(image.display_url || image.image_url),
+                thumbnail_url: resolveApiUrl(image.thumbnail_url || image.image_url),
             }))
             : resolvedImages.map((imageUrl, index) => ({
                 id: index,
                 image_url: imageUrl,
+                display_url: imageUrl,
+                thumbnail_url: imageUrl,
                 title: "",
                 alt_text: "",
                 position: index,

@@ -52,7 +52,8 @@ const Post = () => {
     const error = !id ? 'Липсва идентификатор на публикацията.' : postError instanceof Error ? postError.message : null;
     const galleryImages = useMemo(() => post?.gallery ?? [], [post?.gallery]);
     const lightboxSlides = useMemo(() => galleryImages.map((image, index) => ({
-        src: image.image_url,
+        src: image.display_url || image.image_url,
+        thumbnail: image.thumbnail_url || image.image_url,
         alt: image.alt_text || image.title || `Снимка ${index + 1} към ${post?.title || ''}`,
     })), [galleryImages, post?.title]);
     const readTime = useMemo(() => post ? getReadTime(post.content, post.hook) : 0, [post]);
@@ -269,7 +270,7 @@ const Post = () => {
                                                         aria-label={`Отвори снимка ${index + 1} от галерията`}
                                                     >
                                                         <img
-                                                            src={image.image_url}
+                                                            src={image.thumbnail_url || image.image_url}
                                                             alt={image.alt_text || image.title || `Снимка ${index + 1} към ${post.title}`}
                                                             className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${image.is_featured ? "aspect-video" : "aspect-square"}`}
                                                             style={{ objectPosition: `${image.focus_x}% ${image.focus_y}%` }}
@@ -343,6 +344,7 @@ const Post = () => {
                     close={() => setLightboxOpen(false)}
                     slides={lightboxSlides}
                     index={lightboxIndex}
+                    carousel={{ preload: 1 }}
                     plugins={[Zoom, Fullscreen, Thumbnails, Counter]}
                     styles={{ container: { padding: "env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0)" } }}
                     thumbnails={{
