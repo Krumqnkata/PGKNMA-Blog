@@ -19,7 +19,7 @@ const FloatingFAQ = () => {
           asChild
           variant="ghost"
           size="icon"
-          className="hidden h-10 w-10 text-white/60 transition-colors hover:bg-white/10 hover:text-white xl:inline-flex"
+          className="hidden h-10 w-10 text-white/80 transition-colors hover:bg-white/10 hover:text-white 2xl:inline-flex"
         >
           <Link to="/faq" aria-label="Често задавани въпроси">
             <HelpCircle className="h-[18px] w-[18px]" aria-hidden="true" />

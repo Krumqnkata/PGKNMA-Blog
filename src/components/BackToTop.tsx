@@ -24,7 +24,7 @@ const BackToTop = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
     });
   };
 
@@ -35,7 +35,7 @@ const BackToTop = () => {
           onClick={scrollToTop}
           size="icon"
           className="fixed bottom-8 right-8 z-50 h-12 w-12 rounded-full shadow-lg transition-all duration-300 hover:scale-110"
-          aria-label="Back to top"
+          aria-label="Нагоре към началото на страницата"
         >
           <ArrowUp className="h-5 w-5" />
         </Button>

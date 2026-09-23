@@ -65,12 +65,11 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                  className="text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary"
-                >
-                  {link.label}
-                </a>
+                  {link.href.startsWith('/') ? (
+                    <Link to={link.href} className="text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">{link.label}</Link>
+                  ) : (
+                    <a href={link.href} className="text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">{link.label}</a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -83,12 +82,11 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               {resources.map((link) => (
                 <li key={link.label}>
-                  <a
-                    href={link.href}
-                  className="text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary"
-                >
-                  {link.label}
-                </a>
+                  {link.href.startsWith('/') ? (
+                    <Link to={link.href} className="text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">{link.label}</Link>
+                  ) : (
+                    <a href={link.href} className="text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">{link.label}</a>
+                  )}
                 </li>
               ))}
             </ul>
@@ -102,18 +100,18 @@ const Footer: React.FC = () => {
                 <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
                 <span>ул. Стефан Сливков №7, град Стара Загора</span>
               </li>
-              <a href="tel:+359884994500" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+              <li><a href="tel:+359884994500" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Phone className="h-5 w-5 flex-shrink-0 text-primary" />
                 <span>+359 88 499 4500</span>
-              </a>
-              <a href="mailto:info-2400020@edu.mon.bg" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+              </a></li>
+              <li><a href="mailto:info-2400020@edu.mon.bg" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span>info-2400020@edu.mon.bg</span>
-              </a>
-              <a href="mailto:support@pgknma.space" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+                <span className="break-all">info-2400020@edu.mon.bg</span>
+              </a></li>
+              <li><a href="mailto:support@pgknma.space" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span>support@pgknma.space</span>
-              </a>
+                <span className="break-all">support@pgknma.space</span>
+              </a></li>
             </ul>
           </div>
         </div>
@@ -133,10 +131,10 @@ const Footer: React.FC = () => {
             © {new Date().getFullYear()} ПГКНМА Блог. Всички права запазени.
             </p>
             <span className="hidden sm:inline text-[hsl(var(--footer-foreground))]/80">|</span>
-            <a href="/developers" className="flex items-center gap-2 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">
+            <Link to="/developers" className="flex items-center gap-2 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary">
               <Code className="h-4 w-4" />
               <span>Разработка от учениците на ПГКНМА "Проф. Минко Балкански"</span>
-            </a>
+            </Link>
             {/* Even more discrete Easter Egg Button */}
             <span className="hidden sm:inline text-[hsl(var(--footer-foreground))]/80">|</span> {/* Separator */}                                            
           {/* Easter Egg Button */}                                                                                                                        

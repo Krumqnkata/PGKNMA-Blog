@@ -12,6 +12,8 @@ import {
   Mail,
   Music2,
   Newspaper,
+  Clock3,
+  HelpCircle,
   SearchX,
   Vote,
 } from "lucide-react";
@@ -35,6 +37,8 @@ const pages = [
   { name: "Начало", path: "/", icon: Home, keywords: "начална страница главно" },
   { name: "Новини и актуализации", path: "/news", icon: FileText, keywords: "статии блог публикации" },
   { name: "Училищен календар", path: "/events", icon: Calendar, keywords: "събития график дати" },
+  { name: "Учебна програма", path: "/program", icon: Clock3, keywords: "часове разписание клас" },
+  { name: "Помощ и въпроси", path: "/faq", icon: HelpCircle, keywords: "помощ често задавани въпроси" },
   { name: "Предложете звънец", path: "/bell-suggest#bell-song", icon: Music2, keywords: "песен звънец" },
   { name: "Седмична анкета", path: "/weekly-poll", icon: Vote, keywords: "анкета въпрос" },
   { name: "Меме на седмицата", path: "/meme-of-the-week", icon: Laugh, keywords: "меме забавление" },
@@ -81,7 +85,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
 
   const results = searchQuery.data?.results ?? [];
   const awaitingQuery = search.trim() !== debouncedSearch;
-  const showNoResults = debouncedSearch.length >= 2
+  const showNoResults = !awaitingQuery && debouncedSearch.length >= 2
     && !searchQuery.isFetching
     && !searchQuery.isError
     && results.length === 0
@@ -122,7 +126,7 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
           </div>
         )}
 
-        {results.length > 0 && (
+        {!awaitingQuery && results.length > 0 && (
           <CommandGroup heading="Намерено съдържание">
             {results.map((result) => {
               const details = resultDetails[result.kind];
