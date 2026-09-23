@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useMutation } from "@tanstack/react-query";
+import { useState } from "react";
 
 import {
   Select,
@@ -37,12 +38,11 @@ const FormSchema = z.object({
   message: z.string().min(10, {
     message: "Съобщението трябва да е поне 10 символа.",
   }),
-  reason: z.string({
-    required_error: "Моля, изберете причина за контакт.",
-  }),
+  reason: z.string().min(1, "Моля, изберете причина за контакт."),
 });
 
 export function ContactForm() {
+  const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -56,6 +56,7 @@ export function ContactForm() {
   const { mutate, isPending } = useMutation({
     mutationFn: (data: ContactFormData) => submitContactForm(data),
     onSuccess: (response) => {
+      setSubmitMessage({ type: "success", text: response.detail || "Съобщението е изпратено успешно." });
       toast({
         title: "Успех!",
         description: response.detail,
@@ -64,6 +65,7 @@ export function ContactForm() {
       form.reset(); // Clear form on success
     },
     onError: (error) => {
+      setSubmitMessage({ type: "error", text: error.message || "Съобщението не беше изпратено. Опитайте отново." });
       toast({
         title: "Грешка при изпращане",
         description: error.message || "Възникна грешка при изпращане на съобщението.",
@@ -73,6 +75,7 @@ export function ContactForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
+    setSubmitMessage(null);
     // The schema guarantees every API field at runtime. The explicit boundary
     // type is needed while this project still compiles without strict null checks.
     mutate(data as ContactFormData);
@@ -81,6 +84,11 @@ export function ContactForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
+        {submitMessage && (
+          <div role={submitMessage.type === "error" ? "alert" : "status"} className={`rounded-xl border px-4 py-3 text-sm ${submitMessage.type === "error" ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-primary/30 bg-primary/10 text-foreground"}`}>
+            {submitMessage.text}
+          </div>
+        )}
         <FormField
           control={form.control}
           name="name"
@@ -114,7 +122,7 @@ export function ContactForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Причина за контакт *</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Изберете причина..." />

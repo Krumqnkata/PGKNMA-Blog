@@ -45,19 +45,19 @@ const Header = () => {
       <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
       <nav className="container mx-auto flex h-16 items-center justify-between px-3 sm:px-4">
         {/* Logo */}
-        <NavLink to="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <img src={logo} className="h-auto w-10" alt="Logo" />
+        <NavLink to="/" className="flex shrink-0 items-center gap-2 transition-opacity hover:opacity-80" aria-label="ПГКНМА Блог — начало">
+          <img src={logo} className="h-auto w-10" alt="" />
           <span className="hidden text-[15px] font-bold uppercase tracking-widest sm:inline">ПГКНМА Блог</span>
         </NavLink>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-6 lg:flex">
+        <div className="hidden items-center gap-4 xl:flex">
           {navLinks.map((link) => (
             <NavLink
               key={link.path}
               to={link.path}
-              className="text-sm font-medium text-white/80 transition-colors hover:text-primary"
-              activeClassName="text-primary"
+              className="rounded-sm text-sm font-medium text-white/85 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              activeClassName="text-white underline decoration-2 underline-offset-8"
             >
               {link.name}
             </NavLink>
@@ -83,7 +83,7 @@ const Header = () => {
             <div className="[&_button]:h-[40px] [&_button]:w-[40px]"><NotificationBell /></div>
           </Suspense>
 
-          <ThemeSelector />
+          <div className="hidden sm:block"><ThemeSelector /></div>
 
           <div>
             {isAuthenticated ? (
@@ -99,7 +99,7 @@ const Header = () => {
           <Button
             variant="ghost"
             size="icon"
-            className="h-[40px] w-[40px] lg:hidden"
+            className="h-[40px] w-[40px] xl:hidden"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-navigation"
@@ -112,7 +112,7 @@ const Header = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div id="mobile-navigation" className="border-b border-border bg-background text-foreground shadow-xl animate-in slide-in-from-top-2 duration-200 lg:hidden">
+        <div id="mobile-navigation" className="max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-b border-border bg-background text-foreground shadow-xl animate-in slide-in-from-top-2 duration-200 motion-reduce:animate-none xl:hidden">
           <div className="container mx-auto space-y-1 px-4 py-4">
             <Button
               type="button"
@@ -144,6 +144,11 @@ const Header = () => {
               <HelpCircle className="h-4 w-4" aria-hidden="true" />
               Помощ и въпроси
             </NavLink>
+
+            <div className="flex items-center gap-3 border-t border-border/40 px-4 pt-4 sm:hidden">
+              <span className="text-sm font-medium text-muted-foreground">Цветова тема</span>
+              <span className="rounded-full bg-[hsl(var(--header-background))]"><ThemeSelector /></span>
+            </div>
 
             <div className="border-t border-border/40 pt-4 mt-4 space-y-2">
               {isAuthenticated ? (

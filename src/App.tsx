@@ -11,7 +11,6 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import { useSettings } from "@/hooks/use-settings";
 import FeatureDisabledPage from "./pages/FeatureDisabledPage";
 import CustomCursor from "./components/CustomCursor";
-import { useDisableInspect } from "./hooks/use-disable-inspect";
 import ScrollToTop from "./components/ScrollToTop";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import OfflineStatusToast from "@/components/OfflineStatusToast";
@@ -69,9 +68,6 @@ const AppLoadingScreen = () => (
 );
 
 const AppContent = () => {
-  // Disable inspect tools (right click, F12, etc.)
-  useDisableInspect();
-
   const { settings: settingsData, isLoading } = useSettings();
   const isTVRoute = window.location.pathname === "/tv";
 

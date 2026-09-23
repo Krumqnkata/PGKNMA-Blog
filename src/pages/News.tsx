@@ -66,7 +66,14 @@ const News = () => {
     const handlePageChange = (page: number) => {
       if (page === currentPage) return;
       setCurrentPage(page);
-      document.getElementById('news-results')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const results = document.getElementById('news-results');
+      results?.focus({ preventScroll: true });
+      results?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+    };
+
+    const clearFilters = () => {
+      setSearchQuery('');
+      setSelectedCategory(null);
     };
 
     return (
@@ -102,6 +109,7 @@ const News = () => {
                 <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden="true" />Категории
               </div>
               <div className="flex flex-wrap gap-2 lg:max-w-[52%]">
+                <Button size="sm" variant={!categorySlug ? "default" : "outline"} aria-pressed={!categorySlug} onClick={() => setSelectedCategory(null)}>Всички</Button>
                 {categories.map((category) => (
                   <Button key={category} size="sm" variant={categorySlug === category ? "default" : "outline"} aria-pressed={categorySlug === category} onClick={() => setSelectedCategory(categorySlug === category ? null : category)}>{category}</Button>
                 ))}
@@ -109,7 +117,9 @@ const News = () => {
             </div>
           </div>
 
-          <div id="news-results" className="scroll-mt-24" />
+          <div id="news-results" tabIndex={-1} aria-live="polite" className="scroll-mt-24 outline-none">
+            <span className="sr-only">Страница {currentPage} от {Math.max(1, pageCount)}. {filteredPosts.length} намерени публикации.</span>
+          </div>
           <SectionHeading
             eyebrow="Архив"
             title={debouncedSearch || categorySlug ? "Резултати от филтрирането" : "Всички публикации"}
@@ -120,7 +130,10 @@ const News = () => {
           ) : error ? (
             <QueryErrorState message={error.message} onRetry={() => void refetch()} />
           ) : filteredPosts.length === 0 ? (
-            <QueryEmptyState title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
+            <div className="text-center">
+              <QueryEmptyState title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
+              {posts.length > 0 && (debouncedSearch || categorySlug) && <Button variant="outline" className="mt-4" onClick={clearFilters}>Изчисти филтрите</Button>}
+            </div>
           ) : (
             <>
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">

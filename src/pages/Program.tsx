@@ -41,8 +41,9 @@ const Program: React.FC = () => {
   const [data, setData] = useState<ScheduleRow[]>([]);
   const [classes, setClasses] = useState<string[]>([]);
   const [selectedClass, setSelectedClass] = useState<string>('');
-    const [loadingSchedule, setLoadingSchedule] = useState<boolean>(true);
-    const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [loadingSchedule, setLoadingSchedule] = useState<boolean>(true);
+  const [scheduleError, setScheduleError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   const isProgramEnabled = siteStatus?.enable_program_page;
 
@@ -57,7 +58,8 @@ const Program: React.FC = () => {
           setHeaders(schedule.headers);
           setData(schedule.rows);
           setClasses(schedule.classes);
-          setSelectedClass(schedule.classes[0] || '');
+          const savedClass = window.localStorage.getItem('preferredProgramClass');
+          setSelectedClass(savedClass && schedule.classes.includes(savedClass) ? savedClass : schedule.classes[0] || '');
         } catch (error: unknown) {
           setScheduleError(
             error instanceof Error ? error.message : 'Не може да се зареди учебната програма.'
@@ -72,10 +74,11 @@ const Program: React.FC = () => {
       // If the program is disabled, we don't need to load the CSV.
       setLoadingSchedule(false);
     }
-  }, [isProgramEnabled]);
+  }, [isProgramEnabled, retryCount]);
 
   const handleClassChange = (value: string) => {
     setSelectedClass(value);
+    window.localStorage.setItem('preferredProgramClass', value);
   };
 
   const filteredData = data.filter(row => row['Клас'] === selectedClass);
@@ -89,7 +92,7 @@ const Program: React.FC = () => {
     }
     
     if (scheduleError) {
-      return <div className="py-12 text-center text-red-500">Грешка: {scheduleError}</div>;
+      return <QueryErrorState title="Програмата не може да се зареди" message={scheduleError} onRetry={() => setRetryCount((count) => count + 1)} />;
     }
 
     return (
@@ -99,7 +102,7 @@ const Program: React.FC = () => {
             <span>Програма за <span className="text-primary">{selectedClass}</span></span>
             {classes.length > 0 && (
               <Select onValueChange={handleClassChange} value={selectedClass}>
-                <SelectTrigger className="w-full md:w-[200px]">
+                <SelectTrigger aria-label="Изберете клас" className="w-full md:w-[200px]">
                   <SelectValue placeholder="Избери клас" />
                 </SelectTrigger>
                 <SelectContent>
@@ -114,6 +117,7 @@ const Program: React.FC = () => {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-5 sm:pt-6">
+          <p className="mb-3 text-sm text-muted-foreground sm:hidden">Плъзнете таблицата настрани, за да видите всички часове.</p>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>

@@ -13,8 +13,8 @@ const Contact = () => {
               <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent"><CardTitle>Информация за контакт</CardTitle></CardHeader>
               <CardContent className="space-y-5 pt-5 sm:pt-6">
                 <ContactDetail icon={MapPin} label="Адрес">гр. Стара Загора, ул. „Стефан Сливков“ №7</ContactDetail>
-                <ContactDetail icon={Phone} label="Телефон">+359 88 499 4500</ContactDetail>
-                <ContactDetail icon={Mail} label="Имейл">info-2400020@edu.mon.bg<br />support@pgknma.space</ContactDetail>
+                <ContactDetail icon={Phone} label="Телефон"><a className="underline-offset-4 hover:underline" href="tel:+359884994500">+359 88 499 4500</a></ContactDetail>
+                <ContactDetail icon={Mail} label="Имейл"><a className="break-all underline-offset-4 hover:underline" href="mailto:info-2400020@edu.mon.bg">info-2400020@edu.mon.bg</a><br /><a className="break-all underline-offset-4 hover:underline" href="mailto:support@pgknma.space">support@pgknma.space</a></ContactDetail>
                 <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 shadow-inner sm:aspect-video lg:aspect-[4/3]">
                 <iframe
                   width="100%"
