@@ -47,6 +47,7 @@ const ProtectedRoute = lazy(() => import("@/components/ProtectedRoute"));
 const Changelog = lazy(() => import("@/pages/Changelog"));
 const TVScreen = lazy(() => import("@/pages/TVScreen"));
 const FAQ = lazy(() => import("@/pages/FAQ"));
+const Gamification = lazy(() => import("@/pages/Gamification"));
 const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
 const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
 const NotificationTarget = lazy(() => import("@/pages/NotificationTarget"));
@@ -126,6 +127,7 @@ const AppContent = () => {
                   <Route path="/terms-of-service" element={<TermsOfService />} />
                   <Route path="/developers" element={<Developers />} />
                   <Route path="/faq" element={<FAQ />} />
+                  <Route path="/gamification" element={<Gamification />} />
                   <Route path="/verify-email" element={<EmailVerification />} />
                   <Route path="/easter-egg" element={<EasterEgg />} />
                   <Route path="*" element={<NotFound />} />

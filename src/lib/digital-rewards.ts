@@ -2,6 +2,8 @@ import type { CSSProperties } from 'react';
 
 import type { PublicDigitalReward } from '@/lib/api';
 
+type RewardVisual = Pick<PublicDigitalReward, 'title' | 'kind' | 'config' | 'selected'>;
+
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
 export const safeRewardColor = (value: unknown, fallback: string) => (
@@ -9,17 +11,17 @@ export const safeRewardColor = (value: unknown, fallback: string) => (
 );
 
 export const selectedReward = (
-  rewards: PublicDigitalReward[] | null | undefined,
+  rewards: RewardVisual[] | null | undefined,
   kind: PublicDigitalReward['kind'],
 ) => rewards?.find((reward) => reward.selected && reward.kind === kind) ?? null;
 
-const effectStyle = (reward: PublicDigitalReward | null) => {
+const effectStyle = (reward: RewardVisual | null) => {
   const value = reward?.config.style;
   return value === 'gradient' || value === 'glow' ? value : 'solid';
 };
 
 export const avatarFrameStyle = (
-  rewards: PublicDigitalReward[] | null | undefined,
+  rewards: RewardVisual[] | null | undefined,
 ): CSSProperties | undefined => {
   const reward = selectedReward(rewards, 'avatar_frame');
   if (!reward) return undefined;
@@ -38,7 +40,7 @@ export const avatarFrameStyle = (
 };
 
 export const profileBorderStyle = (
-  rewards: PublicDigitalReward[] | null | undefined,
+  rewards: RewardVisual[] | null | undefined,
 ): CSSProperties | undefined => {
   const reward = selectedReward(rewards, 'profile_border');
   if (!reward) return undefined;
@@ -57,7 +59,7 @@ export const profileBorderStyle = (
 };
 
 export const profileThemeStyle = (
-  rewards: PublicDigitalReward[] | null | undefined,
+  rewards: RewardVisual[] | null | undefined,
 ): CSSProperties | undefined => {
   const reward = selectedReward(rewards, 'profile_theme');
   if (!reward) return undefined;
@@ -69,7 +71,7 @@ export const profileThemeStyle = (
 };
 
 export const rewardTitles = (
-  rewards: PublicDigitalReward[] | null | undefined,
+  rewards: RewardVisual[] | null | undefined,
 ) => (rewards ?? [])
   .filter((reward) => reward.selected && reward.kind === 'user_title')
   .map((reward) => {
@@ -82,7 +84,7 @@ export const rewardTitles = (
   .filter(Boolean)
   .slice(0, 3);
 
-export const rewardIcon = (rewards: PublicDigitalReward[] | null | undefined) => {
+export const rewardIcon = (rewards: RewardVisual[] | null | undefined) => {
   const reward = selectedReward(rewards, 'special_icon');
   const icon = reward?.config.icon;
   return typeof icon === 'string' && icon.trim() ? icon.trim().slice(0, 40) : null;
