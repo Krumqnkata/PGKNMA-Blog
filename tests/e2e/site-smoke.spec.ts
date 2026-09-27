@@ -113,7 +113,7 @@ test('navigation moves secondary sections into More as the viewport narrows', as
     }
     await more.click();
     const overflow = page.getByRole('navigation', { name: 'Още раздели' });
-    await expect(overflow.getByRole('link')).toHaveCount(5 - visibleExtras);
+    await expect(overflow.getByRole('link')).toHaveCount(6 - visibleExtras);
     for (const name of extraSections.slice(visibleExtras)) {
       await expect(overflow.getByRole('link', { name, exact: true })).toBeVisible();
     }

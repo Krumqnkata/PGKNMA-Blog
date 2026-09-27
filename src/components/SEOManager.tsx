@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 const routeTitles: Record<string, string> = {
   "/": "Начало",
   "/news": "Новини",
+  "/gallery": "Галерия",
   "/events": "Училищен календар",
   "/program": "Учебна програма",
   "/bell-suggest": "Предложи песен за звънеца",
@@ -21,6 +22,7 @@ const routeTitles: Record<string, string> = {
 };
 
 const routeDescriptions: Record<string, string> = {
+  "/gallery": "Снимки от училищния живот в ПГКНМА — събития, постижения и споделени моменти в албуми от нашите публикации.",
   "/": "Добре дошли в официалния блог на ПГКНМА. Научете най-новите новини, свързани с гимназията, училищни събития и интересни проекти.",
   "/news": "Разгледайте списъка с всички публикации, новини и съобщения от ПГКНМА.",
   "/events": "Следете училищния календар на ПГКНМА за предстоящи събития, празници, изпити и ваканции.",
@@ -46,7 +48,7 @@ const SEOManager = () => {
 
     // For dynamic paths like /post/:id, we don't set static titles here.
     // The individual Post component will use the useSEO hook to set the title dynamically.
-    if (path.startsWith("/post/") || path.startsWith("/users/")) {
+    if (path.startsWith("/post/") || path.startsWith("/users/") || path.startsWith("/gallery/")) {
       return;
     }
 

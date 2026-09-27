@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Link } from "react-router-dom";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Calendar, ArrowRight, Eye } from "lucide-react";
-import { getPosts, Post } from "@/lib/api";
+import type { Post } from "@/lib/api";
+import { usePosts } from "@/hooks/use-posts";
 import { formatSiteDate } from "@/lib/date-time";
 import { formatMonthlyViews } from "@/lib/post-analytics";
 
@@ -16,10 +15,9 @@ const displayCategories = (post: Post) => {
 };
 
 const NewsGrid = () => {
-  const navigate = useNavigate();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isPending: loading, error: queryError } = usePosts();
+  const posts = data?.slice(0, 6) || [];
+  const error = queryError?.message;
 
   const getReadTime = (content: string, hook: string) => {
     const text = `${content} ${hook}`;
@@ -27,27 +25,6 @@ const NewsGrid = () => {
     const wordCount = text.split(/\s+/).filter(Boolean).length;
     return Math.ceil(wordCount / wordsPerMinute);
   };
-
-  useEffect(() => {
-    const fetchRecentPosts = async () => {
-      try {
-        setLoading(true);
-        const allPosts = await getPosts();
-        if (Array.isArray(allPosts) && allPosts.length > 0) {
-          // Get the 6 most recent posts (1 featured + 5 secondary)
-          setPosts(allPosts.slice(0, 6));
-        }
-        setError(null);
-      } catch (err: unknown) {
-        setError(err instanceof Error ? err.message : "Неуспешно извличане на новини. Моля, опитайте отново по-късно.");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchRecentPosts();
-  }, []);
 
   return (
     <section className="relative overflow-hidden border-b border-border py-4 lg:py-8">
