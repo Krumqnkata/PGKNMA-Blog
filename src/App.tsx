@@ -28,6 +28,8 @@ import { SITE_THEME_NAMES } from "@/lib/themes";
 
 const Index = lazy(() => import("@/pages/Index"));
 const News = lazy(() => import("@/pages/News"));
+const Gallery = lazy(() => import("@/pages/Gallery"));
+const GalleryAlbum = lazy(() => import("@/pages/GalleryAlbum"));
 const SchoolCalendar = lazy(() => import("@/pages/SchoolCalendar"));
 const BellSuggest = lazy(() => import("@/pages/BellSuggest"));
 const WeeklyPoll = lazy(() => import("@/pages/WeeklyPoll"));
@@ -106,6 +108,8 @@ const AppContent = () => {
                   <Route element={<SiteLayout />}>
                   <Route path="/" element={<Index />} />
                   <Route path="/news" element={<News />} />
+                  <Route path="/gallery" element={<Gallery />} />
+                  <Route path="/gallery/:id" element={<GalleryAlbum />} />
                   <Route path="/post/:id" element={<Post />} />
                   <Route path="/notification/:id" element={<NotificationTarget />} />
                   <Route path="/events" element={<SchoolCalendar />} />

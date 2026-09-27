@@ -4,6 +4,7 @@ import NewsGrid from "@/components/NewsGrid";
 import RevealOnScroll from "@/components/RevealOnScroll";
 import HomeBenefits from "@/components/home/HomeBenefits";
 import HomeFinalCTA from "@/components/home/HomeFinalCTA";
+import HomeGallery from "@/components/home/HomeGallery";
 
 const Index = () => (
   <main className="relative isolate overflow-hidden bg-background">
@@ -16,6 +17,9 @@ const Index = () => (
     </RevealOnScroll>
     <RevealOnScroll>
       <Events />
+    </RevealOnScroll>
+    <RevealOnScroll>
+      <HomeGallery />
     </RevealOnScroll>
     <RevealOnScroll>
       <HomeFinalCTA />

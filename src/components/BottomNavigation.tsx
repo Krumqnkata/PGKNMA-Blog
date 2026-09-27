@@ -20,7 +20,7 @@ const BottomNavigation = () => {
   const breakpoint = useSyncExternalStore(subscribeToWidth, getBreakpoint, () => 0);
   const visibleLinks = siteNavLinks.filter(({ minWidth }) => minWidth <= breakpoint);
   const moreLinks = [...siteNavLinks.filter(({ minWidth }) => minWidth > breakpoint), ...additionalNavLinks];
-  const moreActive = moreLinks.some(({ path }) => pathname === path);
+  const moreActive = moreLinks.some(({ path }) => pathname === path || pathname.startsWith(`${path}/`));
 
   useEffect(() => setMoreOpen(false), [pathname]);
 
