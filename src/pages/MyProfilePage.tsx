@@ -1,115 +1,92 @@
-import React, { useState, useEffect } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import AccountSettings from '@/components/AccountSettings';
-import MyCommentsList from '@/components/MyCommentsList';
-import MySongSuggestionsList from '@/components/MySongSuggestionsList';
-import MyMemesList from '@/components/MyMemesList';
-import RulesContent from '@/components/RulesContent'; // Import the new component
-import LoginSessions from '@/components/LoginSessions';
-import GamificationProgress from '@/components/GamificationProgress';
-import ArchivedNotifications from '@/components/ArchivedNotifications';
-import { useAuth } from '@/hooks/use-auth';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Archive, User, Music, MessageSquare, Image as ImageIcon, Shield, History, Trophy } from 'lucide-react'; // Import Shield icon
-import { useLocation } from 'react-router-dom'; // Import useLocation
-import UserAvatar from '@/components/UserAvatar';
-import SiteRoleBadge from '@/components/SiteRoleBadge';
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import { Archive, Eye, History, Image, LayoutDashboard, LogOut, MessageSquare, Music, Settings, Shield, Trophy } from 'lucide-react';
+import { Link, useSearchParams } from 'react-router-dom';
+
+import ProfileOverview from '@/components/account/ProfileOverview';
 import { InteriorPage, InteriorSection } from '@/components/InteriorPage';
+import SiteRoleBadge from '@/components/SiteRoleBadge';
+import UserAvatar from '@/components/UserAvatar';
+import { ContentSkeleton } from '@/components/query/QueryStates';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/use-auth';
+import { publicProfilePath } from '@/lib/public-profile';
+import { cn } from '@/lib/utils';
 
-const MyProfilePage: React.FC = () => {
-  const { user } = useAuth();
-  const isMobile = useIsMobile();
-  const location = useLocation();
+const sections = [
+  { value: 'overview', label: 'Общ преглед', description: 'Твоето участие и най-важното за профила ти на едно място.', icon: LayoutDashboard, group: 'Начало', component: ProfileOverview },
+  { value: 'progress', label: 'Моят прогрес', description: 'Точки, значки, мисии и награди за участието ти.', icon: Trophy, group: 'Начало', component: lazy(() => import('@/components/GamificationProgress')) },
+  { value: 'songs', label: 'Моите песни', description: 'Следи предложенията си за училищния звънец.', icon: Music, group: 'Моето участие', component: lazy(() => import('@/components/MySongSuggestionsList')) },
+  { value: 'memes', label: 'Моите мемета', description: 'Прегледай качените мемета и техния статус.', icon: Image, group: 'Моето участие', component: lazy(() => import('@/components/MyMemesList')) },
+  { value: 'comments', label: 'Моите коментари', description: 'Прегледай коментарите си в публикациите.', icon: MessageSquare, group: 'Моето участие', component: lazy(() => import('@/components/MyCommentsList')) },
+  { value: 'notifications', label: 'Архив известия', description: 'Намери запазените в архива известия.', icon: Archive, group: 'Моето участие', component: lazy(() => import('@/components/ArchivedNotifications')) },
+  { value: 'settings', label: 'Настройки', description: 'Персонализирай профила, предпочитанията и данните си за вход.', icon: Settings, group: 'Моят акаунт', component: lazy(() => import('@/components/AccountSettings')) },
+  { value: 'sessions', label: 'Активни сесии', description: 'Виж устройствата и управлявай достъпа до акаунта си.', icon: History, group: 'Моят акаунт', component: lazy(() => import('@/components/LoginSessions')) },
+  { value: 'rules', label: 'Правила', description: 'Правилата за участие в училищната общност.', icon: Shield, group: 'Моят акаунт', component: lazy(() => import('@/components/RulesContent')) },
+] as const;
+const groups = ['Начало', 'Моето участие', 'Моят акаунт'];
 
-  // Initialize activeTab from URL query parameter, default to 'settings'
-  const [activeTab, setActiveTab] = useState(() => {
-    const params = new URLSearchParams(location.search);
-    return params.get('tab') || 'settings';
-  });
+export default function MyProfilePage() {
+  const { user, logout } = useAuth();
+  const [searchParams] = useSearchParams();
+  const active = sections.find(({ value }) => value === searchParams.get('tab')) ?? sections[0];
+  const Content = active.component;
+  const navigationRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    setActiveTab(params.get('tab') || 'settings');
-  }, [location.search]);
-
-  const tabs = [
-    { value: 'settings', label: 'Настройки', Icon: User },
-    { value: 'progress', label: 'Моят прогрес', Icon: Trophy },
-    { value: 'songs', label: 'Моите песни', Icon: Music },
-    { value: 'memes', label: 'Моите мемета', Icon: ImageIcon },
-    { value: 'comments', label: 'Моите коментари', Icon: MessageSquare },
-    { value: 'sessions', label: 'Сесии', Icon: History },
-    { value: 'notifications', label: 'Архив известия', Icon: Archive },
-    { value: 'rules', label: 'Правила', Icon: Shield }, // Add the new tab
-  ];
+    const navigation = navigationRef.current;
+    const selected = navigation?.querySelector('[aria-current="page"]');
+    if (navigation && selected && navigation.scrollWidth > navigation.clientWidth) {
+      navigation.scrollLeft += selected.getBoundingClientRect().left - navigation.getBoundingClientRect().left - 8;
+    }
+  }, [active.value]);
 
   return (
-    <InteriorPage>
-      <InteriorSection className="pt-8 sm:pt-12">
-        <div className="relative mb-8 overflow-hidden rounded-3xl border border-border/70 bg-card p-5 shadow-xl shadow-primary/5 sm:p-8">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,hsl(var(--primary)/0.18),transparent_38%),linear-gradient(120deg,transparent_55%,hsl(210_100%_55%/0.08))]" aria-hidden="true" />
-          <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center">
-          <UserAvatar
-            username={user?.username}
-            avatarUrl={user?.avatar_url}
-            siteRole={user?.site_role}
-            equippedRewards={user?.equipped_rewards}
-            className="h-20 w-20 border-4 border-background shadow-xl sm:h-24 sm:w-24"
-          />
-          <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Лично пространство</p>
-            <h1 className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">Моят профил</h1>
-            <SiteRoleBadge role={user?.site_role} className="mt-2" />
-            <p className="mt-1 break-words text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere] sm:text-base">Добре дошли, <span className="font-bold text-foreground">{user?.username || 'потребител'}</span>. Управлявайте профила и активността си.</p>
+    <InteriorPage className="overflow-clip">
+      <InteriorSection className="py-6 sm:py-8">
+        <header className="mb-6 flex flex-col gap-5 rounded-2xl border bg-card p-4 sm:p-6 md:flex-row md:items-center md:justify-between">
+          <div className="flex min-w-0 items-center gap-4">
+            <UserAvatar username={user?.username} avatarUrl={user?.avatar_url} siteRole={user?.site_role} equippedRewards={user?.equipped_rewards} className="size-14 shrink-0 sm:size-16" />
+            <div className="min-w-0">
+              <h1 className="text-xl font-bold tracking-tight sm:text-2xl">Моят профил</h1>
+              <p className="mt-1 break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">{user?.username}</p>
+              <SiteRoleBadge role={user?.site_role} className="mt-2" />
+            </div>
           </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild size="sm" className="min-h-10 gap-2"><Link to="/profile?tab=settings"><Settings className="size-4" aria-hidden="true" />Настройки</Link></Button>
+            {user && <Button asChild size="sm" variant="outline" className="min-h-10 gap-2"><Link to={publicProfilePath(user.username)}><Eye className="size-4" aria-hidden="true" />Публичен профил</Link></Button>}
+            <Button variant="ghost" size="icon" onClick={() => void logout()} aria-label="Изход от профила" title="Изход"><LogOut className="size-4" aria-hidden="true" /></Button>
           </div>
-        </div>
+        </header>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} defaultValue="settings" className="w-full">
-          {isMobile ? (
-            <Select value={activeTab} onValueChange={setActiveTab}>
-              <SelectTrigger className="h-12 w-full bg-card">
-                <SelectValue placeholder="Изберете секция" />
-              </SelectTrigger>
-              <SelectContent>
-                {tabs.map(tab => (
-                  <SelectItem key={tab.value} value={tab.value}>
-                    <div className="flex items-center">
-                      <tab.Icon className="mr-2 h-4 w-4" />
-                      {tab.label}
-                    </div>
-                  </SelectItem>
+        <div className="grid min-w-0 items-start gap-6 xl:grid-cols-[220px_minmax(0,1fr)]">
+          <nav ref={navigationRef} aria-label="Раздели на профила" className="flex min-w-0 gap-2 overflow-x-auto rounded-2xl border bg-card p-2 xl:sticky xl:top-[calc(var(--site-header-height)+env(safe-area-inset-top,0px)+1rem)] xl:block xl:space-y-5 xl:p-3">
+            {groups.map((group) => (
+              <div key={group} className="flex shrink-0 gap-1 xl:block xl:space-y-1">
+                <p className="hidden px-3 pb-1 pt-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground xl:block">{group}</p>
+                {sections.filter((section) => section.group === group).map(({ value, label, icon: Icon }) => (
+                  <Link key={value} to={`/profile?tab=${value}`} aria-current={active.value === value ? 'page' : undefined} className={cn(
+                    'flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-xl px-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                    active.value === value ? 'bg-primary/10 text-primary' : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                  )}>
+                    <Icon className="size-4 shrink-0" aria-hidden="true" />{label}
+                  </Link>
                 ))}
-              </SelectContent>
-            </Select>
-          ) : (
-            <TabsList className="grid h-auto w-full grid-cols-3 gap-1 bg-card/80 p-2 shadow-sm lg:grid-cols-4 xl:grid-cols-8">
-              {tabs.map(tab => (
-                <TabsTrigger key={tab.value} value={tab.value} className="min-h-12 whitespace-normal px-2 text-center leading-tight">
-                  <tab.Icon className="mr-1.5 h-4 w-4 shrink-0" />
-                  <span>{tab.label}</span>
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          )}
+              </div>
+            ))}
+          </nav>
 
-          {tabs.map(tab => (
-            <TabsContent key={tab.value} value={tab.value} className="mt-7 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2">
-              {tab.value === 'settings' && <AccountSettings />}
-              {tab.value === 'progress' && <GamificationProgress />}
-              {tab.value === 'songs' && <MySongSuggestionsList />}
-              {tab.value === 'memes' && <MyMemesList />}
-              {tab.value === 'comments' && <MyCommentsList />}
-              {tab.value === 'sessions' && <LoginSessions />}
-              {tab.value === 'notifications' && <ArchivedNotifications />}
-              {tab.value === 'rules' && <RulesContent />} 
-            </TabsContent>
-          ))}
-        </Tabs>
+          <section aria-labelledby="profile-section-title" className="min-w-0">
+            <div className="mb-5">
+              <h2 id="profile-section-title" className="text-xl font-bold">{active.label}</h2>
+              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{active.description}</p>
+            </div>
+            <Suspense fallback={<ContentSkeleton variant="detail" label="Зареждане на раздела" />}>
+              <Content key={active.value} />
+            </Suspense>
+          </section>
+        </div>
       </InteriorSection>
     </InteriorPage>
   );
-};
-
-export default MyProfilePage;
+}

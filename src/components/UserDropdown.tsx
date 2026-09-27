@@ -32,7 +32,7 @@ export const UserDropdown: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full p-0">
+        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full p-0" aria-label="Меню на профила">
           <UserAvatar
             username={user.username}
             avatarUrl={user.avatar_url}
@@ -53,6 +53,12 @@ export const UserDropdown: React.FC = () => {
           <Link to="/profile">
             <UserIcon className="mr-2 h-4 w-4" />
             <span>Профил</span>
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link to="/profile?tab=settings">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Настройки</span>
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

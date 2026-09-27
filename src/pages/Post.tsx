@@ -173,7 +173,7 @@ const Post = () => {
                 }
                 `}
             </style>
-            <div className="pointer-events-none fixed left-0 top-16 z-50 h-1 w-full bg-background/30">
+            <div className="pointer-events-none fixed left-0 top-[calc(var(--site-header-height)+env(safe-area-inset-top,0px))] z-40 h-1 w-full bg-background/30">
                 <div 
                     className="reading-progress-bar h-full rounded-r-full shadow-[0_0_12px_hsl(var(--primary)/0.45)] transition-all duration-150 ease-out motion-reduce:animate-none"
                     style={{ width: `${scrollProgress}%` }}

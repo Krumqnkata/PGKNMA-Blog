@@ -67,7 +67,7 @@ export default function SelectionReader() {
 
   return (
     <aside
-      className="fixed bottom-4 left-1/2 z-[99990] flex w-[min(36rem,calc(100vw-1rem))] -translate-x-1/2 items-center gap-3 rounded-xl border bg-popover p-3 text-popover-foreground shadow-2xl"
+      className="fixed bottom-[calc(var(--site-bottom-clearance)+1rem)] left-1/2 z-[99990] flex w-[min(36rem,calc(100vw-1rem))] -translate-x-1/2 items-center gap-3 rounded-xl border bg-popover p-3 text-popover-foreground shadow-2xl"
       aria-label="Четене на маркиран текст"
     >
       <Volume2 className="h-5 w-5 shrink-0 text-primary" aria-hidden="true" />

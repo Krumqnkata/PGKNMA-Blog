@@ -101,7 +101,7 @@ const CookieConsent = () => {
 
   if (policyVersion === null) {
     return (
-      <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-card/80 backdrop-blur-sm border-t border-border shadow-lg">
+      <div className="fixed bottom-[var(--site-bottom-clearance)] left-0 right-0 z-40 p-4 bg-card/80 backdrop-blur-sm border-t border-border shadow-lg">
         <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
                 <Cookie className="h-6 w-6 text-primary flex-shrink-0" />
@@ -113,7 +113,7 @@ const CookieConsent = () => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 max-h-[80dvh] overflow-y-auto border-t border-border bg-card/95 p-3 shadow-lg backdrop-blur-sm sm:p-4">
+    <div className="fixed bottom-[var(--site-bottom-clearance)] left-0 right-0 z-40 max-h-[calc(100dvh-var(--site-bottom-clearance)-var(--site-header-height)-env(safe-area-inset-top,0px)-1rem)] overflow-y-auto border-t border-border bg-card/95 p-3 shadow-lg backdrop-blur-sm sm:p-4">
       <div className="container mx-auto flex flex-col items-stretch justify-between gap-4 lg:flex-row lg:items-center">
         <div className="flex min-w-0 items-start gap-3">
           <Cookie className="h-6 w-6 text-primary flex-shrink-0" />

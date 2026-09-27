@@ -77,7 +77,7 @@ export const PwaInstallBanner: React.FC = () => {
   }
 
   return (
-    <div className="fixed bottom-6 left-6 right-6 z-50 mx-auto max-w-md animate-in fade-in slide-in-from-bottom-8 duration-500">
+    <div className="fixed bottom-[calc(var(--site-bottom-clearance)+1rem)] left-3 right-3 z-40 mx-auto max-w-md animate-in fade-in slide-in-from-bottom-8 duration-500 md:left-6 md:right-6">
       <Card className="relative overflow-hidden border-primary/20 bg-card/90 shadow-2xl backdrop-blur-md">
         <div className="absolute top-0 left-0 h-full w-1.5 bg-primary" />
         <CardContent className="p-5 flex items-center justify-between gap-4">

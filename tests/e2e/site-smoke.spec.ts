@@ -35,22 +35,104 @@ test('FAQ renders and the keyboard skip link reaches the main content', async ({
   await expect(page.locator('#main-content')).toBeFocused();
 });
 
-test('navigation and cookie notice fit a narrow screen', async ({ page }) => {
+test('mobile navigation and header actions fit a narrow screen', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 720 });
   await page.route('**/api/privacy-policy/', (route) => route.fulfill({ json: { date: '2026-09-23', content: 'Политика' } }));
   await page.goto('/faq');
   await expect(page.getByRole('heading', { name: /Често задавани въпроси/i })).toBeVisible();
-  await page.getByRole('button', { name: 'Отвори менюто' }).click();
-  await expect(page.locator('#mobile-navigation').getByRole('link', { name: 'Програма' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Само необходими' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Отказвам' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Приемам' })).toBeVisible();
+  await page.getByRole('button', { name: 'Само необходими' }).click();
+
+  const bottomNavigation = page.getByRole('navigation', { name: 'Основна навигация', exact: true });
+  await expect(bottomNavigation.getByRole('link', { name: 'Програма' })).toBeVisible();
+  await bottomNavigation.getByRole('link', { name: 'Програма' }).click();
+  await expect(page).toHaveURL(/\/program$/);
+  await bottomNavigation.getByRole('button', { name: 'Още' }).click();
+  await expect(page.getByRole('navigation', { name: 'Още раздели' }).getByRole('link', { name: 'Седмична анкета' })).toBeVisible();
+  await page.getByRole('navigation', { name: 'Още раздели' }).getByRole('link', { name: 'Помощ и въпроси' }).click();
+  await expect(page).toHaveURL(/\/faq$/);
+  await page.getByRole('button', { name: 'Отвори настройки за достъпност' }).click();
+  await expect(page.getByRole('heading', { name: 'Достъпност' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: /Избери цветова тема/ }).click();
+  await expect(page.getByRole('menuitemradio', { name: /Тъмна/ })).toBeVisible();
+  await page.keyboard.press('Escape');
 
   const dimensions = await page.evaluate(() => ({
     viewport: window.innerWidth,
     page: document.documentElement.scrollWidth,
   }));
   expect(dimensions.page).toBeLessThanOrEqual(dimensions.viewport);
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await expect(bottomNavigation).toBeVisible();
+  await expect(bottomNavigation.getByRole('link', { name: 'Предложения за звънец' })).toBeVisible();
+  await expect(bottomNavigation.getByRole('link', { name: 'Седмична анкета' })).toBeVisible();
+});
+
+test('navigation moves secondary sections into More as the viewport narrows', async ({ page }, testInfo) => {
+  await page.route('**/api/privacy-policy/', (route) => route.fulfill({ json: { date: '2026-09-23', content: 'Политика' } }));
+  await page.goto('/faq');
+  await page.getByRole('button', { name: 'Само необходими' }).click();
+  const navigation = page.getByRole('navigation', { name: 'Основна навигация', exact: true });
+  const more = navigation.getByRole('button', { name: 'Още', exact: true });
+  const extraSections = ['Предложения за звънец', 'Седмична анкета', 'Меме на седмицата'];
+  const sizes: Array<{ width: number; font: number; icon: number }> = [];
+
+  for (const width of [320, 375, 767, 768, 1024, 1279, 1280, 1920]) {
+    await page.setViewportSize({ width, height: 900 });
+    const visibleExtras = width >= 1280 ? 3 : width >= 768 ? 2 : 0;
+    await expect(navigation.getByRole('link')).toHaveCount(4 + visibleExtras);
+    for (const name of extraSections.slice(0, visibleExtras)) {
+      await expect(navigation.getByRole('link', { name, exact: true })).toBeVisible();
+    }
+    const geometry = await navigation.evaluate((nav) => {
+      const bounds = nav.getBoundingClientRect();
+      const items = [...nav.querySelectorAll('a, button')];
+      return {
+        viewport: window.innerWidth,
+        page: document.documentElement.scrollWidth,
+        bottom: bounds.bottom,
+        viewportHeight: window.innerHeight,
+        fits: items.every((item) => {
+          const rect = item.getBoundingClientRect();
+          return rect.left >= 0 && rect.right <= window.innerWidth
+            && item.scrollWidth <= item.clientWidth && item.scrollHeight <= item.clientHeight;
+        }),
+        font: parseFloat(getComputedStyle(items[0]).fontSize),
+        icon: items[0].querySelector('svg')!.getBoundingClientRect().width,
+      };
+    });
+    expect(geometry.page).toBeLessThanOrEqual(geometry.viewport);
+    expect(geometry.fits).toBe(true);
+    expect(geometry.bottom).toBeCloseTo(geometry.viewportHeight, 0);
+    sizes.push({ width, font: geometry.font, icon: geometry.icon });
+    if ([375, 768, 1280].includes(width)) {
+      await page.screenshot({ path: testInfo.outputPath(`navigation-${width}.png`) });
+    }
+    await more.click();
+    const overflow = page.getByRole('navigation', { name: 'Още раздели' });
+    await expect(overflow.getByRole('link')).toHaveCount(5 - visibleExtras);
+    for (const name of extraSections.slice(visibleExtras)) {
+      await expect(overflow.getByRole('link', { name, exact: true })).toBeVisible();
+    }
+    await page.keyboard.press('Escape');
+    await expect(more).toBeFocused();
+  }
+  expect(sizes.at(-1)!.font).toBeGreaterThan(sizes[0].font);
+  expect(sizes.at(-1)!.icon).toBeGreaterThan(sizes[0].icon);
+
+  await navigation.getByRole('link', { name: 'Предложения за звънец' }).click();
+  await expect(page).toHaveURL(/\/bell-suggest$/);
+  await expect(navigation.getByRole('link', { name: 'Предложения за звънец' })).toHaveAttribute('aria-current', 'page');
+  await page.setViewportSize({ width: 375, height: 900 });
+  await more.click();
+  await expect(page.getByRole('navigation', { name: 'Още раздели' }).getByRole('link', { name: 'Предложения за звънец' })).toHaveAttribute('aria-current', 'page');
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect(page.getByRole('navigation', { name: 'Още раздели' }).getByRole('link', { name: 'Предложения за звънец' })).toHaveCount(0);
+  await page.keyboard.press('Escape');
+  await expect(more).toBeFocused();
 });
 
 test('contact form requires a reason before sending', async ({ page }) => {
