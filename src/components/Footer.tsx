@@ -23,6 +23,7 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 const Footer: React.FC = () => {
   const quickLinks = [
+    { label: "Мисии и награди", href: "/gamification" },
     { label: "Контакт", href: "/contact" },
     { label: "Прием", href: "https://pgknma.com/priem" },
     { label: "Новини", href: "/news" },

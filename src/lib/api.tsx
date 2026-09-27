@@ -1624,6 +1624,45 @@ export interface GamificationProfile {
     rewards: PublicDigitalReward[];
 }
 
+export interface GamificationPointRule {
+    action: string;
+    title: string;
+    points: number;
+    daily_limit: number | null;
+    active: boolean;
+    note: string;
+}
+
+export interface CatalogBadge {
+    slug: string;
+    title: string;
+    description: string;
+    icon: string;
+    rarity: GamificationBadgeRarity;
+    points_reward: number;
+    condition: string;
+    ends_at: string | null;
+}
+
+export interface CatalogReward extends Pick<PublicDigitalReward, 'key' | 'title' | 'kind' | 'config'> {
+    badges: CatalogBadge[];
+}
+
+export interface GamificationCatalog {
+    levels: GamificationLevel[];
+    point_rules: GamificationPointRule[];
+    badges: CatalogBadge[];
+    rewards: CatalogReward[];
+}
+
+export async function getGamificationCatalog(): Promise<GamificationCatalog> {
+    const response = await apiRequest('/api/gamification/catalog/', { method: 'GET' });
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Правилата и наградите не могат да бъдат заредени.'));
+    }
+    return response.json();
+}
+
 export async function getGamificationProfile(): Promise<GamificationProfile> {
     const response = await apiRequest('/api/gamification/profile/', {
         method: 'GET',
