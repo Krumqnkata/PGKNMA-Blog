@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+:root:has(.site-bottom-navigation) {
+  --site-bottom-clearance: calc(var(--site-bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Scale the header triggers without changing the controls inside their portals. */
+.site-header-actions > button {
+  height: clamp(2.5rem, 2.25rem + 0.25vw, 2.75rem);
+  min-width: clamp(2.5rem, 2.25rem + 0.25vw, 2.75rem);
+  border-radius: 9999px;
+}
+
+.site-header-actions > button > svg {
+  width: clamp(1.125rem, 1rem + 0.2vw, 1.25rem);
+  height: clamp(1.125rem, 1rem + 0.2vw, 1.25rem);
+}
+
 @font-face {
   font-family: "OpenDyslexic";
   src: url("./assets/fonts/opendyslexic/OpenDyslexic-Regular.woff2") format("woff2");
@@ -40,6 +56,9 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
+    --site-header-height: clamp(3.25rem, 3rem + 0.625vw, 3.75rem);
+    --site-bottom-nav-height: clamp(4rem, 3.75rem + 0.5vw, 4.25rem);
+    --site-bottom-clearance: 0px;
     /* Light Mode Colors - Teal Theme */
     --background: 180 20% 96%;
     --foreground: 180 50% 15%;

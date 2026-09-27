@@ -1,0 +1,16 @@
+import { CalendarDays, CalendarRange, ChartNoAxesColumn, HelpCircle, Home, Mail, Music2, Newspaper, Smile } from "lucide-react";
+
+export const siteNavLinks = [
+  { name: "Начало", path: "/", icon: Home, minWidth: 0 },
+  { name: "Новини", path: "/news", icon: Newspaper, minWidth: 0 },
+  { name: "Събития", path: "/events", icon: CalendarDays, minWidth: 0 },
+  { name: "Програма", path: "/program", icon: CalendarRange, minWidth: 0 },
+  { name: "Предложения за звънец", path: "/bell-suggest", icon: Music2, minWidth: 768 },
+  { name: "Седмична анкета", path: "/weekly-poll", icon: ChartNoAxesColumn, minWidth: 768 },
+  { name: "Меме на седмицата", path: "/meme-of-the-week", icon: Smile, minWidth: 1280 },
+] as const;
+
+export const additionalNavLinks = [
+  { name: "Помощ и въпроси", path: "/faq", icon: HelpCircle },
+  { name: "Контакт", path: "/contact", icon: Mail },
+] as const;

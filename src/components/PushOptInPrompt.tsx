@@ -88,7 +88,7 @@ export default function PushOptInPrompt() {
 
   return (
     <aside
-      className="fixed bottom-3 left-3 right-3 z-40 max-w-md rounded-2xl border border-primary/25 bg-card/95 p-4 shadow-2xl shadow-slate-950/20 backdrop-blur-xl motion-safe:animate-in motion-safe:slide-in-from-bottom-4 sm:bottom-5 sm:left-5 sm:right-auto sm:p-5"
+      className="fixed bottom-[calc(var(--site-bottom-clearance)+1rem)] left-3 right-3 z-40 max-w-md rounded-2xl border border-primary/25 bg-card/95 p-4 shadow-2xl shadow-slate-950/20 backdrop-blur-xl motion-safe:animate-in motion-safe:slide-in-from-bottom-4 sm:p-5 md:left-5 md:right-auto"
       aria-label="Включване на известия"
     >
       <button

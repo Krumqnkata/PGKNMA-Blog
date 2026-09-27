@@ -12,6 +12,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={sonnerTheme}
       className="toaster group"
+      offset="calc(var(--site-bottom-clearance) + 1rem)"
+      mobileOffset="calc(var(--site-bottom-clearance) + 1rem)"
       toastOptions={{
         classNames: {
           toast:

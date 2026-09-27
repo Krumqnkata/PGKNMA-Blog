@@ -146,12 +146,13 @@ function BadgeCard({ badge }: { badge: GamificationBadge }) {
 
 export default function GamificationProgress() {
   const { toast } = useToast();
-  const { updateUser } = useAuth();
+  const { updateUser, user } = useAuth();
   const queryClient = useQueryClient();
   const [leaderboardPeriod, setLeaderboardPeriod] = useState<'weekly' | 'monthly' | 'all_time'>('weekly');
   const progressQuery = useQuery({
-    queryKey: ['gamification-profile'],
+    queryKey: ['gamification-profile', user?.id],
     queryFn: getGamificationProfile,
+    enabled: Boolean(user),
     staleTime: 30_000,
   });
   const leaderboardQuery = useQuery({
