@@ -1,4 +1,5 @@
 import { LogIn, Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from '@/components/InteriorPage';
 import GamificationStatistics from '@/components/GamificationStatistics';
@@ -32,6 +33,7 @@ export default function Gamification() {
               <Button size="lg" className="gap-2" disabled={isLoading} onClick={openLoginDialog}><LogIn className="size-4" aria-hidden="true" />Влез и се включи</Button>
             )}
             <Button asChild size="lg" variant="outline"><a href="#how-it-works">Как работи?</a></Button>
+            <Button asChild size="lg" variant="outline"><Link to="/games">Играй и печели точки</Link></Button>
           </>
         )}
       >

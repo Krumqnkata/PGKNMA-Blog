@@ -1,4 +1,4 @@
-import { CalendarDays, CalendarRange, ChartNoAxesColumn, HelpCircle, Home, Images, Mail, Music2, Newspaper, Smile, Trophy } from "lucide-react";
+import { CalendarDays, CalendarRange, ChartNoAxesColumn, Gamepad2, HelpCircle, Home, Images, Mail, Music2, Newspaper, Smile, Trophy } from "lucide-react";
 
 export const siteNavLinks = [
   { name: "Начало", path: "/", icon: Home, minWidth: 0 },
@@ -11,6 +11,7 @@ export const siteNavLinks = [
 ] as const;
 
 export const additionalNavLinks = [
+  { name: "Игри", path: "/games", icon: Gamepad2 },
   { name: "Мисии и награди", path: "/gamification", icon: Trophy },
   { name: "Галерия", path: "/gallery", icon: Images },
   { name: "Помощ и въпроси", path: "/faq", icon: HelpCircle },

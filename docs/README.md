@@ -9,6 +9,7 @@
 | --- | --- |
 | [FRONTEND.md](FRONTEND.md) | Bootstrap, routing, layout, pages, component groups и styles. |
 | [STATE_AND_API.md](STATE_AND_API.md) | React Query, contexts, JWT refresh, API client и error rules. |
+| [GAMES.md](GAMES.md) | Игрови екрани, API състояние, възстановяване и проверки. |
 | [UI_ACCESSIBILITY_AND_PWA.md](UI_ACCESSIBILITY_AND_PWA.md) | Теми, accessibility widget, SEO, push, service worker и responsive UI. |
 | [DEVELOPMENT_AND_TESTING.md](DEVELOPMENT_AND_TESTING.md) | Environment, commands, tests, build и release handoff. |
 

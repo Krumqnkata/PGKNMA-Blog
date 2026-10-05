@@ -31,6 +31,12 @@ const activityLinks: Record<string, { path: string; label: string }> = {
   poll_vote: { path: '/weekly-poll', label: 'Към анкетата' },
   song_approved: { path: '/bell-suggest', label: 'Предложи песен' },
   meme_approved: { path: '/meme-of-the-week', label: 'Към меметата' },
+  game_quiz: { path: '/games/quiz', label: 'Към викторината' },
+  game_word: { path: '/games/word', label: 'Познай думата' },
+  game_code: { path: '/games/code', label: 'Разбий кода' },
+  game_robot: { path: '/games/robot', label: 'Подреди алгоритъма' },
+  game_memory: { path: '/games/memory', label: 'Открий двойките' },
+  game_hunt: { path: '/games/hunt', label: 'Лов на следи' },
 };
 
 function RewardPreview({ reward }: { reward: CatalogReward }) {
