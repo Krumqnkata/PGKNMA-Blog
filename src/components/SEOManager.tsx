@@ -18,6 +18,7 @@ const routeTitles: Record<string, string> = {
   "/developers": "Разработчици",
   "/faq": "Често задавани въпроси",
   "/gamification": "Мисии и награди",
+  "/games": "Игри",
   "/tv": "Информационен екран",
   "/easter-egg": "Пауза за веселба! 🥚",
 };
@@ -50,7 +51,7 @@ const SEOManager = () => {
 
     // For dynamic paths like /post/:id, we don't set static titles here.
     // The individual Post component will use the useSEO hook to set the title dynamically.
-    if (path.startsWith("/post/") || path.startsWith("/users/") || path.startsWith("/gallery/")) {
+    if (path.startsWith("/post/") || path.startsWith("/users/") || path.startsWith("/gallery/") || path.startsWith("/games")) {
       return;
     }
 

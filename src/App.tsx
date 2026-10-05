@@ -48,6 +48,7 @@ const Changelog = lazy(() => import("@/pages/Changelog"));
 const TVScreen = lazy(() => import("@/pages/TVScreen"));
 const FAQ = lazy(() => import("@/pages/FAQ"));
 const Gamification = lazy(() => import("@/pages/Gamification"));
+const Games = lazy(() => import("@/pages/Games"));
 const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
 const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
 const NotificationTarget = lazy(() => import("@/pages/NotificationTarget"));
@@ -128,6 +129,8 @@ const AppContent = () => {
                   <Route path="/developers" element={<Developers />} />
                   <Route path="/faq" element={<FAQ />} />
                   <Route path="/gamification" element={<Gamification />} />
+                  <Route path="/games" element={<Games />} />
+                  <Route path="/games/:slug" element={<Games />} />
                   <Route path="/verify-email" element={<EmailVerification />} />
                   <Route path="/easter-egg" element={<EasterEgg />} />
                   <Route path="*" element={<NotFound />} />
