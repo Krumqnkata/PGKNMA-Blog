@@ -16,10 +16,11 @@ vi.mock("@/lib/api", async (importOriginal) => ({
 }));
 
 describe("home landing page", () => {
-  it("renders the required sections in the intended conversion order", async () => {
+  it("renders the latest news before the platform pitch", async () => {
     const { container } = renderWithProviders(<Index />);
     const sectionIds = [
       "home-hero",
+      "home-news",
       "home-benefits",
       "home-final-cta",
     ];

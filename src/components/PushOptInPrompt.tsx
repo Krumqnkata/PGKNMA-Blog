@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BellRing, Loader2, ShieldCheck, X } from 'lucide-react';
+import { BellRing, Loader2, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { getPushConfig } from '@/lib/api';
+import { COOKIE_CONSENT_EVENT, readConsentCookie } from '@/lib/cookie-consent';
 import {
   currentPushRegistration,
   isPushSupported,
@@ -28,6 +29,16 @@ export default function PushOptInPrompt() {
   const supported = isPushSupported();
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(() => wasRecentlyDismissed());
+  // Never stack this prompt on top of the cookie banner on a first visit.
+  const [cookieChoiceMade, setCookieChoiceMade] = useState(() => readConsentCookie() !== null);
+  const permissionDenied = supported && Notification.permission === 'denied';
+
+  useEffect(() => {
+    if (cookieChoiceMade) return undefined;
+    const handleConsent = () => setCookieChoiceMade(true);
+    window.addEventListener(COOKIE_CONSENT_EVENT, handleConsent);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, handleConsent);
+  }, [cookieChoiceMade]);
 
   const configQuery = useQuery({
     queryKey: ['push-config'],
@@ -48,17 +59,18 @@ export default function PushOptInPrompt() {
   );
 
   useEffect(() => {
-    if (isTvPage || dismissed || isSubscribed || !supported || !configQuery.data?.enabled) {
+    if (isTvPage || dismissed || isSubscribed || !supported || permissionDenied || !configQuery.data?.enabled) {
       setVisible(false);
       return;
     }
     const previousCount = Number(sessionStorage.getItem(SESSION_PAGE_COUNT_KEY) || 0);
     const pageCount = previousCount + 1;
     sessionStorage.setItem(SESSION_PAGE_COUNT_KEY, String(pageCount));
-    const delay = pageCount >= 2 ? 1_500 : 25_000;
-    const timer = window.setTimeout(() => setVisible(true), delay);
+    // Ask only once the visitor has shown interest (a second page in this visit) and the cookie banner is gone.
+    if (pageCount < 2 || !cookieChoiceMade) return;
+    const timer = window.setTimeout(() => setVisible(true), 4_000);
     return () => window.clearTimeout(timer);
-  }, [configQuery.data?.enabled, dismissed, isSubscribed, isTvPage, location.pathname, supported]);
+  }, [configQuery.data?.enabled, cookieChoiceMade, dismissed, isSubscribed, isTvPage, location.pathname, permissionDenied, supported]);
 
   const enableMutation = useMutation({
     mutationFn: () => subscribeToPush(configQuery.data?.public_key ?? ''),
@@ -84,11 +96,9 @@ export default function PushOptInPrompt() {
 
   if (!visible || subscriptionQuery.isLoading || subscriptionQuery.isError) return null;
 
-  const permissionDenied = Notification.permission === 'denied';
-
   return (
     <aside
-      className="fixed bottom-[calc(var(--site-bottom-clearance)+1rem)] left-3 right-3 z-40 max-w-md rounded-2xl border border-primary/25 bg-card/95 p-4 shadow-2xl shadow-slate-950/20 backdrop-blur-xl motion-safe:animate-in motion-safe:slide-in-from-bottom-4 sm:p-5 md:left-5 md:right-auto"
+      className="fixed bottom-[calc(var(--site-bottom-clearance)+0.75rem)] left-3 right-3 z-40 max-w-sm rounded-2xl border border-primary/25 bg-card/95 p-4 shadow-2xl shadow-slate-950/20 backdrop-blur-xl motion-safe:animate-in motion-safe:slide-in-from-bottom-4 md:left-5 md:right-auto"
       aria-label="Включване на известия"
     >
       <button
@@ -101,37 +111,33 @@ export default function PushOptInPrompt() {
       </button>
       <div className="flex items-start gap-3 pr-7">
         <span className="rounded-xl bg-primary/10 p-2.5 text-primary" aria-hidden="true">
-          {permissionDenied ? <ShieldCheck className="h-5 w-5" /> : <BellRing className="h-5 w-5" />}
+          <BellRing className="h-5 w-5" />
         </span>
         <div>
           <h2 className="font-black text-foreground">Не пропускай важните новини</h2>
           <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-            {permissionDenied
-              ? 'Известията са блокирани. Отворете настройките от иконата до адреса на сайта, разрешете „Известия“ и презаредете страницата.'
-              : 'Получавай известия за новини, събития и анкети. Не е необходим профил.'}
+            Получавай известия за новини, събития и анкети. Не е необходим профил.
           </p>
         </div>
       </div>
-      <div className="mt-4 flex flex-wrap gap-2 sm:justify-end">
+      <div className="mt-4 grid grid-cols-2 gap-2">
         <Button type="button" variant="ghost" size="sm" onClick={dismiss}>
-          {permissionDenied ? 'Разбрах' : 'Не сега'}
+          Не сега
         </Button>
-        {!permissionDenied && (
-          <Button
-            type="button"
-            size="sm"
-            className="gap-2"
-            disabled={enableMutation.isPending}
-            onClick={() => enableMutation.mutate()}
-          >
-            {enableMutation.isPending ? (
-              <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-            ) : (
-              <BellRing className="h-4 w-4" aria-hidden="true" />
-            )}
-            Включи известията
-          </Button>
-        )}
+        <Button
+          type="button"
+          size="sm"
+          className="gap-2"
+          disabled={enableMutation.isPending}
+          onClick={() => enableMutation.mutate()}
+        >
+          {enableMutation.isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+          ) : (
+            <BellRing className="h-4 w-4" aria-hidden="true" />
+          )}
+          Включи
+        </Button>
       </div>
     </aside>
   );

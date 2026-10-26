@@ -6,6 +6,13 @@
   --site-bottom-clearance: calc(var(--site-bottom-nav-height) + env(safe-area-inset-bottom, 0px));
 }
 
+/* The bottom bar is hidden from the `lg` breakpoint (tailwind.config.ts), where the header holds the menu. */
+@media (min-width: 900px) {
+  :root:has(.site-bottom-navigation) {
+    --site-bottom-clearance: 0px;
+  }
+}
+
 /* Scale the header triggers without changing the controls inside their portals. */
 .site-header-actions > button {
   height: clamp(2.5rem, 2.25rem + 0.25vw, 2.75rem);

@@ -27,6 +27,8 @@ import { useAuth } from '@/hooks/use-auth';
 import { publicProfilePath } from '@/lib/public-profile';
 import { formatSiteDate } from '@/lib/date-time';
 import { formatMonthlyViews } from '@/lib/post-analytics';
+import { usePosts } from '@/hooks/use-posts';
+import { PostPager, RelatedPosts } from '@/components/news/PostNavigation';
 
 const getReadTime = (content: string, hook: string) => {
     const wordCount = `${content} ${hook}`.split(/\s+/).filter(Boolean).length;
@@ -49,6 +51,7 @@ const Post = () => {
         staleTime: 5 * 60 * 1000,
     });
     const post: PostType | null = postData ?? null;
+    const { data: allPosts = [] } = usePosts();
     const error = !id ? 'Липсва идентификатор на публикацията.' : postError instanceof Error ? postError.message : null;
     const galleryImages = useMemo(() => post?.gallery ?? [], [post?.gallery]);
     const lightboxSlides = useMemo(() => galleryImages.map((image, index) => ({
@@ -205,10 +208,10 @@ const Post = () => {
                                         />
                                         <span>{post.author_username}</span>
                                         <SiteRoleBadge role={post.author_site_role} compact />
-                                    </Link> : <span>User ID: {post.author}</span>}
+                                    </Link> : null}
                                     <div className="flex items-center gap-1.5">
-                                        <Calendar className="h-4 w-4" />
-                                        <span>{formatSiteDate(post.published_at || post.created_at)}</span>
+                                        <Calendar className="h-4 w-4" aria-hidden="true" />
+                                        <time dateTime={post.published_at || post.created_at}>{formatSiteDate(post.published_at || post.created_at)}</time>
                                     </div>
                                     <div className="flex items-center gap-1.5">
                                         <Clock className="h-4 w-4" />
@@ -242,13 +245,16 @@ const Post = () => {
                                     />
                                 )}
 
-                                <MarkdownRenderer 
-                                    content={post.content} 
-                                    onPdfClick={(url) => {
-                                        setPdfUrl(url);
-                                        setPdfOpen(true);
-                                    }}
-                                />
+                                {/* ~70 characters per line keeps long articles comfortable to read on wide screens. */}
+                                <div className="max-w-[70ch]">
+                                    <MarkdownRenderer
+                                        content={post.content}
+                                        onPdfClick={(url) => {
+                                            setPdfUrl(url);
+                                            setPdfOpen(true);
+                                        }}
+                                    />
+                                </div>
 
                                 {/* Image Gallery Section */}
                                 {galleryImages.length > 0 && (
@@ -317,8 +323,12 @@ const Post = () => {
                                     </div>
                                 )}
                             </div>
-                            
+
+                            <PostPager post={post} posts={allPosts} />
+
                             <Comments postId={id} />
+
+                            <RelatedPosts post={post} posts={allPosts} />
 
                         </article>
                     ) : (
