@@ -6,6 +6,7 @@ import type { Post } from "@/lib/api";
 import { usePosts } from "@/hooks/use-posts";
 import { formatSiteDate } from "@/lib/date-time";
 import { formatMonthlyViews } from "@/lib/post-analytics";
+import { LoadingCaption } from "@/components/query/QueryStates";
 
 const displayCategories = (post: Post) => {
   const names = post.categories.map((c) => c.full_name);
@@ -27,11 +28,11 @@ const NewsGrid = () => {
   };
 
   return (
-    <section className="relative overflow-hidden border-b border-border py-4 lg:py-8">
+    <section id="home-news" className="relative scroll-mt-[var(--site-header-height)] overflow-hidden border-b border-border py-10 lg:py-14">
       <div className="absolute inset-0 bg-[radial-gradient(45%_45%_at_50%_50%,var(--primary-foreground)_0%,transparent_100%)] opacity-[0.03]" />
-      
+
       <div className="container relative mx-auto px-4">
-        <div className="mb-16 flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-end">
+        <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-12 lg:flex-row lg:items-end lg:gap-6">
           <div className="max-w-2xl text-left">
             <h2 className="mb-4 text-4xl font-black tracking-tighter sm:text-5xl lg:text-6xl uppercase">
               Последни <span className="text-primary italic">Новини</span>
@@ -53,7 +54,8 @@ const NewsGrid = () => {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
           {loading ? (
             // Show skeleton loaders
-            <div className="col-span-12 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+            <div role="status" aria-label="Зареждане на последните новини" className="col-span-12 grid grid-cols-1 gap-6 lg:grid-cols-12 lg:gap-8">
+               <LoadingCaption label="Зареждане на последните новини" className="col-span-12" />
                <Card className="col-span-12 lg:col-span-8 h-[500px] animate-pulse bg-card/50" />
                <div className="col-span-12 lg:col-span-4 space-y-6">
                   <Card className="h-40 animate-pulse bg-card/50" />

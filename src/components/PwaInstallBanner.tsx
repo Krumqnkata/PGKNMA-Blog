@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Download, X, Sparkles } from "lucide-react";
+import { COOKIE_CONSENT_EVENT, readConsentCookie } from "@/lib/cookie-consent";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -15,6 +16,15 @@ interface BeforeInstallPromptEvent extends Event {
 export const PwaInstallBanner: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  // Wait for the cookie banner to be answered so the two never overlap.
+  const [cookieChoiceMade, setCookieChoiceMade] = useState(() => readConsentCookie() !== null);
+
+  useEffect(() => {
+    if (cookieChoiceMade) return undefined;
+    const handleConsent = () => setCookieChoiceMade(true);
+    window.addEventListener(COOKIE_CONSENT_EVENT, handleConsent);
+    return () => window.removeEventListener(COOKIE_CONSENT_EVENT, handleConsent);
+  }, [cookieChoiceMade]);
 
   useEffect(() => {
     // Check if the app is already installed and running standalone
@@ -72,7 +82,7 @@ export const PwaInstallBanner: React.FC = () => {
   };
 
   // Do not show if dismissed in this session
-  if (!isVisible || sessionStorage.getItem("pwa-banner-dismissed") === "true") {
+  if (!isVisible || !cookieChoiceMade || sessionStorage.getItem("pwa-banner-dismissed") === "true") {
     return null;
   }
 
@@ -97,7 +107,7 @@ export const PwaInstallBanner: React.FC = () => {
               <Download className="h-3.5 w-3.5" />
               Инсталиране
             </Button>
-            <Button size="icon" variant="ghost" onClick={handleClose} className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary">
+            <Button size="icon" variant="ghost" onClick={handleClose} aria-label="Затвори" className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-secondary">
               <X className="h-4 w-4" />
             </Button>
           </div>

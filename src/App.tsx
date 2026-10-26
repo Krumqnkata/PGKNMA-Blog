@@ -6,18 +6,16 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { lazy, Suspense } from "react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import MaintenancePage from "./pages/MaintenancePage";
-import { Loader2, LoaderPinwheel } from "lucide-react";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { useSettings } from "@/hooks/use-settings";
 import FeatureDisabledPage from "./pages/FeatureDisabledPage";
-import CustomCursor from "./components/CustomCursor";
 import ScrollToTop from "./components/ScrollToTop";
 import PwaInstallBanner from "@/components/PwaInstallBanner";
 import OfflineStatusToast from "@/components/OfflineStatusToast";
 import SEOManager from "@/components/SEOManager";
 import SiteLayout from "@/components/SiteLayout";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
-import { Skeleton } from "@/components/ui/skeleton";
+import AppLoadingScreen from "@/components/AppLoadingScreen";
 import { AccessibilityProvider } from "@/contexts/AccessibilityProvider";
 import AccessibilityColorFilters from "@/components/accessibility/AccessibilityColorFilters";
 import ReadingGuide from "@/components/accessibility/ReadingGuide";
@@ -53,24 +51,6 @@ const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
 const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
 const NotificationTarget = lazy(() => import("@/pages/NotificationTarget"));
 
-const AppLoadingScreen = () => (
-  <div id="main-content" tabIndex={-1} className="flex min-h-screen flex-col items-center justify-center gap-6 bg-background px-6 text-foreground outline-none" role="status" aria-live="polite">
-    <div className="relative">
-      <LoaderPinwheel className="h-14 w-14 animate-spin text-primary motion-reduce:animate-none" />
-      <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping-slow motion-reduce:animate-none" />
-    </div>
-    <div className="flex items-center gap-2 text-muted-foreground">
-      <Loader2 className="h-5 w-5 animate-spin text-primary motion-reduce:animate-none" />
-      <span>Зареждане...</span>
-    </div>
-    <div className="w-full max-w-md space-y-3" aria-hidden="true">
-      <Skeleton className="h-5 w-3/4" />
-      <Skeleton className="h-4 w-full" />
-      <Skeleton className="h-4 w-5/6" />
-    </div>
-  </div>
-);
-
 const AppContent = () => {
   const { settings: settingsData, isLoading } = useSettings();
   const isTVRoute = window.location.pathname === "/tv";
@@ -94,7 +74,6 @@ const AppContent = () => {
       themes={[...SITE_THEME_NAMES]}
       disableTransitionOnChange
     >
-      <CustomCursor />
       <PwaInstallBanner />
       <OfflineStatusToast />
       <AuthProvider>

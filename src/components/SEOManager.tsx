@@ -1,27 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
-const routeTitles: Record<string, string> = {
-  "/": "Начало",
-  "/news": "Новини",
-  "/gallery": "Галерия",
-  "/events": "Училищен календар",
-  "/program": "Учебна програма",
-  "/bell-suggest": "Предложи песен за звънеца",
-  "/weekly-poll": "Анкета на седмицата",
-  "/meme-of-the-week": "Меме на седмицата",
-  "/changelog": "История на промените",
-  "/profile": "Моят профил",
-  "/contact": "Контакти",
-  "/privacy-policy": "Политика за поверителност",
-  "/terms-of-service": "Условия за ползване",
-  "/developers": "Разработчици",
-  "/faq": "Често задавани въпроси",
-  "/gamification": "Мисии и награди",
-  "/games": "Игри",
-  "/tv": "Информационен екран",
-  "/easter-egg": "Пауза за веселба! 🥚",
-};
+import { routeTitles } from "@/lib/route-labels";
 
 const routeDescriptions: Record<string, string> = {
   "/gamification": "Открий как работят точките, нивата, значките и мисиите в ПГКНМА Блог. Следи своя прогрес и отключвай дигитални награди.",
