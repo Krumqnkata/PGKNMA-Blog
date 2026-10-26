@@ -9,9 +9,7 @@ import HomeGallery from "@/components/home/HomeGallery";
 const Index = () => (
   <main className="relative isolate overflow-hidden bg-background">
     <Hero />
-    <RevealOnScroll>
-      <HomeBenefits />
-    </RevealOnScroll>
+    {/* Real content first; the platform pitch follows for visitors who keep scrolling. */}
     <RevealOnScroll>
       <NewsGrid />
     </RevealOnScroll>
@@ -20,6 +18,9 @@ const Index = () => (
     </RevealOnScroll>
     <RevealOnScroll>
       <HomeGallery />
+    </RevealOnScroll>
+    <RevealOnScroll>
+      <HomeBenefits />
     </RevealOnScroll>
     <RevealOnScroll>
       <HomeFinalCTA />

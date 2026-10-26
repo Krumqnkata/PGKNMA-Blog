@@ -1,5 +1,7 @@
+import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
+import AppLoadingScreen from "@/components/AppLoadingScreen";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
 import Footer from "@/components/Footer";
@@ -17,9 +19,12 @@ const SiteLayout = () => {
       <BottomNavigation />
       <div id="main-content" tabIndex={-1} className="flex-1 outline-none">
         <PageErrorBoundary resetKey={location.pathname}>
-          <div key={location.pathname} className="animate-in fade-in duration-300 motion-reduce:animate-none">
-            <Outlet />
-          </div>
+          {/* Keep the header and navigation on screen while a page's code downloads. */}
+          <Suspense fallback={<AppLoadingScreen fullScreen={false} />}>
+            <div key={location.pathname} className="animate-in fade-in duration-300 motion-reduce:animate-none">
+              <Outlet />
+            </div>
+          </Suspense>
         </PageErrorBoundary>
       </div>
       <Footer />
