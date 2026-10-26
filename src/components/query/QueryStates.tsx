@@ -1,8 +1,16 @@
 import type { LucideIcon } from "lucide-react";
-import { AlertCircle, Inbox, RefreshCw } from "lucide-react";
+import { AlertCircle, Inbox, Loader2, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+
+/** Visible caption naming exactly what a skeleton is waiting for. */
+export const LoadingCaption = ({ label, className = "" }: { label: string; className?: string }) => (
+  <p className={`flex items-center gap-2 text-sm font-medium text-muted-foreground ${className}`}>
+    <Loader2 className="h-4 w-4 shrink-0 animate-spin text-primary motion-reduce:animate-none" aria-hidden="true" />
+    {label}…
+  </p>
+);
 
 interface ContentSkeletonProps {
   count?: number;
@@ -15,23 +23,23 @@ export function ContentSkeleton({ count = 3, variant = "cards", label = "Зар�
   if (variant === "detail") {
     return (
       <div role="status" aria-label={label} className={`mx-auto w-full max-w-4xl space-y-5 py-8 ${className}`}>
+        <LoadingCaption label={label} />
         <Skeleton className="h-10 w-4/5" /><Skeleton className="h-5 w-2/5" />
         <Skeleton className="aspect-video w-full rounded-2xl" />
         <div className="space-y-3"><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-3/4" /></div>
-        <span className="sr-only">{label}</span>
       </div>
     );
   }
 
   return (
     <div role="status" aria-label={label} className={`${variant === "cards" ? "grid gap-6 sm:grid-cols-2 lg:grid-cols-3" : "space-y-4"} ${className}`}>
+      <LoadingCaption label={label} className="col-span-full" />
       {Array.from({ length: count }, (_, index) => (
         <div key={index} className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
           {variant === "cards" && <Skeleton className="mb-4 aspect-video w-full rounded-xl" />}
           <div className="space-y-3"><Skeleton className="h-5 w-3/4" /><Skeleton className="h-4 w-full" /><Skeleton className="h-4 w-1/2" /></div>
         </div>
       ))}
-      <span className="sr-only">{label}</span>
     </div>
   );
 }

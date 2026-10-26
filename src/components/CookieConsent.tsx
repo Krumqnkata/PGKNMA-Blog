@@ -3,39 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Cookie } from "lucide-react";
 import { Link } from "react-router-dom";
 import { recordConsent, getLatestPrivacyPolicyVersion } from '@/lib/api'; // Import getLatestPrivacyPolicyVersion
+import {
+  CONSENT_COOKIE_NAME,
+  COOKIE_CONSENT_EVENT,
+  readConsentCookie,
+  type ConsentStatus,
+} from '@/lib/cookie-consent';
 
-const CONSENT_COOKIE_NAME = 'cookieConsent';
 const CONSENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
-
-type ConsentStatus = 'INFORMED' | 'ACCEPTED' | 'REJECTED';
-
-interface StoredConsent {
-  status: ConsentStatus;
-  policyVersion: string;
-}
-
-const readConsentCookie = (): StoredConsent | null => {
-  const prefix = `${CONSENT_COOKIE_NAME}=`;
-  const rawValue = document.cookie
-    .split(';')
-    .map((part) => part.trim())
-    .find((part) => part.startsWith(prefix))
-    ?.slice(prefix.length);
-  if (!rawValue) return null;
-
-  try {
-    const parsed = JSON.parse(decodeURIComponent(rawValue)) as StoredConsent;
-    if (
-      !['INFORMED', 'ACCEPTED', 'REJECTED'].includes(parsed.status)
-      || typeof parsed.policyVersion !== 'string'
-    ) {
-      return null;
-    }
-    return parsed;
-  } catch {
-    return null;
-  }
-};
 
 const writeConsentCookie = (status: ConsentStatus, policyVersion: string) => {
   const value = encodeURIComponent(JSON.stringify({ status, policyVersion }));
@@ -87,6 +62,7 @@ const CookieConsent = () => {
     }
     writeConsentCookie(status, policyVersion);
     setIsVisible(false);
+    window.dispatchEvent(new Event(COOKIE_CONSENT_EVENT));
     try {
         await recordConsent({ 
             consent_status: status, 
@@ -113,16 +89,20 @@ const CookieConsent = () => {
   }
 
   return (
-    <div className="fixed bottom-[var(--site-bottom-clearance)] left-0 right-0 z-40 max-h-[calc(100dvh-var(--site-bottom-clearance)-var(--site-header-height)-env(safe-area-inset-top,0px)-1rem)] overflow-y-auto border-t border-border bg-card/95 p-3 shadow-lg backdrop-blur-sm sm:p-4">
-      <div className="container mx-auto flex flex-col items-stretch justify-between gap-4 lg:flex-row lg:items-center">
+    <div
+      role="region"
+      aria-label="Бисквитки"
+      className="fixed bottom-[calc(var(--site-bottom-clearance)+0.75rem)] left-3 right-3 z-40 mx-auto max-w-3xl rounded-2xl border border-border bg-card/95 p-3 shadow-2xl shadow-slate-950/20 backdrop-blur-md motion-safe:animate-in motion-safe:slide-in-from-bottom-4 sm:p-4"
+    >
+      <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
         <div className="flex min-w-0 items-start gap-3">
-          <Cookie className="h-6 w-6 text-primary flex-shrink-0" />
-          <p className="text-sm text-muted-foreground">
+          <Cookie className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" aria-hidden="true" />
+          <p className="text-sm leading-snug text-muted-foreground">
             {policyVersion === 'error_fetching_version' ? (
               <>Настройките за бисквитки не се заредиха. Проверете връзката си и опитайте отново.</>
             ) : (
-              <>Управлявайте предпочитанията си за бисквитки. Повече информация можете да намерите в{' '}
-                <Link to='/privacy-policy' className="text-primary underline-offset-4 hover:underline">Политиката ни за поверителност.</Link>
+              <>Използваме бисквитки, за да работи сайтът.{' '}
+                <Link to='/privacy-policy' className="font-medium text-primary underline underline-offset-4 hover:no-underline">Научи повече</Link>
               </>
             )}
           </p>
@@ -133,9 +113,10 @@ const CookieConsent = () => {
             <Button className="flex-1 sm:flex-none" onClick={() => void fetchPolicyVersion()}>Опитайте отново</Button>
           </div>
         ) : (
-          <div className="grid w-full shrink-0 grid-cols-2 gap-2 sm:flex sm:w-auto sm:flex-wrap">
-            <Button className="col-span-2 sm:col-auto" size="sm" variant="outline" onClick={() => handleConsent('INFORMED')}>Само необходими</Button>
-            <Button size="sm" variant="destructive" onClick={() => handleConsent('REJECTED')}>Отказвам</Button>
+          // Rejecting must stay as visible and as easy as accepting.
+          <div className="grid w-full shrink-0 grid-cols-2 gap-2 sm:flex sm:w-auto">
+            <Button className="col-span-2 sm:col-auto" size="sm" variant="outline" onClick={() => handleConsent('INFORMED')}>Само необходимите</Button>
+            <Button size="sm" variant="outline" onClick={() => handleConsent('REJECTED')}>Отказвам</Button>
             <Button size="sm" onClick={() => handleConsent('ACCEPTED')}>Приемам</Button>
           </div>
         )}

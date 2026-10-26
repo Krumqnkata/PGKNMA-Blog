@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,6 @@ const News = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchQuery, setSearchQuery] = useState('');
     const debouncedSearch = useDebouncedValue(searchQuery, 300);
-    const [currentPage, setCurrentPage] = useState(1);
     const { data: posts = [], isLoading, error, refetch } = useQuery<Post[], Error>({
       queryKey: ['posts'],
       queryFn: getPosts,
@@ -55,17 +54,34 @@ const News = () => {
       });
     }, [debouncedSearch, posts, categorySlug]);
 
-    useEffect(() => setCurrentPage(1), [debouncedSearch, categorySlug]);
-
+    // The page lives in the URL so the browser's Back button returns to the same page of results.
     const pageCount = Math.ceil(filteredPosts.length / ITEMS_PER_PAGE);
+    const requestedPage = Math.floor(Number(searchParams.get('page')) || 1);
+    const currentPage = Math.min(Math.max(1, requestedPage), Math.max(1, pageCount));
     const visiblePosts = useMemo(
       () => filteredPosts.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE),
       [currentPage, filteredPosts],
     );
 
+    const handleSearchChange = (value: string) => {
+      setSearchQuery(value);
+      if (searchParams.has('page')) {
+        setSearchParams((params) => {
+          const next = new URLSearchParams(params);
+          next.delete('page');
+          return next;
+        }, { replace: true });
+      }
+    };
+
     const handlePageChange = (page: number) => {
       if (page === currentPage) return;
-      setCurrentPage(page);
+      setSearchParams((params) => {
+        const next = new URLSearchParams(params);
+        if (page > 1) next.set('page', String(page));
+        else next.delete('page');
+        return next;
+      });
       const results = document.getElementById('news-results');
       results?.focus({ preventScroll: true });
       results?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
@@ -100,7 +116,7 @@ const News = () => {
                   type="search"
                   placeholder="Търсене по заглавие, съдържание или автор..."
                   value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
+                  onChange={(event) => handleSearchChange(event.target.value)}
                   className="h-12 pl-11"
                   aria-label="Търсене в публикациите"
                 />
@@ -108,10 +124,10 @@ const News = () => {
               <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground lg:self-start lg:pt-3">
                 <SlidersHorizontal className="h-4 w-4 text-primary" aria-hidden="true" />Категории
               </div>
-              <div className="flex flex-wrap gap-2 lg:max-w-[52%]">
-                <Button size="sm" variant={!categorySlug ? "default" : "outline"} aria-pressed={!categorySlug} onClick={() => setSelectedCategory(null)}>Всички</Button>
+              <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0 lg:max-w-[52%]">
+                <Button className="shrink-0 rounded-full" size="sm" variant={!categorySlug ? "default" : "outline"} aria-pressed={!categorySlug} onClick={() => setSelectedCategory(null)}>Всички</Button>
                 {categories.map((category) => (
-                  <Button key={category} size="sm" variant={categorySlug === category ? "default" : "outline"} aria-pressed={categorySlug === category} onClick={() => setSelectedCategory(categorySlug === category ? null : category)}>{category}</Button>
+                  <Button key={category} className="shrink-0 rounded-full" size="sm" variant={categorySlug === category ? "default" : "outline"} aria-pressed={categorySlug === category} onClick={() => setSelectedCategory(categorySlug === category ? null : category)}>{category}</Button>
                 ))}
               </div>
             </div>
