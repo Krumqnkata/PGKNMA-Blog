@@ -14,6 +14,7 @@ const SAFE_DEFAULT_SETTINGS: SiteStatus = {
   enable_meme_of_the_week: true,
   enable_user_registration: true,
   enable_program_page: true,
+  header_logo: null,
 };
 
 interface CachedSiteStatus {
