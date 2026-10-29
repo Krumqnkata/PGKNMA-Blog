@@ -28,7 +28,7 @@ const NewsGrid = () => {
   };
 
   return (
-    <section id="home-news" className="relative scroll-mt-[var(--site-header-height)] overflow-hidden border-b border-border py-10 lg:py-14">
+    <section id="home-news" className="relative scroll-mt-[calc(var(--site-header-height)+var(--header-greeting-height))] overflow-hidden border-b border-border py-10 lg:py-14">
       <div className="absolute inset-0 bg-[radial-gradient(45%_45%_at_50%_50%,var(--primary-foreground)_0%,transparent_100%)] opacity-[0.03]" />
 
       <div className="container relative mx-auto px-4">

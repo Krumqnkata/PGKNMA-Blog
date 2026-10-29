@@ -3,8 +3,10 @@ import { ChevronDown, Search, User as UserIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
-import logoDark from "/logo-dark.png";
 import { useAuth } from "@/hooks/use-auth";
+import { useAccessibility } from "@/hooks/use-accessibility";
+import { useSettings } from "@/hooks/use-settings";
+import SeasonalLogo from "@/components/SeasonalLogo";
 import { UserDropdown } from "@/components/UserDropdown";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
 import ThemeSelector from "@/components/ThemeSelector";
@@ -74,6 +76,11 @@ const Header = () => {
   const [registerOpen, setRegisterOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const { isAuthenticated, loginDialogOpen, openLoginDialog, closeLoginDialog } = useAuth();
+  const { settings } = useSettings();
+  const { reduceMotion } = useAccessibility();
+  const headerLogo = settings?.header_logo ?? null;
+  const greeting = headerLogo?.greeting ?? "";
+  const effect = !reduceMotion && headerLogo && headerLogo.effect !== "none" ? headerLogo.effect : null;
 
   useEffect(() => {
     const openSearch = (event: KeyboardEvent) => {
@@ -88,11 +95,20 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[hsl(var(--header-background)/0.96)] pt-[env(safe-area-inset-top,0px)] text-[hsl(var(--header-foreground))] shadow-sm backdrop-blur-md">
-      <nav aria-label="Горна навигация" className="container mx-auto flex h-[var(--site-header-height)] items-center justify-between gap-2 px-2 sm:px-4">
+      {effect && (
+        <Suspense fallback={null}>
+          <SeasonalEffect effect={effect} />
+        </Suspense>
+      )}
+      <nav aria-label="Горна навигация" className="container relative mx-auto flex h-[var(--site-header-height)] items-center justify-between gap-2 px-2 sm:px-4">
         <div className="flex min-w-0 items-center gap-4 xl:gap-8">
-          <NavLink to="/" className="flex shrink-0 items-center gap-3 transition-opacity hover:opacity-80" aria-label="ПГКНМА Блог — начало">
-            <img src={logoDark} className="h-auto w-[clamp(2.25rem,2rem+0.5vw,2.5rem)]" alt="" />
-            <span className="hidden text-[clamp(0.875rem,0.75rem+0.2vw,1rem)] font-bold uppercase tracking-widest sm:inline lg:hidden xl:inline">ПГКНМА Блог</span>
+          <NavLink
+            to="/"
+            className="flex shrink-0 items-center gap-3 transition-opacity hover:opacity-80"
+            aria-label={greeting ? `ПГКНМА Блог — начало. ${greeting}` : "ПГКНМА Блог — начало"}
+            title={greeting || undefined}
+          >
+            <SeasonalLogo logo={headerLogo} />
           </NavLink>
           <DesktopNavigation />
         </div>
@@ -117,6 +133,12 @@ const Header = () => {
           )}
         </div>
       </nav>
+      {greeting && (
+        // On wide screens the greeting sits under the logo; narrower screens get this slim strip.
+        <p aria-hidden="true" className="site-header-greeting relative flex h-[var(--header-greeting-height)] items-center justify-center border-t border-white/10 px-4 text-xs font-semibold tracking-wide text-white/90 xl:hidden">
+          <span className="truncate">{greeting}</span>
+        </p>
+      )}
 
       <Suspense fallback={null}>
         {searchOpen && <SearchDialog open onOpenChange={setSearchOpen} />}
@@ -133,3 +155,4 @@ const NotificationBell = lazy(() => import("@/components/NotificationBell"));
 const LoginDialog = lazy(() => import("@/components/LoginDialog"));
 const RegisterDialog = lazy(() => import("@/components/RegisterDialog"));
 const SearchDialog = lazy(() => import("@/components/SearchDialog"));
+const SeasonalEffect = lazy(() => import("@/components/SeasonalEffect"));

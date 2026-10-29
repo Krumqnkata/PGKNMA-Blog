@@ -62,8 +62,20 @@ All colors MUST be HSL.
 */
 
 @layer base {
+  :root:has(.site-header-greeting) {
+    --header-greeting-height: 1.75rem;
+  }
+
+  @media (min-width: 1280px) {
+    :root:has(.site-header-greeting) {
+      --header-greeting-height: 0px;
+    }
+  }
+
   :root {
     --site-header-height: clamp(3.25rem, 3rem + 0.625vw, 3.75rem);
+    /* Extra header strip with the holiday greeting below xl (see Header.tsx). */
+    --header-greeting-height: 0px;
     --site-bottom-nav-height: clamp(4rem, 3.75rem + 0.5vw, 4.25rem);
     --site-bottom-clearance: 0px;
     /* Light Mode Colors - Teal Theme */

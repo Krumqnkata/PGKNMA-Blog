@@ -1159,6 +1159,19 @@ export interface SiteStatus {
     enable_meme_of_the_week: boolean;
     enable_user_registration: boolean;
     enable_program_page: boolean;
+    header_logo?: HeaderLogo | null;
+}
+
+export type HeaderLogoEffect =
+    | 'none' | 'snow' | 'leaves' | 'petals' | 'hearts' | 'confetti'
+    | 'stars' | 'balloons' | 'martenitsa' | 'tricolor' | 'bats' | 'eggs' | 'letters';
+
+export interface HeaderLogo {
+    image_url: string;
+    static_image_url: string | null;
+    greeting: string;
+    alt: string;
+    effect: HeaderLogoEffect;
 }
 
 export interface ProgramScheduleResponse {
