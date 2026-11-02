@@ -1,7 +1,16 @@
 # 🏫 ПГКНМА Дигитална Платформа - Фронтенд
 
+[![CI](https://github.com/Krumqnkata/PGKNMA-Blog/actions/workflows/ci.yml/badge.svg)](https://github.com/Krumqnkata/PGKNMA-Blog/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/Krumqnkata/PGKNMA-Blog/actions/workflows/codeql.yml/badge.svg)](https://github.com/Krumqnkata/PGKNMA-Blog/actions/workflows/codeql.yml)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue.svg)](LICENSE)
+![React 18](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+
 ![Project Banner](public/logo-light.png#gh-light-mode-only)
 ![Project Banner](public/logo-dark.png#gh-dark-mode-only)
+
+> Backend (Django REST API + admin): [Krumqnkata/pgknma-valentine](https://github.com/Krumqnkata/pgknma-valentine)
 
 ## 📝 Общ преглед
 
@@ -20,7 +29,8 @@
 - [UI, accessibility, SEO и PWA](docs/UI_ACCESSIBILITY_AND_PWA.md)
 - [Разработка, тестове и build](docs/DEVELOPMENT_AND_TESTING.md)
 
-Backend/API/deployment документацията е в отделния backend repository, в
+Backend/API/deployment документацията е в отделния
+[backend repository](https://github.com/Krumqnkata/pgknma-valentine), в
 неговата папка `docs/`.
 
 ---
@@ -149,8 +159,10 @@ Backend/API/deployment документацията е в отделния backe
 3. **Конфигурация**:
    ```bash
    cp .env.example .env
-   # Отворете .env and задайте VITE_API_BASE_URL
+   # Отворете .env и задайте VITE_API_BASE_URL
    ```
+   `.env` не се качва в git. Всичко с `VITE_` влиза в browser bundle-а, затова
+   там никога не слагай пароли или частни ключове.
 
 ### Команди за разработка
 
@@ -158,8 +170,14 @@ Backend/API/deployment документацията е в отделния backe
 | :--- | :--- |
 | `npm run dev` | Стартира Vite сървър с HMR (Hot Module Replacement) |
 | `npm run build` | Създава оптимизиран `dist/` пакет за продукция |
+| `npm run typecheck` | TypeScript проверка на app и node конфигурацията |
 | `npm run lint` | Изпълнява ESLint проверка за грешки в кода |
+| `npm run test` | Vitest unit и accessibility тестове |
+| `npm run test:e2e` | Playwright end-to-end тестове |
 | `npm run preview` | Стартира локален сървър за преглед на build-а |
+
+Същите проверки (typecheck, lint, test, build) се пускат автоматично в
+GitHub Actions при всеки push и pull request.
 
 ---
 
@@ -170,6 +188,24 @@ Backend/API/deployment документацията е в отделния backe
 - **JWT Authentication**: Сигурно управление на сесиите чрез токени.
 - **Content Sanitization**: Предотвратяване на XSS атаки при рендване на Markdown и коментари.
 
+Ако откриеш уязвимост, не отваряй публичен issue — виж [SECURITY.md](SECURITY.md).
+
 ---
 
-*Този проект е разработен от екипа на ПГКНМА с цел иновация и модернизация на училищния живот.*
+## 👥 Автори
+
+- [Krumqnkata](https://github.com/Krumqnkata)
+- ad0312
+- [lkbonev72](https://github.com/lkbonev72)
+
+Проектът е създаден за ПГКНМА „Проф. Минко Балкански“ с цел иновация и
+модернизация на училищния живот.
+
+## 📄 Лиценз
+
+Кодът е © 2025–2026 Krumqnkata, ad0312 и lkbonev72 и е лицензиран под
+[GNU AGPL v3.0 или по-нова версия](LICENSE). Ако го ползваш или пуснеш като
+сайт, трябва да запазиш авторството и да публикуваш промените си под същия лиценз.
+
+Името, логата, снимките, видеата и документите на ПГКНМА са собственост на
+училището и **не са** част от лиценза. Подробности: [NOTICE.md](NOTICE.md).

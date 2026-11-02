@@ -24,3 +24,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local environment (public VITE_ values only; never commit)
+.env
+.env.*
+!.env.example
