@@ -19,6 +19,12 @@ const PDFViewer: React.FC<PDFViewerProps> = ({ fileUrl }) => {
         <Viewer
           fileUrl={fileUrl}
           plugins={[defaultLayoutPluginInstance]}
+          // pdf.js 3.x can run attacker JavaScript from a crafted font
+          // (CVE-2024-4367); disabling eval closes that path.
+          transformGetDocumentParams={(options) => ({
+            ...options,
+            isEvalSupported: false,
+          })}
         />
       </Worker>
     </div>
