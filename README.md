@@ -10,7 +10,7 @@
 ![Project Banner](public/logo-light.png#gh-light-mode-only)
 ![Project Banner](public/logo-dark.png#gh-dark-mode-only)
 
-> Backend (Django REST API + admin): [Krumqnkata/pgknma-valentine](https://github.com/Krumqnkata/pgknma-valentine)
+> Backend (Django REST API + admin): [Krumqnkata/pgknma-blog-backend](https://github.com/Krumqnkata/pgknma-blog-backend)
 
 ## 📝 Общ преглед
 
@@ -30,7 +30,7 @@
 - [Разработка, тестове и build](docs/DEVELOPMENT_AND_TESTING.md)
 
 Backend/API/deployment документацията е в отделния
-[backend repository](https://github.com/Krumqnkata/pgknma-valentine), в
+[backend repository](https://github.com/Krumqnkata/pgknma-blog-backend), в
 неговата папка `docs/`.
 
 ---
