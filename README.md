@@ -195,7 +195,7 @@ GitHub Actions при всеки push и pull request.
 ## 👥 Автори
 
 - [Krumqnkata](https://github.com/Krumqnkata)
-- ad0312
+- [ythef0](https://github.com/ythef0)
 - [lkbonev72](https://github.com/lkbonev72)
 
 Проектът е създаден за ПГКНМА „Проф. Минко Балкански“ с цел иновация и
@@ -203,7 +203,7 @@ GitHub Actions при всеки push и pull request.
 
 ## 📄 Лиценз
 
-Кодът е © 2025–2026 Krumqnkata, ad0312 и lkbonev72 и е лицензиран под
+Кодът е © 2025–2026 Krumqnkata, ythef0 и lkbonev72 и е лицензиран под
 [GNU AGPL v3.0 или по-нова версия](LICENSE). Ако го ползваш или пуснеш като
 сайт, трябва да запазиш авторството и да публикуваш промените си под същия лиценз.
 
