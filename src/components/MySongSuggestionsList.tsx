@@ -3,11 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMySongSuggestions, deleteMySongSuggestion, ApprovedSong } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, MicOff, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Loader2, Trash2 } from 'lucide-react';
 import SongMediaDisplay from './SongMediaDisplay';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { formatSiteDate } from '@/lib/date-time';
 
 const MySongSuggestionsList: React.FC = () => {
@@ -59,11 +60,9 @@ const MySongSuggestionsList: React.FC = () => {
 
   if (!songs || songs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center">
-        <MicOff className="h-12 w-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-semibold">Нямате предложения</h3>
-        <p className="mt-1 text-sm text-muted-foreground">Все още не сте предложили песен за училищния звънец.</p>
-      </div>
+      <QueryEmptyState art="bell" title="Нямате предложения" description="Звънецът чака твоята песен. Какво да звучи в междучасието?">
+        <Button asChild><Link to="/bell-suggest">Предложи песен</Link></Button>
+      </QueryEmptyState>
     );
   }
 

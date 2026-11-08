@@ -6,7 +6,7 @@ import AudioReader from '@/components/AudioReader';
 import UserAvatar from '@/components/UserAvatar';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Eye, Share2, Newspaper } from "lucide-react";
+import { Calendar, Tag, FileText, FileArchive, FileSpreadsheet, FileWarning, Clock, Eye, Share2, Printer } from "lucide-react";
 import { getPost, Post as PostType, recordGamificationActivity } from '@/lib/api'; // Assuming Post is the type, aliasing to avoid conflict
 import { getPostShareUrl } from '@/lib/share';
 import Comments from '@/components/Comments';
@@ -29,6 +29,8 @@ import { formatSiteDate } from '@/lib/date-time';
 import { formatMonthlyViews } from '@/lib/post-analytics';
 import { usePosts } from '@/hooks/use-posts';
 import { PostPager, RelatedPosts } from '@/components/news/PostNavigation';
+import { PostPrintView } from '@/components/news/PostPrintView';
+import { usePostPrint } from '@/hooks/use-post-print';
 
 const getReadTime = (content: string, hook: string) => {
     const wordCount = `${content} ${hook}`.split(/\s+/).filter(Boolean).length;
@@ -60,6 +62,7 @@ const Post = () => {
         alt: image.alt_text || image.title || `Снимка ${index + 1} към ${post?.title || ''}`,
     })), [galleryImages, post?.title]);
     const readTime = useMemo(() => post ? getReadTime(post.content, post.hook) : 0, [post]);
+    const { viewRef: printViewRef, isMounted: isPrintViewMounted, isPreparing: isPreparingPrint, startPrint } = usePostPrint(post?.id);
 
     useEffect(() => {
         if (!user || !post?.id) return undefined;
@@ -196,7 +199,7 @@ const Post = () => {
                                     ))}
                                 </div>
                                 <h1 className="text-balance text-3xl font-black leading-[1.08] tracking-[-0.035em] sm:text-4xl md:text-5xl">{post.title}</h1>
-                                <p className="mt-4 text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">{post.hook}</p>
+                                <p className="mt-4 text-pretty font-reading text-base leading-relaxed text-muted-foreground sm:text-lg">{post.hook}</p>
                                 <div className="mb-8 mt-6 flex flex-wrap items-center gap-x-4 gap-y-3 border-y border-border/60 py-4 text-sm text-muted-foreground">
                                     {post.author_username ? <Link className="flex items-center gap-1.5 rounded hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" to={publicProfilePath(post.author_username)}>
                                         <UserAvatar
@@ -221,15 +224,27 @@ const Post = () => {
                                         <Eye className="h-4 w-4" />
                                         <span>{formatMonthlyViews(post.views_this_month)}</span>
                                     </div>
-                                    <ShareDropdown url={getPostShareUrl(post.id)} title={post.title}>
-                                        <button 
-                                            className="flex items-center justify-start gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer w-full sm:w-auto mt-2 sm:mt-0 pt-2 sm:pt-0 border-t border-border/50 sm:border-t-0"
-                                            title="Сподели тази статия"
+                                    <div className="mt-2 flex w-full flex-wrap items-center gap-x-4 gap-y-2 border-t border-border/50 pt-2 sm:mt-0 sm:w-auto sm:border-t-0 sm:pt-0">
+                                        <ShareDropdown url={getPostShareUrl(post.id)} title={post.title}>
+                                            <button
+                                                className="flex items-center justify-start gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+                                                title="Сподели тази статия"
+                                            >
+                                                <Share2 className="h-4 w-4" />
+                                                <span>Сподели</span>
+                                            </button>
+                                        </ShareDropdown>
+                                        <button
+                                            type="button"
+                                            className="flex items-center justify-start gap-1.5 text-muted-foreground hover:text-primary transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-70"
+                                            title="Принтирай статията със снимките"
+                                            onClick={startPrint}
+                                            disabled={isPreparingPrint}
                                         >
-                                            <Share2 className="h-4 w-4" />
-                                            <span>Сподели</span>
+                                            <Printer className="h-4 w-4" aria-hidden="true" />
+                                            <span aria-live="polite">{isPreparingPrint ? "Подготвям…" : "Принтирай"}</span>
                                         </button>
-                                    </ShareDropdown>
+                                    </div>
                                 </div>
 
                                 <AudioReader content={post.content} title={post.title} />
@@ -246,7 +261,7 @@ const Post = () => {
                                 )}
 
                                 {/* ~70 characters per line keeps long articles comfortable to read on wide screens. */}
-                                <div className="max-w-[70ch]">
+                                <div className="max-w-[70ch] font-reading">
                                     <MarkdownRenderer
                                         content={post.content}
                                         onPdfClick={(url) => {
@@ -334,7 +349,7 @@ const Post = () => {
                     ) : (
                         <div className="mx-auto max-w-2xl text-center">
                             <QueryEmptyState
-                                icon={Newspaper}
+                                art="newspaper"
                                 title="Публикацията вече не е налична"
                                 description="Възможно е да е била изтрита, скрита или все още да не е публикувана."
                             />
@@ -365,7 +380,9 @@ const Post = () => {
                 />
             )}
 
-            <PDFViewerDialog 
+            {post && isPrintViewMounted && <PostPrintView ref={printViewRef} post={post} />}
+
+            <PDFViewerDialog
                 fileUrl={pdfUrl}
                 isOpen={pdfOpen}
                 onOpenChange={setPdfOpen}

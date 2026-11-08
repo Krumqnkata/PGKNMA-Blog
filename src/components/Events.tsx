@@ -7,6 +7,7 @@ import { getEvents, Event as EventType } from "@/lib/api"; // Import getEvents a
 import { parseISO } from 'date-fns';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 import { formatSiteDate, formatSiteDateTime } from "@/lib/date-time";
+import { SiteArt } from "@/components/art/SiteArt";
 
 const Events = () => {
   const { data: events, isLoading, isError, error, refetch } = useQuery<EventType[]>({
@@ -46,7 +47,7 @@ const Events = () => {
 
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-6 text-4xl font-black tracking-tighter sm:text-5xl lg:text-6xl uppercase">Календар на <span className="text-primary italic">училището</span></h2>
-          <QueryEmptyState title="Няма предстоящи събития" description="Новите дати ще се появят тук веднага след публикуването им." />
+          <QueryEmptyState art="calendar" title="Няма предстоящи събития" description="Новите дати ще се появят тук веднага след публикуването им." />
         </div>
       </section>
     );
@@ -59,6 +60,7 @@ const Events = () => {
       <div className="container relative mx-auto px-4">
         <div className="mb-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
           <div className="lg:col-span-8">
+            <SiteArt name="calendar" className="mb-3 block h-14 w-14 drop-shadow-sm" />
             <h2 className="mb-4 text-4xl font-black tracking-tighter sm:text-5xl lg:text-6xl uppercase">
               Училищен <span className="text-primary italic">Календар</span>
             </h2>

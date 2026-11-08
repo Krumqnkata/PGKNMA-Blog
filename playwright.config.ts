@@ -5,6 +5,9 @@ export default defineConfig({
   fullyParallel: true,
   retries: 1,
   reporter: 'list',
+  globalSetup: './tests/e2e/warm-up-dev-server.ts',
+  // With every worker busy on the dev server, a page can take longer than the default 5s.
+  expect: { timeout: 10_000 },
   use: {
     baseURL: 'http://127.0.0.1:5173',
     trace: 'retain-on-failure',

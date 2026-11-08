@@ -16,9 +16,9 @@ export interface AuthContextValue {
   logout: () => Promise<void>;
   loading: boolean;
   isLoading: boolean;
-  loginDialogOpen: boolean;
-  openLoginDialog: () => void;
-  closeLoginDialog: () => void;
+  /** The session ended while the visitor was on a page: ask them to sign in without leaving it. */
+  sessionExpired: boolean;
+  dismissSessionExpired: () => void;
   updateUser: (user: User) => void;
 }
 

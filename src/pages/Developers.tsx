@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Github, Code2, Rocket, Plus } from "lucide-react";
+import { Github, Rocket, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
 
@@ -36,7 +36,7 @@ const developers = [
 const Developers = () => {
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Технологичен екип" title={<>Хората зад <span className="text-primary">ПГКНМА Блог</span></>} description="Ученици и ментори, които изграждат по-добра дигитална среда за училищната общност." icon={Code2} />
+      <InteriorPageHero eyebrow="Технологичен екип" title={<>Хората зад <span className="text-primary">ПГКНМА Блог</span></>} description="Ученици и ментори, които изграждат по-добра дигитална среда за училищната общност." art="laptop" />
       <InteriorSection>
 
         <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -48,8 +48,9 @@ const subscriptionPayload = (subscription: PushSubscription) => {
 
 export async function currentPushSubscription() {
   if (!isPushSupported()) return null;
-  const registration = await navigator.serviceWorker.ready;
-  return registration.pushManager.getSubscription();
+  // Not `serviceWorker.ready`: it never resolves without a worker, which would hang signing out.
+  const registration = await navigator.serviceWorker.getRegistration();
+  return registration ? registration.pushManager.getSubscription() : null;
 }
 
 export async function currentPushRegistration() {

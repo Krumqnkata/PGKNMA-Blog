@@ -3,11 +3,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { getMyMemes, deleteMyMeme, Meme } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, ImageOff, Trash2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Loader2, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { AuthenticatedImage } from '@/components/AuthenticatedImage';
-import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { formatSiteDate } from '@/lib/date-time';
 
 const MyMemesList: React.FC = () => {
@@ -57,11 +58,9 @@ const MyMemesList: React.FC = () => {
 
   if (!memes || memes.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center">
-        <ImageOff className="h-12 w-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-semibold">Нямате качени мемета</h3>
-        <p className="mt-1 text-sm text-muted-foreground">Все още не сте качили меме за 'Меме на седмицата'.</p>
-      </div>
+      <QueryEmptyState art="meme" title="Нямате качени мемета" description="Сещаш се за смешен момент от училище? Време е целият клас да го види.">
+        <Button asChild><Link to="/meme-of-the-week">Качи меме</Link></Button>
+      </QueryEmptyState>
     );
   }
 

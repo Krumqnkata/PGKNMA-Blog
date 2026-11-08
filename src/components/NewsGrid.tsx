@@ -7,6 +7,7 @@ import { usePosts } from "@/hooks/use-posts";
 import { formatSiteDate } from "@/lib/date-time";
 import { formatMonthlyViews } from "@/lib/post-analytics";
 import { LoadingCaption } from "@/components/query/QueryStates";
+import { SiteArt } from "@/components/art/SiteArt";
 
 const displayCategories = (post: Post) => {
   const names = post.categories.map((c) => c.full_name);
@@ -34,6 +35,7 @@ const NewsGrid = () => {
       <div className="container relative mx-auto px-4">
         <div className="mb-8 flex flex-col items-start justify-between gap-4 sm:mb-12 lg:flex-row lg:items-end lg:gap-6">
           <div className="max-w-2xl text-left">
+            <SiteArt name="newspaper" className="mb-3 block h-14 w-14 drop-shadow-sm" />
             <h2 className="mb-4 text-4xl font-black tracking-tighter sm:text-5xl lg:text-6xl uppercase">
               Последни <span className="text-primary italic">Новини</span>
             </h2>

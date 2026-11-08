@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef } from 'react';
 import { Archive, Eye, History, Image, LayoutDashboard, LogOut, MessageSquare, Music, Settings, Shield, Trophy } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 import ProfileOverview from '@/components/account/ProfileOverview';
 import { InteriorPage, InteriorSection } from '@/components/InteriorPage';
@@ -27,10 +27,17 @@ const groups = ['Начало', 'Моето участие', 'Моят акау�
 
 export default function MyProfilePage() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const active = sections.find(({ value }) => value === searchParams.get('tab')) ?? sections[0];
   const Content = active.component;
   const navigationRef = useRef<HTMLElement>(null);
+
+  const handleLogout = () => {
+    // Leave this protected page first; otherwise signing out would redirect to the login form.
+    navigate('/', { replace: true });
+    void logout();
+  };
 
   useEffect(() => {
     const navigation = navigationRef.current;
@@ -55,7 +62,7 @@ export default function MyProfilePage() {
           <div className="flex flex-wrap items-center gap-2">
             <Button asChild size="sm" className="min-h-10 gap-2"><Link to="/profile?tab=settings"><Settings className="size-4" aria-hidden="true" />Настройки</Link></Button>
             {user && <Button asChild size="sm" variant="outline" className="min-h-10 gap-2"><Link to={publicProfilePath(user.username)}><Eye className="size-4" aria-hidden="true" />Публичен профил</Link></Button>}
-            <Button variant="ghost" size="icon" onClick={() => void logout()} aria-label="Изход от профила" title="Изход"><LogOut className="size-4" aria-hidden="true" /></Button>
+            <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="Изход от профила" title="Изход"><LogOut className="size-4" aria-hidden="true" /></Button>
           </div>
         </header>
 

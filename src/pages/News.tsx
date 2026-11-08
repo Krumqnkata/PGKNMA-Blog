@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Newspaper, Search, SlidersHorizontal } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { getPosts, Post } from '@/lib/api';
 import NewsCard from "@/components/news/NewsCard";
 import NewsPagination from "@/components/news/NewsPagination";
@@ -98,7 +98,7 @@ const News = () => {
           eyebrow="Училищен информационен център"
           title={<>Последни <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">новини</span></>}
           description="Събития, успехи и важни моменти от живота на ПГКНМА — подредени ясно и лесни за откриване."
-          icon={Newspaper}
+          art="newspaper"
         >
           {!isLoading && (
             <div className="mx-auto mt-8 inline-flex items-center gap-2 rounded-xl border bg-card/70 px-4 py-2 text-sm text-muted-foreground shadow-sm backdrop-blur">
@@ -147,7 +147,7 @@ const News = () => {
             <QueryErrorState message={error.message} onRetry={() => void refetch()} />
           ) : filteredPosts.length === 0 ? (
             <div className="text-center">
-              <QueryEmptyState title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
+              <QueryEmptyState art="newspaper" title={posts.length ? "Няма резултати" : "Все още няма публикации"} description={posts.length ? "Променете търсенето или избраната категория." : "Новите публикации ще се появят тук."} />
               {posts.length > 0 && (debouncedSearch || categorySlug) && <Button variant="outline" className="mt-4" onClick={clearFilters}>Изчисти филтрите</Button>}
             </div>
           ) : (

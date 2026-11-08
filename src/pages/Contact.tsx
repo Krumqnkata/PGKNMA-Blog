@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Contact = () => {
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Свържете се с нас" title={<>Нека <span className="text-primary">поговорим</span></>} description="Въпрос, идея или технически проблем — изпратете ни съобщение или използвайте директните контакти." icon={Mail} />
+      <InteriorPageHero eyebrow="Свържете се с нас" title={<>Нека <span className="text-primary">поговорим</span></>} description="Въпрос, идея или технически проблем — изпратете ни съобщение или използвайте директните контакти." art="envelope" />
       <InteriorSection>
           <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
             <Card className="overflow-hidden">

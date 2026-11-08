@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 
+import { SiteArt, type SiteArtName } from "@/components/art/SiteArt";
 import { cn } from "@/lib/utils";
 
 interface InteriorPageProps {
@@ -20,7 +21,7 @@ interface InteriorPageHeroProps {
   eyebrow?: string;
   title: ReactNode;
   description: string;
-  icon?: LucideIcon;
+  art?: SiteArtName;
   actions?: ReactNode;
   children?: ReactNode;
   className?: string;
@@ -50,14 +51,15 @@ export function PageEyebrow({ children, icon: Icon, className }: PageEyebrowProp
   );
 }
 
-export function InteriorPageHero({ eyebrow, title, description, icon: Icon, actions, children, className }: InteriorPageHeroProps) {
+export function InteriorPageHero({ eyebrow, title, description, art, actions, children, className }: InteriorPageHeroProps) {
   return (
     <section className={cn("relative isolate overflow-hidden border-b border-border/70 py-8 sm:py-12 lg:py-16", className)}>
       <div className="absolute inset-0 -z-20 bg-[radial-gradient(circle_at_12%_0%,hsl(var(--primary)/0.16),transparent_32%),radial-gradient(circle_at_92%_75%,hsl(210_100%_55%/0.10),transparent_34%)]" />
       <div className="absolute inset-0 -z-10 bg-[linear-gradient(to_right,hsl(var(--border)/0.22)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.22)_1px,transparent_1px)] bg-[size:42px_42px] [mask-image:linear-gradient(to_bottom,black,transparent_92%)]" />
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-4xl text-center">
-          {eyebrow && <PageEyebrow icon={Icon}>{eyebrow}</PageEyebrow>}
+          {art && <SiteArt name={art} className="art-wiggle mx-auto mb-2 block h-14 w-14 drop-shadow-sm sm:mb-3 sm:h-20 sm:w-20" />}
+          {eyebrow && <PageEyebrow>{eyebrow}</PageEyebrow>}
           <h1 className={cn("text-balance text-3xl font-black leading-[1.08] tracking-[-0.035em] sm:text-5xl lg:text-6xl", eyebrow && "mt-3 sm:mt-5")}>{title}</h1>
           <p className="mx-auto mt-3 line-clamp-3 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground sm:mt-5 sm:line-clamp-none sm:text-lg">{description}</p>
           {actions && <div className="mt-6 flex flex-col justify-center gap-3 sm:mt-7 sm:flex-row">{actions}</div>}

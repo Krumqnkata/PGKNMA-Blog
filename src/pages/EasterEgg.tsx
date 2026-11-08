@@ -66,7 +66,7 @@ const EasterEgg: React.FC = () => {
 
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Тайната е отключена" title={<>Историята на <span className="text-primary">проф. Минко Балкански</span></>} description="Бележит учен, филантроп и вдъхновение за поколения български ученици." icon={Sparkles} />
+      <InteriorPageHero eyebrow="Тайната е отключена" title={<>Историята на <span className="text-primary">проф. Минко Балкански</span></>} description="Бележит учен, филантроп и вдъхновение за поколения български ученици." art="star" />
       <InteriorSection containerClassName="max-w-5xl">
         <div className="flex w-full flex-col items-center gap-8">
             <div className="w-full">

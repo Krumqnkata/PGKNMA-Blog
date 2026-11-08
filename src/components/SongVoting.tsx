@@ -118,7 +118,7 @@ export function SongVoting() {
 
     if (safeSongs.length === 0) {
         return (
-            <QueryEmptyState title="Все още няма песни за гласуване" description="Одобрените предложения ще се появят тук." />
+            <QueryEmptyState art="bell" title="Все още няма песни за гласуване" description="Одобрените предложения ще се появят тук." />
         );
     }
 

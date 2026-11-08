@@ -16,7 +16,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Clock3 } from "lucide-react";
 
 // Import API function and type
 import { getProgramSchedule, getSiteStatus, SiteStatus } from '@/lib/api';
@@ -169,7 +168,7 @@ const Program: React.FC = () => {
 
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Организирай учебната седмица" title={<>Учебна <span className="text-primary">програма</span></>} description="Изберете клас и проверете часовете в ясен, удобен за мобилни устройства формат." icon={Clock3} />
+      <InteriorPageHero eyebrow="Организирай учебната седмица" title={<>Учебна <span className="text-primary">програма</span></>} description="Изберете клас и проверете часовете в ясен, удобен за мобилни устройства формат." art="schedule" />
       <InteriorSection>{renderContent()}</InteriorSection>
     </InteriorPage>
   );

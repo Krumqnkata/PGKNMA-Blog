@@ -8,12 +8,14 @@ interface MarkdownRendererProps {
   content: string;
   className?: string;
   onPdfClick?: (url: string) => void;
+  imageLoading?: 'lazy' | 'eager';
 }
 
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ 
   content, 
   className = "prose prose-lg max-w-none break-words prose-headings:mb-4 prose-headings:mt-6 prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:my-4 prose-ul:my-4 prose-ol:my-4 prose-li:my-1 prose-blockquote:my-4 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-code:bg-muted prose-pre:my-4 prose-pre:p-4 prose-pre:rounded-lg prose-pre:overflow-x-auto prose-img:my-4 prose-img:max-w-full prose-img:rounded-lg prose-table:my-4 prose-th:font-semibold prose-th:border prose-th:px-3 prose-th:py-2 prose-td:border prose-td:px-3 prose-td:py-2 prose-a:text-primary prose-a:underline hover:prose-a:no-underline prose-strong:font-semibold prose-em:italic dark:prose-invert",
-  onPdfClick
+  onPdfClick,
+  imageLoading = 'lazy'
 }) => {
   return (
     <div className={className}>
@@ -110,7 +112,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({
             return <a className="text-primary hover:underline underline-offset-4" href={href} {...props}>{children}</a>;
           },
           img({ node, children, ...props }) {
-            return <img className="my-4 max-w-full rounded-lg border border-border" loading="lazy" {...props} />;
+            return <img className="my-4 max-w-full rounded-lg border border-border" loading={imageLoading} {...props} />;
           },
           hr({ node, ...props }) {
             return <hr className="my-8 border-0 h-0.5 bg-gradient-to-r from-transparent via-border to-transparent" {...props} />;

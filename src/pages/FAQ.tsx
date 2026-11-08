@@ -244,7 +244,7 @@ const FAQ = () => {
 
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Помощен център" title={<>Често задавани <span className="text-primary">въпроси</span></>} description="Бързи и ясни отговори за профила, съдържанието и функциите на платформата." icon={HelpCircle} />
+      <InteriorPageHero eyebrow="Помощен център" title={<>Често задавани <span className="text-primary">въпроси</span></>} description="Бързи и ясни отговори за профила, съдържанието и функциите на платформата." art="help" />
       <InteriorSection containerClassName="max-w-3xl">
 
           <div className="relative mx-auto mb-6 max-w-xl">

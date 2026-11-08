@@ -65,7 +65,22 @@ test('guests discover all six games and open login',async({page})=>{
   for(const title of Object.values(titles))await expect(page.getByRole('heading',{name:title,exact:true})).toBeVisible();
   await page.getByRole('link').filter({has:page.getByRole('heading',{name:'Разбий кода',exact:true})}).click();
   await page.getByRole('button',{name:'Влез и играй',exact:true}).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page).toHaveURL(/\/login\?next=%2Fgames%2Fcode$/);
+  await expect(page.getByRole('heading',{name:'Добре дошли'})).toBeVisible();
+});
+
+test('a finished game shows how it ended, with its next steps',async({page})=>{
+  await setup(page,'code');
+  let status:GameSession['status']='lost';
+  await page.route('**/api/games/sessions/**',route=>route.fulfill({json:{...fixture('code'),status}}));
+  await page.goto(`/games/code?session=${base.id}`);await dismissCookies(page);
+  await expect(page.getByRole('heading',{name:'Този опит приключи'})).toBeVisible();
+  await expect(page.getByText('Следващото предизвикателство те очаква.')).toBeVisible();
+  await expect(page.getByRole('button',{name:'Упражни същата задача'})).toBeVisible();
+  status='expired';
+  await page.reload();
+  await expect(page.getByRole('heading',{name:'Времето на тази сесия изтече'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Следваща игра'})).toBeVisible();
 });
 
 for(const game of Object.keys(titles) as GameSlug[]) {

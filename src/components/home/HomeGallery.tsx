@@ -1,10 +1,11 @@
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
-import { ArrowRight, Images } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { AlbumCard } from "@/components/gallery/AlbumCard";
 import { Button } from "@/components/ui/button";
 import { usePosts } from "@/hooks/use-posts";
 import { albumsFromPosts } from "@/lib/gallery";
+import { SiteArt } from "@/components/art/SiteArt";
 
 export default function HomeGallery() {
   const { data } = usePosts();
@@ -16,7 +17,8 @@ export default function HomeGallery() {
       <div className="container mx-auto px-4">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="mb-2 flex items-center gap-2 text-sm font-semibold text-primary"><Images className="size-4" aria-hidden="true" />Училищният живот в кадри</p>
+            <SiteArt name="photos" className="mb-3 block h-14 w-14 drop-shadow-sm" />
+            <p className="mb-2 text-sm font-semibold text-primary">Училищният живот в кадри</p>
             <h2 id="home-gallery-title" className="text-3xl font-bold tracking-tight sm:text-4xl">Последни албуми</h2>
           </div>
           <Button asChild variant="outline"><Link to="/gallery">Всички албуми<ArrowRight className="size-4" aria-hidden="true" /></Link></Button>

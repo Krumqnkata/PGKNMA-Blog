@@ -4,10 +4,10 @@ import { getMyComments, deleteMyComment, Comment } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { Trash2, Loader2, MessageSquareOff, ArrowUpRightFromSquare } from 'lucide-react';
+import { Trash2, Loader2, ArrowUpRightFromSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ContentSkeleton, QueryErrorState } from '@/components/query/QueryStates';
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import { formatSiteDate } from '@/lib/date-time';
 
 const MyCommentsList: React.FC = () => {
@@ -47,11 +47,9 @@ const MyCommentsList: React.FC = () => {
 
   if (!comments || comments.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center">
-        <MessageSquareOff className="h-12 w-12 text-muted-foreground" />
-        <h3 className="mt-4 text-lg font-semibold">Нямате написани коментари</h3>
-        <p className="mt-1 text-sm text-muted-foreground">Все още не сте коментирали нито една публикация.</p>
-      </div>
+      <QueryEmptyState art="comment" title="Нямате написани коментари" description="Имаш мнение за някоя новина? Разговорът те чака.">
+        <Button asChild><Link to="/news">Към новините</Link></Button>
+      </QueryEmptyState>
     );
   }
 

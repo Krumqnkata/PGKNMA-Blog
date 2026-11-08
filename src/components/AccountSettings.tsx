@@ -1,8 +1,9 @@
 import { useRef, useState } from "react";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { useMutation } from "@tanstack/react-query";
 import { AlertTriangle, Loader2, LockKeyhole, Palette, ShieldCheck, UserRound } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import AccountCredentialSettings from "@/components/account/AccountCredentialSettings";
 import PersonalDataExportCard from "@/components/PersonalDataExportCard";
@@ -32,6 +33,7 @@ import { deactivateMyAccount, linkGoogleAccount } from "@/lib/api";
 const AccountSettings = () => {
   const { toast } = useToast();
   const { logout } = useAuth();
+  const navigate = useNavigate();
   const [isDeactivateDialogOpen, setIsDeactivateDialogOpen] = useState(false);
   const [googleLinkPassword, setGoogleLinkPassword] = useState("");
   const deactivateCancelRef = useRef<HTMLButtonElement>(null);
@@ -45,7 +47,11 @@ const AccountSettings = () => {
     onSuccess: () => {
       setIsDeactivateDialogOpen(false);
       toast({ title: "Профилът е деактивиран", description: "Профилът ви беше деактивиран. Ще бъдете отписани." });
-      window.setTimeout(() => void logout(), 2000);
+      // The account is gone, so go home rather than to the login form for /profile.
+      window.setTimeout(() => {
+        navigate("/", { replace: true });
+        void logout();
+      }, 2000);
     },
     onError: (error: Error) => {
       toast({ title: "Грешка", description: error.message, variant: "destructive" });
@@ -110,7 +116,7 @@ const AccountSettings = () => {
               </div>
               <div className="max-w-full overflow-hidden">
                 {googleClientId ? (
-                  <GoogleLogin onSuccess={handleGoogleLink} onError={() => toast({ title: "Грешка", description: "Неуспешно удостоверяване с Google.", variant: "destructive" })} theme="filled_blue" shape="rectangular" text="continue_with" width="300" />
+                  <GoogleLoginButton onSuccess={handleGoogleLink} onError={() => toast({ title: "Грешка", description: "Неуспешно удостоверяване с Google.", variant: "destructive" })} theme="filled_blue" shape="rectangular" text="continue_with" width="300" />
                 ) : (
                   <p className="text-sm text-muted-foreground">Входът с Google още не е конфигуриран.</p>
                 )}

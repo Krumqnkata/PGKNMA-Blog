@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/use-auth';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
 import { getGamificationLeaderboard, getGamificationProfile, type GamificationLeaderboard } from '@/lib/api';
 import { publicProfilePath } from '@/lib/public-profile';
 import { cn } from '@/lib/utils';
@@ -18,7 +19,8 @@ const periods = { weekly: 'Седмица', monthly: 'Месец', all_time: 'О
 type Period = keyof GamificationLeaderboard;
 
 export default function GamificationStatistics() {
-  const { user, isLoading, openLoginDialog } = useAuth();
+  const { user, isLoading } = useAuth();
+  const goToLogin = useGoToLogin();
   const [period, setPeriod] = useState<Period>('weekly');
   const leaderboard = useQuery({
     queryKey: ['gamification-leaderboard', user?.id ?? 'guest'],
@@ -77,7 +79,7 @@ export default function GamificationStatistics() {
             ) : (
               <div className="flex flex-col gap-4 rounded-2xl border border-primary/20 bg-primary/5 p-5 sm:flex-row sm:items-center sm:justify-between">
                 <p className="text-sm leading-relaxed text-muted-foreground">Влез, за да видиш своите точки и място в класацията.</p>
-                <Button onClick={openLoginDialog}>Влез в профила си</Button>
+                <Button onClick={goToLogin}>Влез в профила си</Button>
               </div>
             )}
 

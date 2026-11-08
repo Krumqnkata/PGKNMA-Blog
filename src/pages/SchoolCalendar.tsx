@@ -99,7 +99,7 @@ const SchoolCalendar = () => {
         eyebrow="Планирай навреме"
         title={<>Училищен <span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">календар</span></>}
         description="Важните дати, инициативи и събития на едно място — с бърз преглед по ден и категория."
-        icon={CalendarDays}
+        art="calendar"
       />
 
       <InteriorSection>

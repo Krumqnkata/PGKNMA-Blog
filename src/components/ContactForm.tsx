@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { SuccessMoment } from "@/components/art/SuccessMoment";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -42,7 +43,8 @@ const FormSchema = z.object({
 });
 
 export function ContactForm() {
-  const [submitMessage, setSubmitMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [sentMessage, setSentMessage] = useState<string | null>(null);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -56,16 +58,11 @@ export function ContactForm() {
   const { mutate, isPending } = useMutation({
     mutationFn: (data: ContactFormData) => submitContactForm(data),
     onSuccess: (response) => {
-      setSubmitMessage({ type: "success", text: response.detail || "Съобщението е изпратено успешно." });
-      toast({
-        title: "Успех!",
-        description: response.detail,
-        variant: "default",
-      });
+      setSentMessage(response.detail || "Съобщението е изпратено успешно.");
       form.reset(); // Clear form on success
     },
     onError: (error) => {
-      setSubmitMessage({ type: "error", text: error.message || "Съобщението не беше изпратено. Опитайте отново." });
+      setErrorMessage(error.message || "Съобщението не беше изпратено. Опитайте отново.");
       toast({
         title: "Грешка при изпращане",
         description: error.message || "Възникна грешка при изпращане на съобщението.",
@@ -75,18 +72,26 @@ export function ContactForm() {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    setSubmitMessage(null);
+    setErrorMessage(null);
     // The schema guarantees every API field at runtime. The explicit boundary
     // type is needed while this project still compiles without strict null checks.
     mutate(data as ContactFormData);
   }
 
+  if (sentMessage !== null) {
+    return (
+      <SuccessMoment art="envelope" title="Съобщението ти е при нас!" actionLabel="Изпрати още едно съобщение" onAction={() => setSentMessage(null)}>
+        {sentMessage}
+      </SuccessMoment>
+    );
+  }
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-5">
-        {submitMessage && (
-          <div role={submitMessage.type === "error" ? "alert" : "status"} className={`rounded-xl border px-4 py-3 text-sm ${submitMessage.type === "error" ? "border-destructive/40 bg-destructive/10 text-destructive" : "border-primary/30 bg-primary/10 text-foreground"}`}>
-            {submitMessage.text}
+        {errorMessage && (
+          <div role="alert" className="rounded-xl border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+            {errorMessage}
           </div>
         )}
         <FormField

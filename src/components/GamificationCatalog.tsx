@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/hooks/use-auth';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
 import { getGamificationCatalog, type CatalogBadge, type CatalogReward } from '@/lib/api';
 import { formatSiteDate } from '@/lib/date-time';
 import { avatarFrameStyle, profileBorderStyle, profileThemeStyle, rewardIcon, rewardTitles, safeRewardColor } from '@/lib/digital-rewards';
@@ -72,7 +73,8 @@ function UnlockCondition({ badge }: { badge: CatalogBadge }) {
 }
 
 export default function GamificationCatalog() {
-  const { user, openLoginDialog } = useAuth();
+  const { user } = useAuth();
+  const goToLogin = useGoToLogin();
   const [filter, setFilter] = useState('all');
   const catalog = useQuery({
     queryKey: ['gamification-catalog'], queryFn: getGamificationCatalog, staleTime: 30_000,
@@ -154,7 +156,7 @@ export default function GamificationCatalog() {
 
       <InteriorSection>
         <div id="rewards" className="scroll-mt-24">
-          <SectionHeading eyebrow="Намери следващата си цел" title="Открий наградите" description="Разгледай наличните значки и дигитални награди и виж как се отключват. Активираш спечелените награди от профила си." action={user ? <Button asChild variant="outline"><Link to="/profile?tab=progress">Към моите награди</Link></Button> : <Button variant="outline" onClick={openLoginDialog}>Влез за своите награди</Button>} />
+          <SectionHeading eyebrow="Намери следващата си цел" title="Открий наградите" description="Разгледай наличните значки и дигитални награди и виж как се отключват. Активираш спечелените награди от профила си." action={user ? <Button asChild variant="outline"><Link to="/profile?tab=progress">Към моите награди</Link></Button> : <Button variant="outline" onClick={goToLogin}>Влез за своите награди</Button>} />
           {catalog.isPending ? <ContentSkeleton count={3} label="Зареждане на наградите" /> : catalog.isError ? (
             <p className="text-sm text-muted-foreground">Каталогът временно е недостъпен. Използвай „Опитай отново“ при правилата по-горе.</p>
           ) : (

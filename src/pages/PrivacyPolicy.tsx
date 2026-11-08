@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { getPrivacyPolicy, PrivacyPolicyContent } from "../lib/api";
 import MarkdownRenderer from "@/components/MarkdownRenderer";
-import { ShieldCheck } from "lucide-react";
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
 import { Card, CardContent } from "@/components/ui/card";
 import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
@@ -51,7 +50,7 @@ const PrivacyPolicy = () => {
 
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Правна информация" title={<>Политика за <span className="text-primary">поверителност</span></>} description="Как събираме, използваме и защитаваме информацията в училищната платформа." icon={ShieldCheck} />
+      <InteriorPageHero eyebrow="Правна информация" title={<>Политика за <span className="text-primary">поверителност</span></>} description="Как събираме, използваме и защитаваме информацията в училищната платформа." art="document" />
       <InteriorSection containerClassName="max-w-4xl">
         <Card className="overflow-hidden">
           {policy && <div className="border-b border-border/60 bg-muted/35 px-5 py-3 text-center text-sm font-semibold text-muted-foreground">Последна актуализация: {formatDate(policy.date)}</div>}

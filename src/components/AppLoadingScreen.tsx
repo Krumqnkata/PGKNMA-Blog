@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { CheckCircle2, Circle, Loader2, LoaderPinwheel, RefreshCw, WifiOff } from "lucide-react";
+import { CheckCircle2, Circle, Loader2, RefreshCw, WifiOff } from "lucide-react";
 
+import { PencilLoader } from "@/components/art/PencilLoader";
 import { Button } from "@/components/ui/button";
 import { getRouteLoadingInfo } from "@/lib/route-labels";
 import { cn } from "@/lib/utils";
@@ -62,10 +63,7 @@ export default function AppLoadingScreen({ fullScreen = true }: AppLoadingScreen
       role="status"
       aria-live="polite"
     >
-      <div className="relative">
-        <LoaderPinwheel className="h-12 w-12 animate-spin text-primary motion-reduce:animate-none" aria-hidden="true" />
-        <div className="absolute inset-0 rounded-full border border-primary/30 animate-ping-slow motion-reduce:animate-none" aria-hidden="true" />
-      </div>
+      <PencilLoader />
 
       <div className="text-center">
         <p className="text-lg font-black tracking-tight">Отваряме „{title}“</p>

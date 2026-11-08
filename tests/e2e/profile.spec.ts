@@ -63,6 +63,7 @@ test('profile overview, settings and browser history work on desktop and phone',
   await navigation.getByRole('link', { name: 'Моите песни', exact: true }).click();
   await expect(page).toHaveURL(/tab=songs/);
   await expect(page.getByRole('heading', { name: 'Нямате предложения' })).toBeVisible();
+  await expect(page.getByRole('main').getByRole('link', { name: 'Предложи песен' })).toHaveAttribute('href', '/bell-suggest');
   await page.goBack();
   await expect(page.getByRole('tab', { name: 'Предпочитания', exact: true })).toHaveAttribute('aria-selected', 'true');
 });

@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Images, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
 import { AlbumCard } from "@/components/gallery/AlbumCard";
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
@@ -34,7 +34,7 @@ export default function Gallery() {
         eyebrow="Училищният живот в кадри"
         title={<span className="bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent">Галерия</span>}
         description="Събития, постижения и споделени моменти — разгледай снимките от нашите публикации."
-        icon={Images}
+        art="photos"
       />
       <InteriorSection>
         <div className="mb-10 grid gap-5 rounded-2xl border border-border/70 bg-card/80 p-4 shadow-lg shadow-black/5 backdrop-blur sm:grid-cols-[minmax(0,1fr)_220px] sm:p-6">
@@ -60,7 +60,7 @@ export default function Gallery() {
           <SectionHeading eyebrow="Фотоархив" title={search || year ? "Резултати от филтрирането" : "Всички албуми"} description={`${filtered.length} ${filtered.length === 1 ? "намерен албум" : "намерени албума"}`} />
           <p role="status" className="sr-only">{filtered.length} {filtered.length === 1 ? "албум" : "албума"}</p>
           {!filtered.length ? <>
-            <QueryEmptyState icon={Images} title={albums.length ? "Няма намерени албуми" : "Все още няма албуми"} description={albums.length ? "Опитай с друго заглавие или учебна година." : "Тук ще откриеш снимките от следващите ни публикации."} />
+            <QueryEmptyState art="photos" title={albums.length ? "Няма намерени албуми" : "Все още няма албуми"} description={albums.length ? "Опитай с друго заглавие или учебна година." : "Тук ще откриеш снимките от следващите ни публикации."} />
             {(search || year) && <Button variant="outline" className="mt-4" onClick={() => { setParams({}); setLimit(12); }}>Изчисти филтрите</Button>}
           </> : <>
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">{filtered.slice(0, limit).map((album) => <AlbumCard key={album.id} album={album} />)}</div>

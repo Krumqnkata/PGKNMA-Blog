@@ -16,8 +16,11 @@
 
 1. зарежда global CSS;
 2. създава един `QueryClient`;
-3. добавя `GoogleOAuthProvider` с `VITE_GOOGLE_CLIENT_ID`;
-4. рендерира `App`.
+3. рендерира `App`.
+
+`GoogleOAuthProvider` не е тук, а в `components/auth/GoogleLoginButton.tsx`,
+защото зарежда скрипта на Google при показване. Политиката за поверителност
+обещава, че Google участва само когато посетителят избере вход с Google.
 
 `src/App.tsx` композира providers в този ред:
 

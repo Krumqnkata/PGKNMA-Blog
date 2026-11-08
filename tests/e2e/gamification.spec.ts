@@ -73,7 +73,8 @@ test('guests can discover the page and open login without requesting private pro
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('gamification-guest.png'), fullPage: true });
   await page.getByRole('button', { name: 'Влез в профила си', exact: true }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await expect(page).toHaveURL(/\/login\?next=%2Fgamification/);
+  await expect(page.getByRole('heading', { name: 'Добре дошли' })).toBeVisible();
 });
 
 test('signed-in readers see their rank outside the top ten and can switch periods', async ({ page }, testInfo) => {
@@ -101,7 +102,8 @@ test('signed-in readers see their rank outside the top ten and can switch period
   await expect(statistics.getByText('№ 23', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath('gamification-progress.png'), fullPage: true });
-  await page.getByRole('button', { name: 'Още', exact: true }).click();
+  await page.setViewportSize({ width: 375, height: 800 });
+  await page.getByRole('navigation', { name: 'Основна навигация', exact: true }).getByRole('button', { name: 'Още', exact: true }).click();
   await expect(page.getByRole('navigation', { name: 'Още раздели' }).getByRole('link', { name: 'Мисии и награди' })).toHaveAttribute('aria-current', 'page');
 });
 
