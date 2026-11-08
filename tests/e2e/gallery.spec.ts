@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
   await page.route("**/gallery-test/*.svg", (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><rect width="800" height="600" fill="#166b65"/><circle cx="400" cy="200" r="120" fill="#54baa4"/><path d="M0 600L260 220L560 600ZM320 600L630 280L800 600Z" fill="#103f48"/></svg>' }));
 });
 
-test("latest albums appear on home and Gallery is available in More on every screen", async ({ page }) => {
+test("latest albums appear on home and Gallery is under More on phones and in the desktop header", async ({ page }) => {
   let postRequests = 0;
   page.on("request", (request) => { if (new URL(request.url()).pathname.endsWith("/api/posts/")) postRequests++; });
   await page.goto("/");
@@ -39,10 +39,18 @@ test("latest albums appear on home and Gallery is available in More on every scr
   await preview.scrollIntoViewIfNeeded();
   await expect(preview.locator("h3")).toHaveText(["Откриване на учебната година", "Състезание по информатика", "Спортен празник"]);
   expect(postRequests).toBe(1);
+
+  await page.setViewportSize({ width: 375, height: 800 });
   const nav = page.getByRole("navigation", { name: "Основна навигация", exact: true });
   await expect(nav.getByRole("link", { name: "Галерия" })).toHaveCount(0);
   await nav.getByRole("button", { name: "Още" }).click();
   await page.getByRole("navigation", { name: "Още раздели" }).getByRole("link", { name: "Галерия" }).click();
+  await expect(page).toHaveURL(/\/gallery$/);
+  await expect(page.getByRole("heading", { name: "Галерия", exact: true })).toBeVisible();
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  await page.getByRole("navigation", { name: "Горна навигация" }).getByRole("link", { name: "Галерия" }).click();
   await expect(page).toHaveURL(/\/gallery$/);
   await expect(page.getByRole("heading", { name: "Галерия", exact: true })).toBeVisible();
 });
@@ -80,13 +88,19 @@ test("filters albums, opens photos with keyboard controls, and supports direct a
   await expect(opener).toBeFocused();
   await page.reload();
   await expect(page.getByRole("heading", { name: "Откриване на учебната година" })).toBeVisible();
+  await page.setViewportSize({ width: 375, height: 800 });
   await page.getByRole("navigation", { name: "Основна навигация", exact: true }).getByRole("button", { name: "Още" }).click();
   await expect(page.getByRole("navigation", { name: "Още раздели" }).getByRole("link", { name: "Галерия" })).toHaveAttribute("aria-current", "page");
   await page.keyboard.press("Escape");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await expect(page.getByRole("navigation", { name: "Горна навигация" }).getByRole("link", { name: "Галерия" })).toHaveAttribute("aria-current", "page");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 test("handles empty albums, removed articles and a recoverable loading error", async ({ page }) => {
+  // The error state only appears after the query has used up its retries.
+  test.slow();
   await page.goto("/gallery/5");
   await expect(page.getByRole("heading", { name: "Албумът не е наличен" })).toBeVisible();
   await page.goto("/gallery/999");

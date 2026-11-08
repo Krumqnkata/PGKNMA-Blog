@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Music2, Send, FileText } from "lucide-react";
+import { Send, FileText } from "lucide-react";
+import { SuccessMoment } from "@/components/art/SuccessMoment";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,9 +10,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { useAuth } from '@/hooks/use-auth';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
 import { submitBellSongSuggestion } from '@/lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import PDFViewer from "./PDFViewer";
+import { SiteArt } from "@/components/art/SiteArt";
 
 type BellSongFormValues = {
   title: string;
@@ -20,7 +24,9 @@ type BellSongFormValues = {
 };
 
 const BellSongForm = () => {
-  const { isAuthenticated, openLoginDialog } = useAuth(); // Use AuthContext
+  const { isAuthenticated } = useAuth(); // Use AuthContext
+  const goToLogin = useGoToLogin();
+  const [sentTitle, setSentTitle] = useState<string | null>(null);
 
   const {
     register,
@@ -44,16 +50,13 @@ const BellSongForm = () => {
         description: "Моля, влезте, за да направите предложение.",
         variant: "destructive",
       });
-      openLoginDialog();
+      goToLogin();
       return;
     }
 
     try {
       await submitBellSongSuggestion(values);
-      toast({
-        title: "Успех!",
-        description: `Вашето предложение за песен "${values.title}" беше изпратено за одобрение.`,
-      });
+      setSentTitle(values.title);
       reset();
     } catch (error: unknown) {
       console.error("Submission error:", error);
@@ -71,9 +74,7 @@ const BellSongForm = () => {
     <section id="bell-song" className="relative overflow-hidden border-b border-border/70 bg-gradient-to-b from-primary/10 via-background to-background py-12 sm:py-16">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/15 text-primary shadow-sm">
-            <Music2 className="h-6 w-6" />
-          </div>
+          <SiteArt name="bell" className="art-wiggle mx-auto mb-3 block h-14 w-14 drop-shadow-sm sm:h-20 sm:w-20" />
           <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Твоят избор в междучасието</p>
           <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-5xl">Предложи песен за звънеца</h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
@@ -114,8 +115,12 @@ const BellSongForm = () => {
             <CardDescription className="mb-6">
               Само регистрирани и влезли потребители могат да предлагат песни за звънеца.
             </CardDescription>
-            <Button onClick={openLoginDialog}>Вход</Button>
+            <Button onClick={goToLogin}>Вход</Button>
           </Card>
+        ) : sentTitle !== null ? (
+          <SuccessMoment art="bell" title="Песента ти е при нас!" actionLabel="Предложи още една песен" onAction={() => setSentTitle(null)}>
+            „{sentTitle}“ чака одобрение. Ще те уведомим, когато я разгледаме.
+          </SuccessMoment>
         ) : (
           <Card className="mx-auto max-w-4xl border-border bg-card/90 shadow-lg">
             <CardHeader>

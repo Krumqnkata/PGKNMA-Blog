@@ -1,21 +1,16 @@
 import type { CSSProperties } from "react";
-import type { LucideIcon } from "lucide-react";
-import {
-  ArrowUpRight,
-  CalendarCheck2,
-  MessagesSquare,
-  Newspaper,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
+
+import { SiteArt, type SiteArtName } from "@/components/art/SiteArt";
 
 interface Benefit {
   title: string;
   description: string;
   href: string;
   action: string;
-  icon: LucideIcon;
+  art: SiteArtName;
   accent: string;
-  iconColor: string;
 }
 
 const BENEFITS: Benefit[] = [
@@ -24,27 +19,24 @@ const BENEFITS: Benefit[] = [
     description: "Официални новини, успехи и възможности — подредени ясно, без да губиш време в търсене.",
     href: "/news",
     action: "Отвори новините",
-    icon: Newspaper,
+    art: "newspaper",
     accent: "from-sky-500/25 via-cyan-500/10 to-transparent",
-    iconColor: "text-sky-600 dark:text-sky-300",
   },
   {
     title: "Планирай с увереност",
     description: "Виж предстоящите събития и важните дати навреме, за да знаеш какво следва.",
     href: "/events",
     action: "Виж календара",
-    icon: CalendarCheck2,
+    art: "calendar",
     accent: "from-violet-500/25 via-fuchsia-500/10 to-transparent",
-    iconColor: "text-violet-600 dark:text-violet-300",
   },
   {
     title: "Участвай, не само чети",
     description: "Гласувай, предлагай идеи и бъди активна част от решенията и настроението в училище.",
     href: "/weekly-poll",
     action: "Включи се сега",
-    icon: MessagesSquare,
+    art: "poll",
     accent: "from-amber-500/25 via-orange-500/10 to-transparent",
-    iconColor: "text-amber-700 dark:text-amber-300",
   },
 ];
 
@@ -72,7 +64,7 @@ export default function HomeBenefits() {
         </div>
 
         <div className="mt-10 grid gap-5 md:grid-cols-3 lg:mt-14 lg:gap-7">
-          {BENEFITS.map(({ title, description, href, action, icon: Icon, accent, iconColor }, index) => (
+          {BENEFITS.map(({ title, description, href, action, art, accent }, index) => (
             <Link
               key={title}
               to={href}
@@ -80,9 +72,7 @@ export default function HomeBenefits() {
               style={{ "--home-stagger-index": index } as CSSProperties}
             >
               <div className={`absolute inset-x-0 top-0 h-40 bg-gradient-to-br ${accent} opacity-75 transition-opacity duration-300 group-hover:opacity-100`} aria-hidden="true" />
-              <div className={`relative flex h-14 w-14 items-center justify-center rounded-2xl border border-current/10 bg-background/85 shadow-sm backdrop-blur ${iconColor}`}>
-                <Icon className="h-7 w-7" aria-hidden="true" />
-              </div>
+              <SiteArt name={art} className="relative block h-16 w-16 drop-shadow-sm" />
 
               <div className="relative mt-8 flex flex-1 flex-col">
                 <h3 className="text-2xl font-black leading-tight tracking-tight">{title}</h3>

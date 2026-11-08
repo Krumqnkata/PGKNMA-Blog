@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { Construction, RotateCw } from 'lucide-react';
+import { RotateCw } from 'lucide-react';
 import logoDark from "/logo-dark.png";
 import { Button } from '@/components/ui/button';
+import { SiteArt } from "@/components/art/SiteArt";
 
 interface MaintenancePageProps {
   isBackendError?: boolean;
@@ -37,7 +38,7 @@ const MaintenancePage = ({ isBackendError = false }: MaintenancePageProps) => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_10%,hsl(var(--primary)/0.18),transparent_34%),radial-gradient(circle_at_90%_80%,hsl(210_100%_55%/0.10),transparent_36%)]" aria-hidden="true" />
       <div className="relative max-w-2xl rounded-3xl border border-border/70 bg-card/90 p-7 text-center shadow-2xl backdrop-blur-xl sm:p-12">
         <img src={logoDark} className="mx-auto mb-6 h-auto w-24" alt="ПГКНМА" />
-        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/10 text-primary"><Construction className="h-8 w-8" aria-hidden="true" /></div>
+        <SiteArt name="cone" className="art-wiggle mx-auto mb-5 block h-20 w-20" />
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">Техническо известие</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-5xl">Сайтът е в поддръжка</h1>
         <p className="mt-4 text-base leading-relaxed text-muted-foreground">

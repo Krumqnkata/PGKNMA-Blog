@@ -1,6 +1,7 @@
 import { memo, useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
 import { getComments, addComment, Comment as CommentType, User } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -20,7 +21,7 @@ interface CommentItemProps {
     level: number;
     isAuthenticated: boolean;
     currentUser: User | null;
-    openLoginDialog: () => void;
+    goToLogin: () => void;
 }
 
 const requestedCommentId = () => {
@@ -36,7 +37,7 @@ const containsComment = (comment: CommentType, targetId: number | null): boolean
     )
 );
 
-const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthenticated, currentUser, openLoginDialog }: CommentItemProps) => {
+const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthenticated, currentUser, goToLogin }: CommentItemProps) => {
     const [showReplyForm, setShowReplyForm] = useState(false);
     const [replyContent, setReplyContent] = useState('');
     const [submittingReply, setSubmittingReply] = useState(false);
@@ -51,7 +52,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
             return;
         }
         if (!isAuthenticated || !currentUser) {
-            openLoginDialog();
+            goToLogin();
             return;
         }
 
@@ -128,7 +129,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
                         className="h-auto px-0 mt-2 text-xs text-primary"
                         onClick={() => {
                             if (!isAuthenticated) {
-                                openLoginDialog();
+                                goToLogin();
                                 return;
                             }
                             setShowReplyForm(!showReplyForm);
@@ -202,7 +203,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
                                      level={level + 1}
                                      isAuthenticated={isAuthenticated}
                                      currentUser={currentUser}
-                                     openLoginDialog={openLoginDialog}
+                                     goToLogin={goToLogin}
                                  />
                              ))}
                          </div>
@@ -235,7 +236,8 @@ interface CommentsProps {
 }
 
 const Comments = ({ postId }: CommentsProps) => {
-    const { isAuthenticated, user, openLoginDialog } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    const goToLogin = useGoToLogin();
     const [newCommentContent, setNewCommentContent] = useState('');
     const [submittingMainComment, setSubmittingMainComment] = useState(false);
     const [submissionError, setSubmissionError] = useState('');
@@ -254,7 +256,7 @@ const Comments = ({ postId }: CommentsProps) => {
             return;
         }
         if (!isAuthenticated || !user) {
-            openLoginDialog();
+            goToLogin();
             return;
         }
 
@@ -312,7 +314,7 @@ const Comments = ({ postId }: CommentsProps) => {
                 </div>
             ) : (
                 <p className="text-muted-foreground mb-8">
-                    Трябва <a href="#" onClick={(e) => { e.preventDefault(); openLoginDialog(); }} className="text-primary hover:underline">да сте логнат</a> за да публикувате коментар.
+                    Трябва <button type="button" onClick={goToLogin} className="text-primary hover:underline">да сте логнат</button> за да публикувате коментар.
                 </p>
             )}
 
@@ -321,7 +323,7 @@ const Comments = ({ postId }: CommentsProps) => {
             ) : commentsError ? (
                 <QueryErrorState message={commentsError instanceof Error ? commentsError.message : 'Грешка при зареждане на коментарите.'} onRetry={() => void refetch()} />
             ) : processedComments.length === 0 ? (
-                <QueryEmptyState title="Все още няма коментари" description="Бъдете първият, който ще се включи в разговора." />
+                <QueryEmptyState art="comment" title="Все още няма коментари" description="Бъдете първият, който ще се включи в разговора." />
             ) : (
                 <div className="space-y-6">
                     {processedComments.map((comment) => (
@@ -333,7 +335,7 @@ const Comments = ({ postId }: CommentsProps) => {
                             level={0}
                             isAuthenticated={isAuthenticated}
                             currentUser={user}
-                            openLoginDialog={openLoginDialog}
+                            goToLogin={goToLogin}
                         />
                     ))}
                 </div>

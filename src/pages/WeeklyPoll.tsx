@@ -7,11 +7,11 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/components/ui/use-toast";
 import { getWeeklyPollStatus, submitWeeklyPollAnswer, PollQuestion, PollOption } from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { useGoToLogin } from "@/hooks/use-go-to-login";
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 import { Link } from "react-router-dom";
 import { PollStatistics } from "@/components/PollStatistics";
 import hljs from '@/lib/syntax-highlighter';
-import { BrainCircuit } from 'lucide-react';
 import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 import { formatSiteDateTime } from '@/lib/date-time';
 
@@ -106,7 +106,7 @@ const WeeklyPollContent = () => {
   }
 
   if (!currentQuestion) {
-     return <QueryEmptyState title="Няма активна анкета" description="Следващият въпрос ще се появи тук, когато бъде публикуван." />;
+     return <QueryEmptyState art="poll" title="Няма активна анкета" description="Следващият въпрос ще се появи тук, когато бъде публикуван." />;
   }
 
   return (
@@ -201,11 +201,12 @@ const WeeklyPollContent = () => {
 };
 
 const WeeklyPoll = () => {
-    const { isAuthenticated, isLoading, openLoginDialog } = useAuth();
+    const { isAuthenticated, isLoading } = useAuth();
+    const goToLogin = useGoToLogin();
   
     return (
       <InteriorPage>
-        <InteriorPageHero eyebrow="Седмично предизвикателство" title={<>Задача на <span className="text-primary">седмицата</span></>} description="Проверете знанията си, изберете отговор и сравнете резултата си с общността." icon={BrainCircuit} />
+        <InteriorPageHero eyebrow="Седмично предизвикателство" title={<>Задача на <span className="text-primary">седмицата</span></>} description="Проверете знанията си, изберете отговор и сравнете резултата си с общността." art="poll" />
         <InteriorSection>
           {isLoading ? (
              <ContentSkeleton variant="detail" label="Проверка на потребителската сесия" />
@@ -214,7 +215,7 @@ const WeeklyPoll = () => {
           ) : (
             <div className="text-center text-lg text-muted-foreground">
               <p>Трябва да имате акаунт, за да участвате.</p>
-              <Button onClick={openLoginDialog} className="mt-4">
+              <Button onClick={goToLogin} className="mt-4">
                  Вход или Регистрация
               </Button>
             </div>

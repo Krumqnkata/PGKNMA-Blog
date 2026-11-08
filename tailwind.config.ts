@@ -20,6 +20,9 @@ export default {
       },
       fontFamily: {
         sans: ['Sofia Sans', 'sans-serif'],
+        heading: ['Commissioner', 'Sofia Sans', 'sans-serif'],
+        // Needs the inner quotes: an unquoted family name cannot end in a bare number.
+        reading: ['"Source Serif 4"', 'Georgia', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",

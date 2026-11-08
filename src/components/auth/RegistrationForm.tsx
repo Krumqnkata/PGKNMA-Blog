@@ -1,7 +1,7 @@
 import { FormEvent, useEffect, useRef, useState } from "react";
-import type { RefObject } from "react";
 import { Link } from "react-router-dom";
-import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
+import type { CredentialResponse } from "@react-oauth/google";
+import { GoogleLoginButton } from "@/components/auth/GoogleLoginButton";
 import { Turnstile } from "@marsidev/react-turnstile";
 import { CheckCircle2, Eye, EyeOff, Loader2, XCircle } from "lucide-react";
 
@@ -18,17 +18,11 @@ import {
 import type { RegisterCredentials, RegistrationResponse } from "@/lib/api";
 
 interface RegistrationFormProps {
-  onClose: () => void;
-  onOpenLogin: () => void;
   onRegistered: (result: RegistrationResponse) => void;
-  initialFocusRef: RefObject<HTMLInputElement>;
 }
 
 export function RegistrationForm({
-  onClose,
-  onOpenLogin,
   onRegistered,
-  initialFocusRef,
 }: RegistrationFormProps) {
   const { register, loginWithGoogle, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
@@ -69,18 +63,12 @@ export function RegistrationForm({
     return () => observer.disconnect();
   }, []);
 
-  const openLogin = () => {
-    onClose();
-    onOpenLogin();
-  };
-
   const handleGoogleSuccess = async (response: CredentialResponse) => {
     setError("");
     setLocalLoading(true);
     try {
       if (!response.credential) throw new Error("Не бе получен токен от Google.");
       await loginWithGoogle(response.credential);
-      onClose();
       toast({
         title: "Успешна регистрация / вход",
         description: "Добре дошли в платформата!",
@@ -153,11 +141,10 @@ export function RegistrationForm({
   };
 
   return (
-    <form className="mt-1 flex flex-col gap-5 px-0.5" onSubmit={handleRegister}>
+    <form className="flex flex-col gap-5" onSubmit={handleRegister}>
       <div className="space-y-1">
         <Label htmlFor="reg-email">Имейл</Label>
         <Input
-          ref={initialFocusRef}
           id="reg-email"
           type="email"
           autoComplete="email"
@@ -275,13 +262,8 @@ export function RegistrationForm({
       </div>
 
       <div className="flex w-full max-w-full justify-center overflow-hidden" ref={googleContainerRef}>
-        <GoogleLogin key={googleButtonWidth} onSuccess={handleGoogleSuccess} onError={() => setError("Грешка при влизане с Google акаунт.")} theme="filled_blue" shape="rectangular" text="signup_with" width={googleButtonWidth} />
+        <GoogleLoginButton onSuccess={handleGoogleSuccess} onError={() => setError("Грешка при влизане с Google акаунт.")} theme="filled_blue" shape="rectangular" text="signup_with" width={googleButtonWidth} />
       </div>
-
-      <p className="mt-2 text-center text-sm text-muted-foreground">
-        Вече имаш профил?{" "}
-        <button type="button" className="font-semibold text-primary hover:underline" onClick={openLogin}>Вход</button>
-      </p>
     </form>
   );
 }

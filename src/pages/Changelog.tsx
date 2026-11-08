@@ -6,7 +6,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import MainLayout from '@/components/MainLayout';
 import { ContentSkeleton, QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
-import { History } from 'lucide-react';
 import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 import { formatSiteDateTime } from '@/lib/date-time';
 interface ChangelogEntry {
@@ -48,7 +47,7 @@ const Changelog: React.FC = () => {
 
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Развитие на платформата" title={<>История на <span className="text-primary">промените</span></>} description="Нови възможности, подобрения и поправки — подредени хронологично." icon={History} />
+      <InteriorPageHero eyebrow="Развитие на платформата" title={<>История на <span className="text-primary">промените</span></>} description="Нови възможности, подобрения и поправки — подредени хронологично." art="scroll" />
       <InteriorSection containerClassName="max-w-4xl">
           
           {changelogEntries && changelogEntries.length > 0 ? (
@@ -68,7 +67,7 @@ const Changelog: React.FC = () => {
               ))}
             </div>
           ) : (
-            <QueryEmptyState title="Все още няма записани промени" description="Историята на следващите версии ще се показва тук." />
+            <QueryEmptyState art="scroll" title="Все още няма записани промени" description="Историята на следващите версии ще се показва тук." />
           )}
       </InteriorSection>
     </InteriorPage>

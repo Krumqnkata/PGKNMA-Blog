@@ -1,8 +1,10 @@
 import { Component, createRef } from "react";
 import type { ErrorInfo, ReactNode } from "react";
-import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { Home, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { SiteArt } from "@/components/art/SiteArt";
+import { ERROR_JOKES, pickRandom } from "@/lib/playful-messages";
 
 interface PageErrorBoundaryProps {
   children: ReactNode;
@@ -12,6 +14,7 @@ interface PageErrorBoundaryProps {
 
 interface PageErrorBoundaryState {
   error: Error | null;
+  joke?: string;
 }
 
 class PageErrorBoundary extends Component<PageErrorBoundaryProps, PageErrorBoundaryState> {
@@ -19,7 +22,7 @@ class PageErrorBoundary extends Component<PageErrorBoundaryProps, PageErrorBound
   private fallbackRef = createRef<HTMLDivElement>();
 
   static getDerivedStateFromError(error: Error): PageErrorBoundaryState {
-    return { error };
+    return { error, joke: pickRandom(ERROR_JOKES) };
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
@@ -46,10 +49,11 @@ class PageErrorBoundary extends Component<PageErrorBoundaryProps, PageErrorBound
         className={`flex min-h-[60vh] items-center justify-center px-4 py-16 outline-none ${isTV ? "min-h-screen bg-gray-950 text-white" : "bg-background text-foreground"}`}
       >
         <div className={`w-full max-w-lg rounded-2xl border p-6 text-center shadow-xl sm:p-10 ${isTV ? "border-gray-700 bg-gray-900" : "bg-card"}`}>
-          <AlertTriangle className={`mx-auto mb-5 h-12 w-12 ${isTV ? "text-amber-400" : "text-destructive"}`} aria-hidden="true" />
+          <SiteArt name="pencil" className="mx-auto mb-5 block h-20 w-20" />
           <h1 id={`${this.props.resetKey}-error-title`} className="text-2xl font-bold sm:text-3xl">
             {isTV ? "TV екранът временно не е достъпен" : "Страницата не можа да се покаже"}
           </h1>
+          {!isTV && <p className="mt-2 font-semibold">{this.state.joke}</p>}
           <p className={`mt-3 ${isTV ? "text-gray-300" : "text-muted-foreground"}`}>
             Възникна неочаквана грешка. Опитайте да презаредите или се върнете към началната страница.
           </p>

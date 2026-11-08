@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ArrowUpRight, Images, Link2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, Link2 } from "lucide-react";
 import { toast } from "sonner";
 import Lightbox from "yet-another-react-lightbox";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
@@ -43,7 +43,7 @@ export default function GalleryAlbum() {
       <InteriorSection>
         <Button asChild variant="ghost" className="mb-6 -ml-3"><Link to="/gallery"><ArrowLeft className="size-4" aria-hidden="true" />Всички албуми</Link></Button>
         {isPending ? <ContentSkeleton label="Зареждане на албума" /> : isError ? <QueryErrorState title="Албумът не може да се зареди" onRetry={() => void refetch()} /> : !album ? (
-          <QueryEmptyState icon={Images} title="Албумът не е наличен" description="Публикацията не е достъпна или няма прикачени снимки. Разгледай останалите албуми в галерията." />
+          <QueryEmptyState art="photos" title="Албумът не е наличен" description="Публикацията не е достъпна или няма прикачени снимки. Разгледай останалите албуми в галерията." />
         ) : <>
           <header className="mb-8">
             <p className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground"><time dateTime={album.date}>{formatSiteDate(album.date, { day: "numeric", month: "long", year: "numeric" })}</time><span aria-hidden="true">·</span><span>{photoCountLabel(album.photos.length)}</span></p>

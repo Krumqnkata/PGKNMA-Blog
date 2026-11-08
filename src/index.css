@@ -14,13 +14,13 @@
 }
 
 /* Scale the header triggers without changing the controls inside their portals. */
-.site-header-actions > button {
+.site-header-actions > :is(button, a) {
   height: clamp(2.5rem, 2.25rem + 0.25vw, 2.75rem);
   min-width: clamp(2.5rem, 2.25rem + 0.25vw, 2.75rem);
   border-radius: 9999px;
 }
 
-.site-header-actions > button > svg {
+.site-header-actions > :is(button, a) > svg {
   width: clamp(1.125rem, 1rem + 0.2vw, 1.25rem);
   height: clamp(1.125rem, 1rem + 0.2vw, 1.25rem);
 }
@@ -309,6 +309,8 @@ All colors MUST be HSL.
   }
 
   h1, h2, h3, h4, h5, h6 {
+    /* Not @apply font-heading: @apply would also copy every rule that mentions that class. */
+    font-family: theme("fontFamily.heading");
     @apply font-bold;
   }
 }
@@ -368,7 +370,8 @@ html[data-accessibility-contrast="high"] a:not([class*="no-underline"]) {
   text-underline-offset: 0.2em;
 }
 
-html[data-accessibility-dyslexia="true"] body {
+/* Headings and article text set their own families, so the preference has to reach them explicitly. */
+html[data-accessibility-dyslexia="true"] :is(body, h1, h2, h3, h4, h5, h6, .font-heading, .font-reading) {
   font-family: "OpenDyslexic", Verdana, Tahoma, Arial, sans-serif;
 }
 
@@ -584,6 +587,332 @@ html[data-accessibility-motion="reduce"] :is(
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/* One small greeting when a drawing appears (components/art/SiteArt.tsx, the cookie banner). */
+@keyframes art-wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(-10deg); }
+  65% { transform: rotate(7deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .art-wiggle {
+    animation: art-wiggle 700ms ease-in-out 300ms 1;
+  }
+}
+
+/*
+ * The sliding tile of components/auth/AuthSwitch.tsx. Login and registration are separate pages,
+ * so each one slides the tile in from the other tab, with a small overshoot.
+ */
+.auth-switch-tile {
+  transform: translateX(0);
+  animation: auth-switch-to-left 450ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.auth-switch-tile-right {
+  transform: translateX(100%);
+  animation-name: auth-switch-to-right;
+}
+
+@keyframes auth-switch-to-left {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes auth-switch-to-right {
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
+}
+
+/* The rocket on the "back to top" button shakes as if about to take off. */
+@keyframes rocket-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(-1px, -1px) rotate(-3deg); }
+  75% { transform: translate(1px, -2px) rotate(3deg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .back-to-top:hover .back-to-top-rocket,
+  .back-to-top:focus-visible .back-to-top-rocket {
+    animation: rocket-shake 220ms linear infinite;
+  }
+}
+
+/* A drawing that arrives with a small bounce (components/art/SuccessMoment.tsx). */
+@keyframes art-pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.08); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes art-sparkle {
+  0%, 100% { transform: scale(0.4); opacity: 0.25; }
+  50% { transform: scale(1); opacity: 1; }
+}
+
+.art-pop {
+  animation: art-pop 500ms cubic-bezier(0.22, 1, 0.36, 1) 1;
+}
+
+.art-sparkle {
+  animation: art-sparkle 1600ms ease-in-out infinite;
+}
+
+/*
+ * The pencil of components/art/PencilLoader.tsx. It stops at each peak and trough of the line,
+ * which has eight equal arcs, so it stays on the line while the line is being drawn.
+ * The resting styles are the finished line, which is what reduced motion ends up showing.
+ */
+.pencil-loader-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: pencil-loader-line 2600ms linear infinite;
+}
+
+.pencil-loader-tip {
+  transform: translate(110px, 36px);
+  animation: pencil-loader-tip 2600ms linear infinite;
+}
+
+@keyframes pencil-loader-line {
+  0% { stroke-dashoffset: 1; opacity: 1; }
+  80% { stroke-dashoffset: 0; opacity: 1; }
+  94% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+@keyframes pencil-loader-tip {
+  0% { transform: translate(10px, 36px); }
+  5% { transform: translate(16.25px, 28px); }
+  10% { transform: translate(22.5px, 36px); }
+  15% { transform: translate(28.75px, 44px); }
+  20% { transform: translate(35px, 36px); }
+  25% { transform: translate(41.25px, 28px); }
+  30% { transform: translate(47.5px, 36px); }
+  35% { transform: translate(53.75px, 44px); }
+  40% { transform: translate(60px, 36px); }
+  45% { transform: translate(66.25px, 28px); }
+  50% { transform: translate(72.5px, 36px); }
+  55% { transform: translate(78.75px, 44px); }
+  60% { transform: translate(85px, 36px); }
+  65% { transform: translate(91.25px, 28px); }
+  70% { transform: translate(97.5px, 36px); }
+  75% { transform: translate(103.75px, 44px); }
+  80%, 100% { transform: translate(110px, 36px); }
+}
+
+/* Printable article (components/news/PostPrintView.tsx). */
+@media screen {
+  .post-print-view {
+    display: none;
+  }
+}
+
+@media print {
+  @page {
+    margin: 16mm;
+  }
+
+  html:has(> body > .post-print-view),
+  body:has(> .post-print-view) {
+    height: auto !important;
+    min-width: 0 !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+
+  body:has(> .post-print-view) > :not(.post-print-view) {
+    display: none !important;
+  }
+
+  /* Every theme and the high-contrast mode resolve to ink on white paper. */
+  .post-print-view {
+    --background: 0 0% 100%;
+    --foreground: 0 0% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
+    --primary: 174 73% 22%;
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 0 0% 8%;
+    --muted: 0 0% 95%;
+    --muted-foreground: 0 0% 32%;
+    --border: 0 0% 75%;
+    display: block;
+    color: hsl(var(--foreground));
+    background: #fff;
+    font-size: 11pt;
+    line-height: 1.5;
+  }
+
+  .post-print-masthead {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+    margin-bottom: 6mm;
+    padding-bottom: 3mm;
+    border-bottom: 1pt solid hsl(var(--border));
+    font-size: 10pt;
+    font-weight: 700;
+  }
+
+  .post-print-masthead img {
+    width: 8mm;
+    height: 8mm;
+    object-fit: contain;
+  }
+
+  .post-print-categories,
+  .post-print-meta {
+    color: hsl(var(--muted-foreground));
+    font-size: 9.5pt;
+  }
+
+  .post-print-title {
+    margin: 1mm 0 3mm;
+    font-size: 24pt;
+    font-weight: 800;
+    line-height: 1.12;
+  }
+
+  .post-print-hook {
+    margin-bottom: 3mm;
+    color: hsl(var(--muted-foreground));
+    font-size: 12.5pt;
+  }
+
+  .post-print-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 110mm;
+    margin-top: 5mm;
+    object-fit: contain;
+  }
+
+  .post-print-body {
+    margin-top: 5mm;
+  }
+
+  .post-print-body .prose {
+    color: hsl(var(--foreground));
+    font-size: 11pt;
+  }
+
+  .post-print-body h1 {
+    font-size: 18pt;
+  }
+
+  .post-print-body h2,
+  .post-print-section h2 {
+    font-size: 15pt;
+  }
+
+  .post-print-body h3 {
+    font-size: 13pt;
+  }
+
+  .post-print-body img {
+    display: block;
+    height: auto;
+    max-height: 110mm;
+    margin-inline: auto;
+    border: 0;
+    border-radius: 0;
+    object-fit: contain;
+  }
+
+  .post-print-body a[href^="http"]:not(:has(img))::after {
+    content: " (" attr(href) ")";
+    color: hsl(var(--muted-foreground));
+    font-size: 0.85em;
+    overflow-wrap: anywhere;
+  }
+
+  .post-print-body :is(iframe, video, audio) {
+    display: none !important;
+  }
+
+  .post-print-body pre {
+    border: 1pt solid hsl(var(--border));
+    background: none !important;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  /* The screen syntax theme is light text meant for a dark background. */
+  .post-print-body .hljs,
+  .post-print-body .hljs * {
+    color: #111 !important;
+    background: none !important;
+  }
+
+  .post-print-section {
+    margin-top: 8mm;
+  }
+
+  .post-print-section h2 {
+    margin-bottom: 3mm;
+  }
+
+  .post-print-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4mm;
+  }
+
+  .post-print-gallery figure[data-featured] {
+    grid-column: 1 / -1;
+  }
+
+  .post-print-gallery img {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 110mm;
+    object-fit: contain;
+  }
+
+  .post-print-gallery figcaption {
+    margin-top: 1.5mm;
+    color: hsl(var(--muted-foreground));
+    font-size: 9pt;
+  }
+
+  .post-print-documents li {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2mm;
+    font-size: 9.5pt;
+    overflow-wrap: anywhere;
+  }
+
+  .post-print-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 6mm;
+    margin-top: 8mm;
+    padding-top: 3mm;
+    border-top: 1pt solid hsl(var(--border));
+    color: hsl(var(--muted-foreground));
+    font-size: 8.5pt;
+    overflow-wrap: anywhere;
+  }
+
+  .post-print-view :is(h1, h2, h3, h4, h5, h6) {
+    break-after: avoid;
+  }
+
+  .post-print-view :is(img, figure, table, blockquote, pre, li) {
+    break-inside: avoid;
+  }
+
+  html[data-accessibility-links="highlight"] .post-print-view a {
+    color: hsl(var(--primary)) !important;
+    background: none !important;
+    box-shadow: none;
   }
 }
 

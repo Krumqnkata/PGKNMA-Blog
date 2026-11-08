@@ -7,6 +7,7 @@ import GamificationCatalog from '@/components/GamificationCatalog';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
 
 const questions = [
   { question: 'Нужен ли ми е профил?', answer: 'Класацията можеш да разглеждаш и без профил. За да събираш точки и да виждаш личната си статистика, трябва да си влязъл. Значките, мисиите и наградите са в „Моят прогрес“ в профила.' },
@@ -16,13 +17,14 @@ const questions = [
 ];
 
 export default function Gamification() {
-  const { user, isLoading, openLoginDialog } = useAuth();
+  const { user, isLoading } = useAuth();
+  const goToLogin = useGoToLogin();
 
   return (
     <InteriorPage>
       <InteriorPageHero
         eyebrow="Всяко участие има значение"
-        icon={Trophy}
+        art="trophy"
         title={<>Мисии, награди и <span className="text-primary">твоят следващ успех.</span></>}
         description="Чети, споделяй идеи и участвай в училищния живот. Събирай точки, откривай значки и направи профила си още по-твой."
         actions={(
@@ -30,7 +32,7 @@ export default function Gamification() {
             {user ? (
               <Button asChild size="lg" className="gap-2"><a href="#leaderboard"><Trophy className="size-4" aria-hidden="true" />Виж моето място</a></Button>
             ) : (
-              <Button size="lg" className="gap-2" disabled={isLoading} onClick={openLoginDialog}><LogIn className="size-4" aria-hidden="true" />Влез и се включи</Button>
+              <Button size="lg" className="gap-2" disabled={isLoading} onClick={goToLogin}><LogIn className="size-4" aria-hidden="true" />Влез и се включи</Button>
             )}
             <Button asChild size="lg" variant="outline"><a href="#how-it-works">Как работи?</a></Button>
             <Button asChild size="lg" variant="outline"><Link to="/games">Играй и печели точки</Link></Button>

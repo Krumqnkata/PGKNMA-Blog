@@ -35,7 +35,7 @@ test("home page follows the landing flow without horizontal overflow", async ({ 
     "/news",
   );
 
-  const sectionIds = ["home-hero", "home-benefits", "home-final-cta"];
+  const sectionIds = ["home-hero", "home-news", "home-benefits", "home-final-cta"];
   for (const id of sectionIds) {
     await expect(page.locator(`#${id}`)).toHaveCount(1);
   }

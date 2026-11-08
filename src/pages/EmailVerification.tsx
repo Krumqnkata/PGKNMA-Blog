@@ -4,14 +4,12 @@ import { CheckCircle2, CircleAlert, Loader2, MailCheck, RefreshCw } from "lucide
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useAuth } from "@/hooks/use-auth";
 import { resendVerificationEmail } from "@/lib/api";
 import { InteriorPage, InteriorSection } from "@/components/InteriorPage";
 
 const EmailVerification = () => {
   const [searchParams] = useSearchParams();
   const status = searchParams.get("status") || "invalid";
-  const { openLoginDialog } = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -59,9 +57,11 @@ const EmailVerification = () => {
 
           {successful ? (
             <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Button onClick={openLoginDialog}>
-                <MailCheck className="mr-2 h-4 w-4" />
-                Вход в профила
+              <Button asChild>
+                <Link to="/login">
+                  <MailCheck className="mr-2 h-4 w-4" />
+                  Вход в профила
+                </Link>
               </Button>
               <Button variant="outline" asChild>
                 <Link to="/">Към началната страница</Link>

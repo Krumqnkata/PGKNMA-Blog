@@ -9,6 +9,8 @@ export const routeTitles: Record<string, string> = {
   "/meme-of-the-week": "Меме на седмицата",
   "/changelog": "История на промените",
   "/profile": "Моят профил",
+  "/login": "Вход",
+  "/register": "Регистрация",
   "/contact": "Контакти",
   "/privacy-policy": "Политика за поверителност",
   "/terms-of-service": "Условия за ползване",

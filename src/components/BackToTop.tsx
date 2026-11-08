@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ArrowUp } from "lucide-react";
+import { SiteArt } from "@/components/art/SiteArt";
 import { Button } from "@/components/ui/button";
 
 const BackToTop = () => {
@@ -34,10 +34,10 @@ const BackToTop = () => {
         <Button
           onClick={scrollToTop}
           size="icon"
-          className="fixed bottom-[calc(var(--site-bottom-clearance)+1rem)] right-4 z-40 h-12 w-12 rounded-full shadow-lg transition-all duration-300 hover:scale-110 md:right-8"
+          className="back-to-top fixed bottom-[calc(var(--site-bottom-clearance)+1rem)] right-4 z-40 h-12 w-12 rounded-full shadow-lg transition-all duration-300 hover:scale-110 md:right-8 [&_svg]:size-9"
           aria-label="Нагоре към началото на страницата"
         >
-          <ArrowUp className="h-5 w-5" />
+          <SiteArt name="rocket" className="back-to-top-rocket" />
         </Button>
       )}
     </>

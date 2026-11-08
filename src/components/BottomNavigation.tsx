@@ -5,6 +5,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { isNavLinkActive, siteNavLinks } from "@/lib/site-navigation";
 import { cn } from "@/lib/utils";
+import { SiteArt } from "@/components/art/SiteArt";
 
 const visibleLinks = siteNavLinks.filter(({ bottomNav }) => bottomNav);
 const moreLinks = siteNavLinks.filter(({ bottomNav }) => !bottomNav);
@@ -52,12 +53,12 @@ const BottomNavigation = () => {
           <SheetDescription>Разгледай останалите раздели.</SheetDescription>
         </SheetHeader>
         <nav aria-label="Още раздели" className="mt-5 grid grid-cols-2 gap-2">
-          {moreLinks.map(({ name, path, icon: Icon }) => (
+          {moreLinks.map(({ name, path, art }) => (
             <NavLink key={path} to={path} onClick={() => setMoreOpen(false)} className={({ isActive }) => cn(
               "flex min-h-[4.5rem] flex-col items-start justify-center gap-2 rounded-2xl border border-border/70 bg-card px-4 py-3 text-sm font-semibold leading-tight text-foreground transition-colors hover:border-primary/40 hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isActive && "border-primary/50 bg-accent text-primary",
             )}>
-              <Icon className="size-5 shrink-0 text-primary" aria-hidden="true" />
+              <SiteArt name={art} className="size-9" />
               <span>{name}</span>
             </NavLink>
           ))}

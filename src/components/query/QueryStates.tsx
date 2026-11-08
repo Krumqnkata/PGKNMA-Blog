@@ -1,8 +1,10 @@
-import type { LucideIcon } from "lucide-react";
-import { AlertCircle, Inbox, Loader2, RefreshCw } from "lucide-react";
+import { useState, type ReactNode } from "react";
+import { Loader2, RefreshCw } from "lucide-react";
 
+import { SiteArt, type SiteArtName } from "@/components/art/SiteArt";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ERROR_JOKES, pickRandom } from "@/lib/playful-messages";
 
 /** Visible caption naming exactly what a skeleton is waiting for. */
 export const LoadingCaption = ({ label, className = "" }: { label: string; className?: string }) => (
@@ -52,10 +54,13 @@ interface QueryErrorStateProps {
 }
 
 export function QueryErrorState({ title = "Съдържанието не можа да се зареди", message, onRetry, className = "" }: QueryErrorStateProps) {
+  const [joke] = useState(() => pickRandom(ERROR_JOKES));
+
   return (
     <div role="alert" className={`rounded-2xl border border-destructive/35 bg-destructive/5 p-7 text-center shadow-sm ${className}`}>
-      <AlertCircle className="mx-auto h-9 w-9 text-destructive" aria-hidden="true" />
+      <SiteArt name="pencil" className="mx-auto block h-14 w-14" />
       <h2 className="mt-3 text-lg font-semibold">{title}</h2>
+      <p className="mt-1 text-sm font-medium">{joke}</p>
       {message && <p className="mt-2 text-sm text-muted-foreground">{message}</p>}
       {onRetry && <Button type="button" variant="outline" className="mt-4" onClick={onRetry}><RefreshCw className="h-4 w-4" aria-hidden="true" />Опитай отново</Button>}
     </div>
@@ -65,16 +70,19 @@ export function QueryErrorState({ title = "Съдържанието не мож�
 interface QueryEmptyStateProps {
   title: string;
   description?: string;
-  icon?: LucideIcon;
+  art?: SiteArtName;
   className?: string;
+  /** The next step, such as a link to where this list gets filled. */
+  children?: ReactNode;
 }
 
-export function QueryEmptyState({ title, description, icon: Icon = Inbox, className = "" }: QueryEmptyStateProps) {
+export function QueryEmptyState({ title, description, art = "box", className = "", children }: QueryEmptyStateProps) {
   return (
     <div className={`rounded-2xl border-2 border-dashed border-border/80 bg-card/50 p-8 text-center ${className}`}>
-      <Icon className="mx-auto h-10 w-10 text-muted-foreground/60" aria-hidden="true" />
+      <SiteArt name={art} className="mx-auto block h-16 w-16" />
       <h2 className="mt-3 text-lg font-semibold">{title}</h2>
       {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+      {children && <div className="mt-4">{children}</div>}
     </div>
   );
 }

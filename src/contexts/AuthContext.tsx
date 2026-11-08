@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [accessToken, setAccessToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
-    const [loginDialogOpen, setLoginDialogOpen] = useState(false);
+    const [sessionExpired, setSessionExpired] = useState(false);
 
     useEffect(() => {
         let cancelled = false;
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 console.warn('Push устройството не можа да бъде откачено от изтеклата сесия:', error);
             });
             queryClient.removeQueries({ queryKey: ['notifications'] });
-            setLoginDialogOpen(true);
+            setSessionExpired(true);
             toast({
                 title: 'Сесията приключи',
                 description: detail?.message || 'Моля, влезте отново.',
@@ -98,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
                 localStorage.setItem('user', JSON.stringify(loggedInUser));
-                setLoginDialogOpen(false); // Close dialog on successful login
+                setSessionExpired(false);
             } else {
                 throw new Error('Login failed: No tokens returned');
             }
@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
                 localStorage.setItem('accessToken', data.access);
                 localStorage.setItem('refreshToken', data.refresh);
                 localStorage.setItem('user', JSON.stringify(data.user));
-                setLoginDialogOpen(false);
+                setSessionExpired(false);
             } else {
                 throw new Error('Google Login failed: No tokens returned');
             }
@@ -155,8 +155,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [queryClient]);
 
-    const openLoginDialog = useCallback(() => setLoginDialogOpen(true), []);
-    const closeLoginDialog = useCallback(() => setLoginDialogOpen(false), []);
+    const dismissSessionExpired = useCallback(() => setSessionExpired(false), []);
     const updateUser = useCallback((updatedUser: User) => {
         setUser(updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
@@ -171,11 +170,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             logout, 
             loading,
             isLoading: loading,
-            loginDialogOpen,
-            openLoginDialog,
-            closeLoginDialog,
+            sessionExpired,
+            dismissSessionExpired,
             updateUser,
-    }), [accessToken, closeLoginDialog, loading, login, loginDialogOpen, loginWithGoogle, logout, openLoginDialog, register, updateUser, user]);
+    }), [accessToken, dismissSessionExpired, loading, login, loginWithGoogle, logout, register, sessionExpired, updateUser, user]);
 
     return (
         <AuthContext.Provider value={value}>

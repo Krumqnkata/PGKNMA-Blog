@@ -7,9 +7,10 @@ import { useToast } from "@/hooks/use-toast";
 import { getMemes, submitMeme, voteForMeme, Meme } from '@/lib/api';
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from '@/hooks/use-auth';
-import LoginDialog from '@/components/LoginDialog';
-import RegisterDialog from '@/components/RegisterDialog';
-import { Heart, Images, Laugh, UploadCloud } from 'lucide-react';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
+import { Heart, Images, UploadCloud } from 'lucide-react';
+import { SuccessMoment } from '@/components/art/SuccessMoment';
+import { QueryEmptyState } from '@/components/query/QueryStates';
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from '@/components/InteriorPage';
 import { Link } from 'react-router-dom';
 import { publicProfilePath } from '@/lib/public-profile';
@@ -20,12 +21,13 @@ const MemeOfTheWeek: React.FC = () => {
   const [memes, setMemes] = useState<Meme[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [title, setTitle] = useState("");
+  const [memeSent, setMemeSent] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const { isAuthenticated, openLoginDialog, loginDialogOpen, closeLoginDialog } = useAuth();
-  const [registerOpen, setRegisterOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const goToLogin = useGoToLogin();
 
 
   useEffect(() => {
@@ -66,18 +68,16 @@ const MemeOfTheWeek: React.FC = () => {
     }
     if (!isAuthenticated) { 
       toast({ title: "Не сте влезли", description: "Моля, влезте, за да качвате мемета.", variant: "destructive" });
-      openLoginDialog();
+      goToLogin();
       return;
     }
 
     setIsSubmitting(true);
     try {
       await submitMeme({ title, image: selectedFile });
-      toast({ title: "Успех!", description: "Вашето меме е изпратено за модерация!" });
+      setMemeSent(true);
       setTitle("");
       setSelectedFile(null);
-      const fileInput = document.getElementById('meme-file') as HTMLInputElement;
-      if (fileInput) fileInput.value = "";
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : "Неуспешно изпращане. Моля, опитайте отново.";
       toast({
@@ -98,7 +98,7 @@ const MemeOfTheWeek: React.FC = () => {
         description: "Моля, влезте в профила си, за да гласувате.",
         variant: "destructive",
       });
-      openLoginDialog();
+      goToLogin();
       return;
     }
 
@@ -126,10 +126,14 @@ const MemeOfTheWeek: React.FC = () => {
 
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Забавната страна на училището" title={<>Меме на <span className="text-primary">седмицата</span></>} description="Споделете забавен момент от училищния живот и подкрепете любимите предложения." icon={Laugh} />
+      <InteriorPageHero eyebrow="Забавната страна на училището" title={<>Меме на <span className="text-primary">седмицата</span></>} description="Споделете забавен момент от училищния живот и подкрепете любимите предложения." art="meme" />
       <InteriorSection>
 
-          {isAuthenticated ? (
+          {isAuthenticated && memeSent ? (
+            <SuccessMoment art="meme" title="Мемето ти е на път!" actionLabel="Качи още едно меме" onAction={() => setMemeSent(false)} className="mb-12">
+              Екипът ще го прегледа и след одобрение ще се появи в галерията.
+            </SuccessMoment>
+          ) : isAuthenticated ? (
             <Card className="mx-auto mb-12 max-w-2xl overflow-hidden shadow-xl shadow-primary/5">
               <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent">
                 <div className="mb-1 flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary"><UploadCloud className="h-5 w-5" aria-hidden="true" /></div>
@@ -158,7 +162,7 @@ const MemeOfTheWeek: React.FC = () => {
                 <CardDescription className="mb-6">
                     За да участвате в състезанието "Меме на седмицата" и да качвате свои мемета, моля, влезте в системата.
                 </CardDescription>
-                <Button onClick={openLoginDialog} className="w-full">Вход</Button>
+                <Button onClick={goToLogin} className="w-full">Вход</Button>
             </Card>
           )}
 
@@ -185,7 +189,7 @@ const MemeOfTheWeek: React.FC = () => {
             ) : (
               <>
                 {memes.length === 0 ? (
-                  <p className="text-center text-muted-foreground mt-8">Все още няма одобрени мемета. Бъди първият!</p>
+                  <QueryEmptyState art="meme" title="Все още няма одобрени мемета" description="Бъди първият, който ще разсмее цялото училище!" />
                 ) : (
                   <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     {memes.map((meme) => (
@@ -219,15 +223,6 @@ const MemeOfTheWeek: React.FC = () => {
             )}
           </div>
       </InteriorSection>
-      <LoginDialog 
-        open={loginDialogOpen} 
-        onOpenChange={(isOpen) => !isOpen && closeLoginDialog()} 
-        onOpenRegister={() => {
-          closeLoginDialog();
-          setRegisterOpen(true);
-        }}
-      />
-      <RegisterDialog open={registerOpen} onOpenChange={setRegisterOpen} onOpenLogin={() => { setRegisterOpen(false); openLoginDialog(); }} />
     </InteriorPage>
   );
 };

@@ -50,6 +50,8 @@ const Games = lazy(() => import("@/pages/Games"));
 const EmailVerification = lazy(() => import("@/pages/EmailVerification"));
 const EasterEgg = lazy(() => import("@/pages/EasterEgg"));
 const NotificationTarget = lazy(() => import("@/pages/NotificationTarget"));
+const Login = lazy(() => import("@/pages/Login"));
+const Register = lazy(() => import("@/pages/Register"));
 
 const AppContent = () => {
   const { settings: settingsData, isLoading } = useSettings();
@@ -101,6 +103,8 @@ const AppContent = () => {
                   <Route path="/changelog" element={<Changelog />} />
                   <Route path="/profile" element={<ProtectedRoute><MyProfilePage /></ProtectedRoute>} />
                   <Route path="/users/:username" element={<PublicProfilePage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
 
                   <Route path="/contact" element={<Contact />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />

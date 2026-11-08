@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ArrowUpRight, Check, Gamepad2, Loader2, Sparkles, Trophy } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, Check, Loader2, Sparkles, Trophy } from 'lucide-react';
 import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 import { Button } from '@/components/ui/button';
 import GameBoard from '@/components/games/GameBoard';
+import GameResult from '@/components/games/GameResult';
 import { useAuth } from '@/hooks/use-auth';
+import { useGoToLogin } from '@/hooks/use-go-to-login';
 import { useSEO } from '@/hooks/use-seo';
 import { GameApiError, getGames, getGameSession, sendGameAction, startGame } from '@/lib/games-api';
 import type { GameAction, GameMode, GameSession, StartGame, SubmitGameAction } from '@/lib/games-api';
@@ -30,7 +32,8 @@ export default function Games() {
 
 function GamesScreen() {
   const { slug } = useParams();
-  const { user, isLoading: authLoading, openLoginDialog } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
+  const goToLogin = useGoToLogin();
   const [params, setParams] = useSearchParams();
   const queryClient = useQueryClient();
   const sessionId = params.get('session');
@@ -75,7 +78,7 @@ function GamesScreen() {
     } finally { setBusy(false); busyRef.current = false; }
   };
   const start = (mode: GameMode) => {
-    if (!user) { openLoginDialog(); return; }
+    if (!user) { goToLogin(); return; }
     if (!game) return;
     void perform({ kind: 'start', body: { game: game.slug, mode, request_id: crypto.randomUUID(), ...(mode === 'replay' && session ? { puzzle_id: session.puzzle_id } : {}) } });
   };
@@ -84,7 +87,7 @@ function GamesScreen() {
   };
 
   return <InteriorPage>
-    <InteriorPageHero eyebrow="Малка пауза. Ново предизвикателство." icon={Gamepad2} title={game ? game.title : <>Време е за <span className="text-primary">игра.</span></>} description={game?.rules ?? 'Открий думата, разгадай кода или заведи робота до целта. Шест начина да раздвижиш ума си и да напреднеш в блога.'} actions={slug ? <Button asChild variant="outline"><Link to="/games"><ArrowLeft className="mr-2 size-4" />Всички игри</Link></Button> : <Button asChild variant="outline"><Link to="/gamification"><Trophy className="mr-2 size-4" />Мисии и награди</Link></Button>} />
+    <InteriorPageHero eyebrow="Малка пауза. Ново предизвикателство." art="gamepad" title={game ? game.title : <>Време е за <span className="text-primary">игра.</span></>} description={game?.rules ?? 'Открий думата, разгадай кода или заведи робота до целта. Шест начина да раздвижиш ума си и да напреднеш в блога.'} actions={slug ? <Button asChild variant="outline"><Link to="/games"><ArrowLeft className="mr-2 size-4" />Всички игри</Link></Button> : <Button asChild variant="outline"><Link to="/gamification"><Trophy className="mr-2 size-4" />Мисии и награди</Link></Button>} />
     <InteriorSection containerClassName={slug ? 'max-w-3xl' : 'max-w-6xl'}>
       {catalog.isPending && <p className="flex items-center gap-2" role="status"><Loader2 className="size-5 animate-spin motion-reduce:animate-none" />Зареждане на игрите…</p>}
       {catalog.isError && <div role="alert" className="space-y-3 rounded-2xl border p-6"><p>Игрите не могат да бъдат заредени.</p><Button variant="outline" onClick={() => void catalog.refetch()}>Опитай отново</Button></div>}
@@ -104,14 +107,14 @@ function GamesScreen() {
         {slug && !game && <p role="alert">Тази игра не съществува. Избери игра от каталога.</p>}
         {game && <>
           <div className="flex flex-wrap gap-3"><Button disabled={busy || authLoading || !catalog.data.enabled} onClick={() => start('daily')}>{game.daily_status ? 'Отвори дневната игра' : 'Дневно предизвикателство'}</Button><Button variant="outline" disabled={busy || authLoading || !catalog.data.enabled} onClick={() => start('practice')}>Допълнителна игра</Button></div>
-          {!user && <div className="rounded-2xl border p-6"><h2 className="text-lg font-bold">Твоят напредък започва с профил</h2><p className="mt-2 text-sm text-muted-foreground">Влез, за да играеш, да събираш точки и да продължиш от друго устройство.</p><Button className="mt-4" disabled={authLoading} onClick={openLoginDialog}>Влез и играй</Button></div>}
+          {!user && <div className="rounded-2xl border p-6"><h2 className="text-lg font-bold">Твоят напредък започва с профил</h2><p className="mt-2 text-sm text-muted-foreground">Влез, за да играеш, да събираш точки и да продължиш от друго устройство.</p><Button className="mt-4" disabled={authLoading} onClick={goToLogin}>Влез и играй</Button></div>}
           {error && <div role="alert" className="space-y-3 rounded-xl border border-destructive/40 bg-destructive/5 p-4"><p>{error}</p>{canRetry && pending.current && <Button variant="outline" disabled={busy} onClick={() => pending.current && void perform(pending.current)}>Повтори действието</Button>}</div>}
           {user && sessionId && sessionQuery.isPending && <p role="status">Възстановяване на играта…</p>}
           {user && sessionQuery.isError && <div role="alert" className="space-y-3 rounded-xl border p-4"><p>Тази сесия не може да бъде заредена. Може да принадлежи на друг профил.</p><Button variant="outline" onClick={() => void sessionQuery.refetch()}>Зареди отново</Button></div>}
           {session && user && <section aria-label="Игрово поле" className="space-y-6 rounded-3xl border bg-card p-4 shadow-sm sm:p-8">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-4"><span className="text-xs font-bold uppercase tracking-widest text-primary">{session.mode === 'daily' ? 'Дневно предизвикателство' : session.reward_eligible ? 'Допълнителна игра' : 'Упражнение'}</span><span className="text-xs text-muted-foreground">До {new Date(session.expires_at).toLocaleString('bg-BG', { timeZone: 'Europe/Sofia', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span></div>
             {!session.reward_eligible && <p className="text-sm text-muted-foreground">Тази задача вече е играна. Упражнението не носи допълнителни точки.</p>}
-            {session.status !== 'active' && <div role="status" className="rounded-2xl bg-primary/10 p-5"><h2 className="text-xl font-bold">{session.status === 'won' ? 'Браво, реши задачата!' : session.status === 'expired' ? 'Времето на тази сесия изтече' : 'Този опит приключи'}</h2><p className="mt-2 text-sm">{session.points_awarded > 0 ? `Получаваш +${session.points_awarded} точки за своя напредък.` : session.status === 'won' ? 'Победата е запазена. Този път няма допълнителни точки.' : 'Следващото предизвикателство те очаква.'}</p></div>}
+            {session.status !== 'active' && <GameResult key={`${session.id}-${session.status}`} session={session} />}
             {session.status !== 'expired' && <GameBoard key={session.id} session={session} busy={busy || !catalog.data.enabled} onAction={action} />}
             {busy && <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="size-4 animate-spin motion-reduce:animate-none" />Запазване…</p>}
             {session.status !== 'active' && <div className="flex flex-wrap gap-3 border-t pt-5"><Button disabled={busy || !catalog.data.enabled} onClick={() => start('practice')}>Следваща игра</Button>{session.status !== 'expired' && <Button variant="outline" disabled={busy || !catalog.data.enabled} onClick={() => start('replay')}>Упражни същата задача</Button>}</div>}

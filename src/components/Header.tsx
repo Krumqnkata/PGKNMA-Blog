@@ -16,8 +16,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { loginPath } from "@/lib/auth-paths";
 import { isNavLinkActive, siteNavLinks } from "@/lib/site-navigation";
 import { cn } from "@/lib/utils";
+import { SiteArt } from "@/components/art/SiteArt";
 
 const headerLinks = siteNavLinks.filter(({ header }) => header);
 const headerMoreLinks = siteNavLinks.filter(({ header, path }) => !header && path !== "/");
@@ -51,16 +53,14 @@ const DesktopNavigation = () => {
             <ChevronDown className="h-4 w-4 opacity-80" aria-hidden="true" />
           </DropdownMenuTrigger>
           <DropdownMenuContent align="start" sideOffset={10} className="grid w-[30rem] grid-cols-2 gap-1 rounded-2xl p-2">
-            {headerMoreLinks.map(({ name, path, icon: Icon }) => (
+            {headerMoreLinks.map(({ name, path, art }) => (
               <DropdownMenuItem key={path} asChild className="cursor-pointer rounded-xl p-0">
                 <Link
                   to={path}
                   aria-current={isNavLinkActive(path, pathname) ? "page" : undefined}
                   className={cn("flex items-center gap-3 px-3 py-2.5 text-sm font-medium", isNavLinkActive(path, pathname) && "bg-accent text-primary")}
                 >
-                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                    <Icon className="h-[1.125rem] w-[1.125rem]" aria-hidden="true" />
-                  </span>
+                  <SiteArt name={art} className="h-9 w-9" />
                   {name}
                 </Link>
               </DropdownMenuItem>
@@ -73,9 +73,10 @@ const DesktopNavigation = () => {
 };
 
 const Header = () => {
-  const [registerOpen, setRegisterOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { isAuthenticated, loginDialogOpen, openLoginDialog, closeLoginDialog } = useAuth();
+  const { isAuthenticated, sessionExpired, dismissSessionExpired } = useAuth();
+  const { pathname, search, hash } = useLocation();
+  const isAuthPage = pathname === "/login" || pathname === "/register";
   const { settings } = useSettings();
   const { reduceMotion } = useAccessibility();
   const headerLogo = settings?.header_logo ?? null;
@@ -92,6 +93,11 @@ const Header = () => {
     window.addEventListener("keydown", openSearch);
     return () => window.removeEventListener("keydown", openSearch);
   }, []);
+
+  // A protected page sends the visitor to /login, which already asks them to sign in again.
+  useEffect(() => {
+    if (sessionExpired && isAuthPage) dismissSessionExpired();
+  }, [dismissSessionExpired, isAuthPage, sessionExpired]);
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-white/10 bg-[hsl(var(--header-background)/0.96)] pt-[env(safe-area-inset-top,0px)] text-[hsl(var(--header-foreground))] shadow-sm backdrop-blur-md">
@@ -127,8 +133,10 @@ const Header = () => {
           {isAuthenticated ? (
             <UserDropdown />
           ) : (
-            <Button variant="ghost" size="icon" className="rounded-full" onClick={openLoginDialog} aria-label="Отвори вход в профила">
-              <UserIcon aria-hidden="true" />
+            <Button asChild variant="ghost" size="icon" className="rounded-full">
+              <Link to={loginPath(`${pathname}${search}${hash}`)} aria-label="Вход в профила">
+                <UserIcon aria-hidden="true" />
+              </Link>
             </Button>
           )}
         </div>
@@ -142,8 +150,7 @@ const Header = () => {
 
       <Suspense fallback={null}>
         {searchOpen && <SearchDialog open onOpenChange={setSearchOpen} />}
-        {loginDialogOpen && <LoginDialog open onOpenChange={closeLoginDialog} onOpenRegister={() => setRegisterOpen(true)} />}
-        {registerOpen && <RegisterDialog open onOpenChange={setRegisterOpen} onOpenLogin={openLoginDialog} />}
+        {sessionExpired && !isAuthPage && <SessionExpiredDialog />}
       </Suspense>
     </header>
   );
@@ -152,7 +159,6 @@ const Header = () => {
 export default Header;
 
 const NotificationBell = lazy(() => import("@/components/NotificationBell"));
-const LoginDialog = lazy(() => import("@/components/LoginDialog"));
-const RegisterDialog = lazy(() => import("@/components/RegisterDialog"));
+const SessionExpiredDialog = lazy(() => import("@/components/auth/SessionExpiredDialog"));
 const SearchDialog = lazy(() => import("@/components/SearchDialog"));
 const SeasonalEffect = lazy(() => import("@/components/SeasonalEffect"));

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Cookie } from "lucide-react";
+import { Check, ChevronDown, Cookie, Info, X } from "lucide-react";
 import { Link } from "react-router-dom";
+import { CookieArt } from "@/components/CookieArt";
 import { recordConsent, getLatestPrivacyPolicyVersion } from '@/lib/api'; // Import getLatestPrivacyPolicyVersion
 import {
   CONSENT_COOKIE_NAME,
@@ -11,6 +12,46 @@ import {
 } from '@/lib/cookie-consent';
 
 const CONSENT_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
+
+// Must match what the site really does and section 9 of the privacy policy.
+// tests/e2e/site-smoke.spec.ts checks the cookie list on a fresh visit.
+const cookieDetails = [
+  {
+    title: "Какво ползваме",
+    icon: Check,
+    iconClassName: "bg-primary/10 text-primary",
+    points: [
+      "Бисквитката cookieConsent помни избора ти от този прозорец за 90 дни.",
+      "Бисквитка за вход в раздела за валентинки, само ако влезеш там.",
+      "Входът в профила, темата и настройките за достъпност се пазят локално в браузъра, не като бисквитки.",
+    ],
+  },
+  {
+    title: "Какво не ползваме",
+    icon: X,
+    iconClassName: "bg-muted text-foreground",
+    points: [
+      "Нямаме бисквитки за аналитика.",
+      "Нямаме бисквитки за реклама и не ползваме Google Analytics.",
+    ],
+  },
+  {
+    title: "Какво броим без бисквитки",
+    icon: Info,
+    iconClassName: "bg-muted text-foreground",
+    points: [
+      "Броим прегледите на страниците на нашия сървър, за да виждаме кое се чете. Това не ползва бисквитки и не пази IP адрес, а записите се изтриват след 90 дни.",
+    ],
+  },
+  {
+    title: "Външни услуги",
+    icon: Info,
+    iconClassName: "bg-muted text-foreground",
+    points: [
+      "Google и Cloudflare могат да ползват свои бисквитки, когато отвориш вход или форма. YouTube и Spotify могат да го правят при вградените клипове.",
+    ],
+  },
+];
 
 const writeConsentCookie = (status: ConsentStatus, policyVersion: string) => {
   const value = encodeURIComponent(JSON.stringify({ status, policyVersion }));
@@ -28,6 +69,7 @@ const clearConsentCookie = () => {
 const CookieConsent = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [policyVersion, setPolicyVersion] = useState<string | null>(null); // New state for dynamic policy version
+  const [detailsOpen, setDetailsOpen] = useState(false);
 
   const fetchPolicyVersion = async () => {
     setPolicyVersion(null);
@@ -94,18 +136,31 @@ const CookieConsent = () => {
       aria-label="Бисквитки"
       className="fixed bottom-[calc(var(--site-bottom-clearance)+0.75rem)] left-3 right-3 z-40 mx-auto max-w-3xl rounded-2xl border border-border bg-card/95 p-3 shadow-2xl shadow-slate-950/20 backdrop-blur-md motion-safe:animate-in motion-safe:slide-in-from-bottom-4 sm:p-4"
     >
+      <CookieArt className="pointer-events-none absolute -top-5 right-5 h-9 w-9 rotate-12 drop-shadow-md sm:-top-6 sm:h-11 sm:w-11" />
       <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-5">
         <div className="flex min-w-0 items-start gap-3">
-          <Cookie className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" aria-hidden="true" />
-          <p className="text-sm leading-snug text-muted-foreground">
-            {policyVersion === 'error_fetching_version' ? (
-              <>Настройките за бисквитки не се заредиха. Проверете връзката си и опитайте отново.</>
-            ) : (
-              <>Използваме бисквитки, за да работи сайтът.{' '}
-                <Link to='/privacy-policy' className="font-medium text-primary underline underline-offset-4 hover:no-underline">Научи повече</Link>
-              </>
+          <CookieArt bitten className="art-wiggle mt-0.5 h-11 w-11 sm:h-14 sm:w-14" />
+          <div className="min-w-0">
+            <p className="text-sm leading-snug text-muted-foreground">
+              {policyVersion === 'error_fetching_version' ? (
+                <>Настройките за бисквитки не се заредиха. Проверете връзката си и опитайте отново.</>
+              ) : (
+                <>Ползваме само бисквитки, нужни за работата на сайта. Нямаме бисквитки за аналитика.</>
+              )}
+            </p>
+            {policyVersion !== 'error_fetching_version' && (
+              <button
+                type="button"
+                aria-expanded={detailsOpen}
+                aria-controls="cookie-details"
+                onClick={() => setDetailsOpen((open) => !open)}
+                className="mt-1 inline-flex min-h-8 items-center gap-1 rounded text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
+                За какво са бисквитките?
+                <ChevronDown className={`h-4 w-4 transition-transform motion-reduce:transition-none ${detailsOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+              </button>
             )}
-          </p>
+          </div>
         </div>
         {policyVersion === 'error_fetching_version' ? (
           <div className="flex w-full shrink-0 gap-2 sm:w-auto">
@@ -121,6 +176,29 @@ const CookieConsent = () => {
           </div>
         )}
       </div>
+      {detailsOpen && policyVersion !== 'error_fetching_version' && (
+        <div id="cookie-details" className="mt-3 max-h-[45dvh] sm:max-h-[60dvh] overflow-y-auto overscroll-contain border-t border-border pt-3 text-sm">
+          <div className="grid gap-3 sm:grid-cols-2">
+            {cookieDetails.map(({ title, icon: Icon, iconClassName, points }) => (
+              <section key={title} aria-label={title}>
+                <h2 className="flex items-center gap-2 text-sm font-bold text-foreground">
+                  <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${iconClassName}`}>
+                    <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                  </span>
+                  {title}
+                </h2>
+                <ul className="mt-1.5 space-y-1 pl-7 leading-snug text-muted-foreground">
+                  {points.map((point) => <li key={point}>{point}</li>)}
+                </ul>
+              </section>
+            ))}
+          </div>
+          <p className="mt-3 leading-snug text-muted-foreground">
+            Понеже нямаме незадължителни бисквитки, сайтът работи еднакво при всеки от трите избора. Записваме избора ти заедно с IP адреса за отчетност и го пазим до 90 дни.{' '}
+            <Link to='/privacy-policy' className="font-medium text-primary underline underline-offset-4 hover:no-underline">Политика за поверителност</Link>
+          </p>
+        </div>
+      )}
     </div>
   );
 };
