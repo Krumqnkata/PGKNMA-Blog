@@ -14,11 +14,22 @@ import { PollStatistics } from "@/components/PollStatistics";
 import hljs from '@/lib/syntax-highlighter';
 import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/InteriorPage';
 import { formatSiteDateTime } from '@/lib/date-time';
+import { POLL_LINES, pickRandom } from '@/lib/playful-messages';
+import { SiteArt } from '@/components/art/SiteArt';
+import { ConfettiBurst } from '@/components/art/ConfettiBurst';
 
 type AnswerKey = "a" | "b" | "c" | "d";
 
+interface AnswerMoment {
+  correct: boolean;
+  correctKey: string;
+  line: string;
+}
+
 const WeeklyPollContent = () => {
   const [selectedOptionId, setSelectedOptionId] = useState<number | null>(null);
+  // Only right after answering; a revisit shows the locked notice and the marked options instead.
+  const [answerMoment, setAnswerMoment] = useState<AnswerMoment | null>(null);
   const queryClient = useQueryClient();
   const codeBlockRef = useRef<HTMLElement>(null); // Ref for the <code> element
 
@@ -33,13 +44,13 @@ const WeeklyPollContent = () => {
       submitWeeklyPollAnswer(questionId, optionId),
     onSuccess: (data) => {
       queryClient.setQueryData(["weeklyPollStatus"], data);
-      const isCorrect = data.last_result?.selected === data.last_result?.correct;
-      toast({
-        title: isCorrect ? "Браво!" : "Опитай пак",
-        description: isCorrect
-          ? "Отговорът е верен."
-          : `Верен е вариант ${data.last_result?.correct?.toUpperCase()}.`,
-        variant: isCorrect ? "default" : "destructive",
+      const result = data.last_result;
+      if (!result) return;
+      const correct = result.selected === result.correct;
+      setAnswerMoment({
+        correct,
+        correctKey: result.correct?.toUpperCase() ?? "",
+        line: pickRandom(correct ? POLL_LINES.correct : POLL_LINES.wrong),
       });
     },
     onError: (err) => {
@@ -53,7 +64,7 @@ const WeeklyPollContent = () => {
 
   const handleSubmit = useCallback(() => {
     if (!selectedOptionId || !pollStatus?.question?.id) {
-      toast({ title: "Изберете отговор", description: "Моля, маркирайте един от вариантите." });
+      toast({ title: "Още няма избран отговор", description: "Маркирай един от вариантите и изпрати пак." });
       return;
     }
     submitAnswer({ questionId: pollStatus.question.id, optionId: selectedOptionId });
@@ -121,6 +132,20 @@ const WeeklyPollContent = () => {
         </Button>
       </CardHeader>
       <CardContent className="space-y-6">
+        {answerMoment && (
+          <div
+            role="status"
+            className={`relative overflow-hidden rounded-2xl border px-5 py-6 text-center ${answerMoment.correct ? "border-emerald-400/60 bg-emerald-500/10" : "border-amber-400/60 bg-amber-500/10"}`}
+          >
+            {answerMoment.correct && <ConfettiBurst />}
+            <SiteArt name={answerMoment.correct ? "trophy" : "pencil"} className="art-pop relative mx-auto block h-16 w-16" />
+            <p className="relative mt-3 text-xl font-black">
+              {answerMoment.correct ? "Браво, верен отговор!" : `Почти! Верен е вариант ${answerMoment.correctKey}.`}
+            </p>
+            <p className="relative mt-1 text-sm text-muted-foreground">{answerMoment.line}</p>
+          </div>
+        )}
+
         {isLocked ? (
           <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
             <Badge variant="secondary" className="bg-amber-200 text-amber-900">Заключено</Badge>

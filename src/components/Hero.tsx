@@ -10,9 +10,12 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { SiteArt } from "@/components/art/SiteArt";
 import { PageEyebrow } from "@/components/InteriorPage";
 import { Button } from "@/components/ui/button";
 import { useAccessibility } from "@/hooks/use-accessibility";
+import { useAuth } from "@/hooks/use-auth";
+import { greetingFor } from "@/lib/playful-messages";
 
 const HERO_SIGNALS = [
   "Актуални новини",
@@ -24,6 +27,9 @@ const VIDEO_RETRY_DELAYS = [1_000, 3_000, 8_000];
 
 export default function Hero() {
   const { reduceMotion } = useAccessibility();
+  const { user } = useAuth();
+  // Picked once, so the greeting does not flip while the page is open across an hour boundary.
+  const [greeting] = useState(() => greetingFor(new Date().getHours()));
   const [videoAttempt, setVideoAttempt] = useState(0);
   const [videoLoadFailed, setVideoLoadFailed] = useState(false);
   const [videoPlaybackBlocked, setVideoPlaybackBlocked] = useState(false);
@@ -126,9 +132,18 @@ export default function Hero() {
 
       <div className="container mx-auto grid items-center gap-8 px-4 py-10 sm:gap-12 sm:py-14 lg:grid-cols-12 lg:gap-16 lg:py-16">
         <div className="relative z-10 text-center lg:col-span-7 lg:text-left">
-          <PageEyebrow icon={Sparkles} className="home-hero-enter">
-            Официалният дигитален портал на ПГКНМА
-          </PageEyebrow>
+          {user ? (
+            <p className="home-hero-enter inline-flex max-w-full items-center gap-2.5 rounded-full border border-primary/25 bg-card/80 py-1.5 pl-1.5 pr-4 text-base font-bold shadow-sm backdrop-blur-sm sm:text-lg">
+              <SiteArt name={greeting.art} className="art-pop h-9 w-9" />
+              <span className="min-w-0 truncate">
+                {greeting.text}, <span className="text-primary">{user.username}</span>!
+              </span>
+            </p>
+          ) : (
+            <PageEyebrow icon={Sparkles} className="home-hero-enter">
+              Официалният дигитален портал на ПГКНМА
+            </PageEyebrow>
+          )}
 
           <h1
             id="home-hero-title"

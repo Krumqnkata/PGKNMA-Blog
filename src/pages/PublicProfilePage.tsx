@@ -26,7 +26,7 @@ import {
 import { Link, useParams } from 'react-router-dom';
 
 import { InteriorPage, InteriorSection, SectionHeading } from '@/components/InteriorPage';
-import { QueryErrorState } from '@/components/query/QueryStates';
+import { QueryEmptyState, QueryErrorState } from '@/components/query/QueryStates';
 import UserAvatar from '@/components/UserAvatar';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from '@/components/ui/badge';
@@ -335,7 +335,7 @@ export default function PublicProfilePage() {
               ))}
             </div>
           ) : (
-            <Card><CardContent className="py-10 text-center text-sm text-muted-foreground">Няма коментари към публични публикации.</CardContent></Card>
+            <QueryEmptyState art="comment" title="Още мълчи" description="Няма коментари към публични публикации. Може би пази най-доброто за по-късно." />
           )}
         </section>
       </InteriorSection>

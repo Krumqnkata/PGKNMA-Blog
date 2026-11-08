@@ -48,7 +48,7 @@ const CommentItem = memo(({ comment, postId, onReplySuccess, level, isAuthentica
 
     const handleReplySubmit = async () => {
         if (!replyContent.trim()) {
-            toast.error('Моля, напишете отговор.');
+            toast.error('Отговорът е празен. Напиши поне няколко думи.');
             return;
         }
         if (!isAuthenticated || !currentUser) {
@@ -252,7 +252,7 @@ const Comments = ({ postId }: CommentsProps) => {
 
     const handleMainCommentSubmit = async () => {
         if (!newCommentContent.trim()) {
-            toast.error('Моля, напишете коментар.');
+            toast.error('Коментарът е празен. Напиши поне няколко думи.');
             return;
         }
         if (!isAuthenticated || !user) {

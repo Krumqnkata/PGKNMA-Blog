@@ -10,7 +10,8 @@ import {
   Notification,
   type NotificationChannel,
 } from '@/lib/api';
-import { Archive, Bell, CheckCheck, AlertCircle, Inbox, BellRing, Check, ChevronRight } from 'lucide-react';
+import { Archive, CheckCheck, AlertCircle, Inbox, Check, ChevronRight } from 'lucide-react';
+import { SiteArt } from '@/components/art/SiteArt';
 import { Button } from '@/components/ui/button';
 import {
   Popover,
@@ -398,11 +399,8 @@ const NotificationBell: React.FC = () => {
             className="relative rounded-full text-white/85 hover:text-white hover:bg-white/10 transition-all duration-300 hover:scale-105 active:scale-95"
             aria-label="Известия"
           >
-            {unreadCount > 0 ? (
-              <BellRing className="h-5 w-5 animate-bell-ring text-white" />
-            ) : (
-              <Bell className="h-5 w-5" />
-            )}
+            {/* The drawn bell swings while there is something unread. */}
+            <SiteArt name="chime" className={`!size-7 drop-shadow-sm ${unreadCount > 0 ? "animate-bell-ring" : ""}`} />
             {totalCount > 0 && (
               <span 
                 className={`absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold text-white ring-2 ring-[#0a2e2e] transition-colors animate-in zoom-in ${

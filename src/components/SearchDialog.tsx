@@ -14,10 +14,10 @@ import {
   Newspaper,
   Clock3,
   HelpCircle,
-  SearchX,
   Vote,
 } from "lucide-react";
 
+import { SiteArt } from "@/components/art/SiteArt";
 import {
   CommandDialog,
   CommandGroup,
@@ -121,8 +121,9 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
 
         {showNoResults && (
           <div className="flex flex-col items-center gap-2 px-6 py-8 text-center text-sm text-muted-foreground">
-            <SearchX className="h-7 w-7 text-primary/70" aria-hidden="true" />
-            Няма намерено съдържание за „{debouncedSearch}“.
+            <SiteArt name="map" className="art-pop h-12 w-12" />
+            <p className="font-semibold text-foreground [overflow-wrap:anywhere]">Претърсихме навсякъде за „{debouncedSearch}“, но не го намерихме.</p>
+            <p>Опитайте с друга дума или по-кратко търсене.</p>
           </div>
         )}
 

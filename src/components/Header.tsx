@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useState } from "react";
-import { ChevronDown, Search, User as UserIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "@/components/NavLink";
@@ -121,7 +121,7 @@ const Header = () => {
 
         <div className="site-header-actions flex shrink-0 items-center gap-0 sm:gap-1 md:gap-2">
           <Button type="button" variant="ghost" className="w-10 gap-2 rounded-full px-0 text-white/85 hover:bg-white/10 hover:text-white md:w-auto md:border md:border-white/10 md:px-3 lg:w-10 lg:px-0 xl:w-auto xl:px-3" onClick={() => setSearchOpen(true)} aria-label="Отвори глобалното търсене">
-            <Search aria-hidden="true" />
+            <SiteArt name="magnifier" className="!size-6 drop-shadow-sm" />
             <span className="hidden text-sm md:inline lg:hidden xl:inline">Търсене</span>
             <kbd className="hidden rounded border border-white/15 bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/60 xl:inline">Ctrl K</kbd>
           </Button>
@@ -133,9 +133,9 @@ const Header = () => {
           {isAuthenticated ? (
             <UserDropdown />
           ) : (
-            <Button asChild variant="ghost" size="icon" className="rounded-full">
+            <Button asChild variant="ghost" size="icon" className="rounded-full transition-transform hover:scale-105 hover:bg-white/10">
               <Link to={loginPath(`${pathname}${search}${hash}`)} aria-label="Вход в профила">
-                <UserIcon aria-hidden="true" />
+                <SiteArt name="person" className="!size-7 drop-shadow-sm" />
               </Link>
             </Button>
           )}

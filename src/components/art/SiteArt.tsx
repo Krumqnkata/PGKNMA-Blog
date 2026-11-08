@@ -307,6 +307,112 @@ const art = {
       <circle cx="32" cy="28" r="4.5" fill={BLUE} />
     </>
   ),
+  sun: (
+    <>
+      <g stroke={GOLD_DARK} strokeWidth="4" strokeLinecap="round">
+        <path d="M32 4v7M32 53v7M4 32h7M53 32h7M12.200 12.200l5 5M46.800 46.800l5 5M12.200 51.800l5-5M46.800 17.200l5-5" />
+      </g>
+      <circle cx="32" cy="33.500" r="15" fill={GOLD_DARK} />
+      <circle cx="32" cy="32" r="15" fill={GOLD} />
+      <path d="M23 29c1-4 4-6 7-7" fill="none" stroke="#fbe3a6" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="27" cy="33" r="1.800" fill={INK} />
+      <circle cx="37" cy="33" r="1.800" fill={INK} />
+      <path d="M27 38c3 3 7 3 10 0" fill="none" stroke={INK} strokeWidth="2.200" strokeLinecap="round" />
+    </>
+  ),
+  moon: (
+    <>
+      <path d="M40 8a24 24 0 1 0 16 38A20 20 0 0 1 40 8Z" fill={PURPLE_DARK} transform="translate(0 2)" />
+      <path d="M40 8a24 24 0 1 0 16 38A20 20 0 0 1 40 8Z" fill="#c9bdf3" />
+      <circle cx="22" cy="24" r="3.500" fill="#b2a3ea" />
+      <circle cx="28" cy="44" r="4.500" fill="#b2a3ea" />
+      <circle cx="16" cy="38" r="2" fill="#b2a3ea" />
+      <path d="M50 6c.9 3.200 1.800 4.100 5 5-3.200.9-4.100 1.800-5 5-.9-3.200-1.800-4.100-5-5 3.200-.9 4.100-1.800 5-5ZM57 24c.6 2 1.200 2.600 3.200 3.200-2 .6-2.600 1.200-3.200 3.200-.6-2-1.200-2.600-3.200-3.200 2-.6 2.600-1.200 3.200-3.200Z" fill={GOLD} />
+    </>
+  ),
+  cap: (
+    <>
+      <path d="M17 30v12c0 5 7 9 15 9s15-4 15-9V30" fill={TEAL_DARK} />
+      <path d="M17 30v10c0 5 7 8 15 8s15-3 15-8V30" fill={TEAL} />
+      <path d="M4 25 32 13l28 12-28 12Z" fill={TEAL_DARK} transform="translate(0 2)" />
+      <path d="M4 25 32 13l28 12-28 12Z" fill="#2bc0ae" />
+      <path d="M14 25 32 17" stroke="#8fe0d5" strokeWidth="2.500" strokeLinecap="round" />
+      <path d="M32 25 52 30v15" fill="none" stroke={GOLD} strokeWidth="2.500" strokeLinecap="round" />
+      <path d="M49 44h6l-1 9h-4Z" fill={GOLD} />
+      <circle cx="32" cy="25" r="2.500" fill={GOLD} />
+    </>
+  ),
+  wave: (
+    <>
+      <circle cx="47" cy="15" r="6" fill={GOLD} />
+      <path d="M4 40c6-14 18-22 30-20 8 1 12 8 9 14-2 4-8 4-9 0 6 0 6-8-1-8-9 0-15 8-17 18Z" fill={BLUE_DARK} />
+      <path d="M4 38c6-14 18-22 30-20 8 1 12 8 9 14-2 4-8 4-9 0 6 0 6-8-1-8-9 0-15 8-17 18Z" fill={BLUE} />
+      <path d="M4 44c5 0 7-3 12-3s7 3 12 3 7-3 12-3 7 3 12 3 7-3 8-3v19H4Z" fill={TEAL} />
+      <path d="M4 52c5 0 7-3 12-3s7 3 12 3 7-3 12-3 7 3 12 3 7-3 8-3v11H4Z" fill={TEAL_DARK} />
+      <path d="M12 46c3-1 5-2 8-2" fill="none" stroke={PAPER} strokeWidth="2" strokeLinecap="round" />
+    </>
+  ),
+  tree: (
+    <>
+      <rect x="28" y="40" width="8" height="18" rx="2" fill={WOOD_DARK} />
+      <rect x="27" y="40" width="7" height="17" rx="2" fill={WOOD} />
+      <circle cx="32" cy="26" r="17" fill="#3f8f53" />
+      <circle cx="21" cy="33" r="11" fill="#3f8f53" />
+      <circle cx="43" cy="33" r="11" fill="#3f8f53" />
+      <circle cx="32" cy="24" r="16" fill={GREEN} />
+      <circle cx="21" cy="31" r="10" fill={GREEN} />
+      <circle cx="43" cy="31" r="10" fill={GREEN} />
+      <path d="M22 20c2-4 6-6 10-6" fill="none" stroke="#8fd59c" strokeWidth="3" strokeLinecap="round" />
+      <circle cx="38" cy="22" r="2.500" fill={RED} />
+      <circle cx="26" cy="35" r="2.500" fill={RED} />
+      <rect x="8" y="56" width="48" height="4" rx="2" fill={GREEN} opacity="0.6" />
+    </>
+  ),
+  magnifier: (
+    <>
+      <path d="m40 40 16 16" stroke={WOOD_DARK} strokeWidth="10" strokeLinecap="round" />
+      <path d="m40 39 15 15" stroke={WOOD} strokeWidth="7" strokeLinecap="round" />
+      <circle cx="26" cy="27.500" r="19" fill={GOLD_DARK} />
+      <circle cx="26" cy="26" r="19" fill={GOLD} />
+      <circle cx="26" cy="26" r="13" fill="#cfe8f5" />
+      <path d="M18 24c0-4 3-7 7-8" fill="none" stroke="#ffffff" strokeWidth="3.500" strokeLinecap="round" />
+      <circle cx="33" cy="32" r="2" fill="#ffffff" opacity="0.8" />
+    </>
+  ),
+  access: (
+    <>
+      <circle cx="32" cy="34" r="27" fill={PURPLE_DARK} />
+      <circle cx="32" cy="32" r="27" fill={PURPLE} />
+      <circle cx="32" cy="15" r="5" fill={PAPER} />
+      <g fill="none" stroke={PAPER} strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
+        <path d="m16 25 16 3 16-3" />
+        <path d="M32 28v11" />
+        <path d="m32 39-7 13M32 39l7 13" />
+      </g>
+    </>
+  ),
+  chime: (
+    <>
+      <path d="M10 13c-3 3-5 8-5 13M54 13c3 3 5 8 5 13" fill="none" stroke={PAPER} strokeWidth="3" strokeLinecap="round" />
+      <circle cx="32" cy="53" r="5" fill={WOOD_DARK} />
+      <path d="M32 12c-9 0-14 7-14 16 0 8-2 12-6 16 0 3 2 4 4 4h32c2 0 4-1 4-4-4-4-6-8-6-16 0-9-5-16-14-16Z" fill={GOLD_DARK} />
+      <path d="M32 10c-9 0-14 7-14 16 0 8-2 12-6 16 0 3 2 4 4 4h32c2 0 4-1 4-4-4-4-6-8-6-16 0-9-5-16-14-16Z" fill={GOLD} />
+      <path d="M24 26c0-5 2-8 5-10" fill="none" stroke="#fbe3a6" strokeWidth="3" strokeLinecap="round" />
+      <rect x="28" y="4" width="8" height="9" rx="4" fill={WOOD} />
+    </>
+  ),
+  person: (
+    <>
+      <circle cx="32" cy="34" r="27" fill={GOLD_DARK} />
+      <circle cx="32" cy="32" r="27" fill={GOLD} />
+      <path d="M13 51c3-9 10-13 19-13s16 4 19 13a27 27 0 0 1-38 0Z" fill={BLUE} />
+      <circle cx="32" cy="26" r="11" fill={PAPER} />
+      <path d="M21 25c0-8 5-12 11-12s11 4 11 12c-3-4-7-5-11-5s-8 1-11 5Z" fill={WOOD_DARK} />
+      <circle cx="28" cy="27.500" r="1.500" fill={INK} />
+      <circle cx="36" cy="27.500" r="1.500" fill={INK} />
+      <path d="M28.500 31.500c2 2 5 2 7 0" fill="none" stroke={INK} strokeWidth="2" strokeLinecap="round" />
+    </>
+  ),
 } satisfies Record<string, ReactElement>;
 
 export type SiteArtName = keyof typeof art;
@@ -318,7 +424,8 @@ interface SiteArtProps {
 
 /**
  * Hand-drawn objects for the places where a page introduces itself: headers, empty and error
- * states, the home page and the "Още" menus. Plain icons stay in buttons and dense controls.
+ * states, the home page, the "Още" menus and the round buttons in the header. Plain icons stay
+ * in other buttons and dense controls.
  * The colours are fixed, so every drawing has to read well on both light and dark themes.
  */
 export function SiteArt({ name, className }: SiteArtProps) {

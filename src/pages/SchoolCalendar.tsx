@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, MousePointerClick } from "lucide-react";
+import { MousePointerClick } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { getEvents, Event, recordGamificationActivity } from "@/lib/api";
 import { format, parseISO } from "date-fns";
@@ -10,7 +10,8 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import EventCard from "@/components/events/EventCard";
 import { getEventCategoryLabel } from "@/lib/event-categories";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { ContentSkeleton, QueryErrorState } from "@/components/query/QueryStates";
+import { SiteArt } from "@/components/art/SiteArt";
+import { ContentSkeleton, QueryEmptyState, QueryErrorState } from "@/components/query/QueryStates";
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from "@/components/InteriorPage";
 import { useAuth } from '@/hooks/use-auth';
 import { useSearchParams } from 'react-router-dom';
@@ -153,9 +154,9 @@ const SchoolCalendar = () => {
             <CardContent className="p-4 sm:p-6">
               {selectedDateEvents.length === 0 ? (
                 <div className="flex min-h-64 flex-col items-center justify-center rounded-2xl border-2 border-dashed border-border/70 bg-muted/20 px-6 text-center">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary"><CalendarDays className="h-7 w-7" aria-hidden="true" /></div>
+                  <SiteArt name="calendar" className="art-pop h-16 w-16" />
                   <p className="mt-4 font-bold">Денят е свободен</p>
-                  <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">Няма публикувани събития за тази дата. Изберете ден, отбелязан с точка.</p>
+                  <p className="mt-1 max-w-sm text-sm leading-relaxed text-muted-foreground">Нито контролно, нито събрание: за тази дата няма публикувани събития. Изберете ден, отбелязан с точка.</p>
                 </div>
               ) : (
                 <div className="space-y-3">{selectedDateEvents.map((event) => <EventCard key={event.id} event={event} isMobile={isMobile} initialOpen={event.id === requestedEventId} />)}</div>
@@ -179,7 +180,7 @@ const SchoolCalendar = () => {
           {upcomingEvents.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">{upcomingEvents.map((event) => <EventCard key={event.id} event={event} isMobile={isMobile} compact />)}</div>
           ) : (
-            <div className="rounded-2xl border-2 border-dashed border-border/70 bg-card/50 p-10 text-center text-muted-foreground">Няма предстоящи събития в тази категория.</div>
+            <QueryEmptyState art="calendar" title="Тук засега е тихо" description="Няма предстоящи събития в тази категория. Разгледайте друга или проверете отново по-късно." />
           )}
         </div>
       </InteriorSection>

@@ -95,6 +95,10 @@ routes; `/tv` е отделен route с `PageErrorBoundary`, за да не с�
 - Profile: `AccountSettings`, avatar, sessions, export, notification/push
   settings, archived notifications, user content lists.
 - Community: song form/voting/media, memes, polls и statistics.
+- PDF с jsPDF: вградените шрифтове на jsPDF нямат кирилица, затова
+  `lib/pdf-fonts.ts` (`addSiteFont`) вгражда Sofia Sans от
+  `assets/fonts/sofia-sans/` (статични TTF от github.com/lettersoup/Sofia-Sans,
+  лиценз OFL). Ползва го PDF-ът с предложените песни в `SongVoting`.
 - Home: `components/home/*`, hero/quick links/final CTA/reveal effects.
 - Accessibility: `components/accessibility/*`, `AccessibilityWidget` и
   `AccessibilityProvider`.

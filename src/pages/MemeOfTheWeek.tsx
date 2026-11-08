@@ -63,7 +63,7 @@ const MemeOfTheWeek: React.FC = () => {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!selectedFile) {
-      toast({ title: "Грешка", description: "Моля, изберете файл.", variant: "destructive" });
+      toast({ title: "Липсва картинка", description: "Избери файл с мемето, преди да го изпратиш.", variant: "destructive" });
       return;
     }
     if (!isAuthenticated) { 

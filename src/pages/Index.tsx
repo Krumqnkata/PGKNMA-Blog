@@ -5,10 +5,12 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import HomeBenefits from "@/components/home/HomeBenefits";
 import HomeFinalCTA from "@/components/home/HomeFinalCTA";
 import HomeGallery from "@/components/home/HomeGallery";
+import WelcomeCard from "@/components/home/WelcomeCard";
 
 const Index = () => (
   <main className="relative isolate overflow-hidden bg-background">
     <Hero />
+    <WelcomeCard />
     {/* Real content first; the platform pitch follows for visitors who keep scrolling. */}
     <RevealOnScroll>
       <NewsGrid />

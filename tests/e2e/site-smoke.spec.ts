@@ -298,7 +298,7 @@ test('contact form requires a reason before sending', async ({ page }) => {
   await page.getByPlaceholder('Вашият имейл').fill('test@example.com');
   await page.getByPlaceholder('Напишете вашето съобщение тук.').fill('Въпрос относно училищния блог.');
   await page.getByRole('button', { name: 'Изпращане', exact: true }).click();
-  await expect(page.getByText('Моля, изберете причина за контакт.')).toBeVisible();
+  await expect(page.getByText('Избери за какво ни пишеш, за да стигне до правилния човек.')).toBeVisible();
 });
 
 test('program recovers from a loading error and remembers the selected class', async ({ page }) => {

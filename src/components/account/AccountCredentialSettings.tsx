@@ -15,14 +15,14 @@ import { useToast } from "@/hooks/use-toast";
 import { changeUsername, updateUserPassword, type PasswordChangeData, type UsernameChangeData } from "@/lib/api";
 
 const passwordSchema = z.object({
-  current_password: z.string().min(1, "Текущата парола е задължителна."),
-  new_password: z.string().min(1, "Новата парола е задължителна."),
+  current_password: z.string().min(1, "Напиши сегашната си парола, за да потвърдим, че си ти."),
+  new_password: z.string().min(1, "Напиши новата парола."),
   new_password_confirm: z.string(),
 });
 
 const usernameSchema = z.object({
-  current_password: z.string().min(1, "Текущата парола е задължителна."),
-  new_username: z.string().min(3, "Потребителското име трябва да е поне 3 символа."),
+  current_password: z.string().min(1, "Напиши сегашната си парола, за да потвърдим, че си ти."),
+  new_username: z.string().min(3, "Името е твърде кратко. Нужни са поне 3 символа."),
 });
 
 const AccountCredentialSettings = () => {
@@ -144,7 +144,7 @@ const AccountCredentialSettings = () => {
                 <FormItem>
                   <FormLabel>Потвърди новата парола</FormLabel>
                   <FormControl><Input type={showNewPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" aria-invalid={passwordsMatch === false} className={passwordsMatch === true ? "border-emerald-500 ring-emerald-500/10" : undefined} {...field} /></FormControl>
-                  <FormMessage>{passwordsMatch === false ? "Паролите не съвпадат." : undefined}</FormMessage>
+                  <FormMessage>{passwordsMatch === false ? "Двете пароли се разминаха. Напиши ги еднакво." : undefined}</FormMessage>
                 </FormItem>
               )} />
             </CardContent>

@@ -224,3 +224,31 @@ test("signing out of the profile goes home, not to the login form", async ({ pag
   await expect(page).toHaveURL(/^http:\/\/127\.0\.0\.1:5173\/$/);
   await expect(page.getByRole("link", { name: "Вход в профила" })).toBeVisible();
 });
+
+test("after registering, the first visit to the home page offers three first steps once", async ({ page }) => {
+  await setup(page);
+  await page.route("**/api/auth/check-username/**", (route) => route.fulfill({ json: { is_available: true } }));
+  await page.route("**/api/auth/validate-password/", (route) => route.fulfill({ json: { is_valid: true } }));
+  await page.route("**/api/auth/register/", (route) => route.fulfill({ json: { detail: "Изпратихме ти имейл за потвърждение.", email: account.email, verification_required: true } }));
+  await page.goto("/register");
+  await page.getByLabel("Имейл").fill(account.email);
+  await page.getByLabel("Потребителско име").fill(account.username);
+  await page.getByLabel("Име", { exact: true }).fill(account.first_name);
+  await page.getByLabel("Фамилия").fill(account.last_name);
+  await page.getByLabel("Парола", { exact: true }).fill("Silna-Parola-2026");
+  await page.getByLabel("Потвърди паролата").fill("Silna-Parola-2026");
+  await page.locator("form button[type=submit]").click();
+  await expect(page.getByRole("heading", { name: "Потвърдете имейла си" })).toBeVisible();
+
+  await page.getByRole("link", { name: "Към входа" }).click();
+  await signIn(page);
+  await expect(page).toHaveURL(/\/$/);
+  const welcome = page.getByRole("region", { name: `Добре дошли в блога, ${account.username}!` });
+  await expect(welcome).toBeVisible();
+  await expect(welcome.getByRole("link", { name: /Предложи песен/ })).toHaveAttribute("href", "/bell-suggest");
+  await welcome.getByRole("button", { name: "Разбрах" }).click();
+  await expect(welcome).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.getByRole("region", { name: /Добре дошли в блога/ })).toHaveCount(0);
+});

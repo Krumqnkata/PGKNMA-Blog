@@ -1,6 +1,7 @@
 import { Check, Palette } from "lucide-react";
 import { useTheme } from "next-themes";
 
+import { SiteArt } from "@/components/art/SiteArt";
 import { THEME_OPTIONS, ThemeSwatch } from "@/components/ThemeSelector";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -27,7 +28,7 @@ const ThemeSettingsCard = () => {
           aria-label="Избор на цветова тема"
           className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3"
         >
-          {THEME_OPTIONS.map(({ value, label, description, icon: Icon, colors }) => {
+          {THEME_OPTIONS.map(({ value, label, description, art, colors }) => {
             const selected = value === selectedTheme;
             const inputId = `profile-theme-${value}`;
 
@@ -40,7 +41,7 @@ const ThemeSettingsCard = () => {
                 <ThemeSwatch colors={colors} />
                 <span className="min-w-0 flex-1">
                   <span className="flex items-center gap-1.5 font-semibold leading-5">
-                    <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
+                    <SiteArt name={art} className="h-5 w-5" />
                     {label}
                   </span>
                   <span className="mt-1 block text-sm leading-5 text-muted-foreground">{description}</span>

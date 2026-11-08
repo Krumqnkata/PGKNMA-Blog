@@ -5,12 +5,13 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { HelpCircle, Info, UserPlus, Music, Calendar, ShieldAlert, Code, Zap, Smartphone, MessageSquare, Bug, Globe, Search } from "lucide-react";
+import { Info, UserPlus, Music, Calendar, ShieldAlert, Code, Zap, Smartphone, MessageSquare, Bug, Globe, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
+import { QueryEmptyState } from "@/components/query/QueryStates";
 
 const GoogleIcon = ({ className }: { className?: string }) => (
   <svg
@@ -285,10 +286,14 @@ const FAQ = () => {
                   </AccordionItem>
                 ))}
               </Accordion> : (
-                <div className="px-4 py-12 text-center text-muted-foreground">
-                  <HelpCircle className="mx-auto mb-3 h-8 w-8 opacity-50" />
-                  <p>Няма въпроси, отговарящи на търсенето.</p>
-                </div>
+                <QueryEmptyState
+                  art="help"
+                  title="Този въпрос още никой не го е задал"
+                  description="Няма въпроси, отговарящи на търсенето. Опитайте с друга дума или ни питайте директно."
+                  className="m-4"
+                >
+                  <Button asChild variant="outline"><Link to="/contact">Питай ни</Link></Button>
+                </QueryEmptyState>
               )}
             </div>
           </div>

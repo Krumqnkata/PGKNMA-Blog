@@ -31,15 +31,15 @@ import { submitContactForm, type ContactFormData } from "@/lib/api";
 
 const FormSchema = z.object({
   name: z.string().min(2, {
-    message: "Името трябва да е поне 2 символа.",
+    message: "Името е твърде кратко. Нужни са поне 2 букви.",
   }),
   email: z.string().email({
-    message: "Моля, въведете валиден имейл адрес.",
+    message: "Този имейл изглежда непълен. Провери за @ и домейн.",
   }),
   message: z.string().min(10, {
-    message: "Съобщението трябва да е поне 10 символа.",
+    message: "Разкажи ни малко повече. Нужни са поне 10 символа.",
   }),
-  reason: z.string().min(1, "Моля, изберете причина за контакт."),
+  reason: z.string().min(1, "Избери за какво ни пишеш, за да стигне до правилния човек."),
 });
 
 export function ContactForm() {

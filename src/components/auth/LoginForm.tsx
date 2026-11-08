@@ -72,7 +72,7 @@ export function LoginForm({ registerHref, onRegisterClick }: LoginFormProps) {
     setError("");
 
     if (!turnstileToken) {
-      setError("Моля, потвърдете, че не сте робот.");
+      setError("Изчакай проверката, че не си робот, и опитай пак.");
       return;
     }
 

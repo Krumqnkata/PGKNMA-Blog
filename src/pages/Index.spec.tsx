@@ -9,6 +9,9 @@ vi.mock("@/hooks/use-accessibility", () => ({
   useAccessibility: () => ({ reduceMotion: true }),
 }));
 
+const auth = vi.hoisted(() => ({ user: null as null | { id: number; username: string } }));
+vi.mock("@/hooks/use-auth", () => ({ useAuth: () => auth }));
+
 vi.mock("@/lib/api", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/lib/api")>(),
   getPosts: vi.fn().mockResolvedValue([]),
@@ -49,6 +52,23 @@ describe("home landing page", () => {
       "href",
       "/news",
     );
+  });
+
+  it("greets a signed-in visitor by name instead of the portal tagline", () => {
+    auth.user = { id: 3, username: "maria_10b" };
+    try {
+      renderWithProviders(<Index />);
+      expect(screen.getByText("maria_10b")).toBeInTheDocument();
+      expect(screen.getByText(/^(Добро утро|Добър ден|Добър вечер|Още будуваш),/)).toBeInTheDocument();
+      expect(screen.queryByText("Официалният дигитален портал на ПГКНМА")).not.toBeInTheDocument();
+    } finally {
+      auth.user = null;
+    }
+  });
+
+  it("shows the portal tagline to guests", () => {
+    renderWithProviders(<Index />);
+    expect(screen.getByText("Официалният дигитален портал на ПГКНМА")).toBeInTheDocument();
   });
 
   it("has no automatically detectable accessibility violations", async () => {

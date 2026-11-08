@@ -30,6 +30,32 @@ export const GAME_LINES = {
   ],
 } as const;
 
+export const POLL_LINES = {
+  correct: [
+    "Ако имаше дневник за анкети, там щеше да има шестица.",
+    "Класът току-що те погледна с уважение.",
+    "Верен отговор и нито едно надничане в тетрадката.",
+  ],
+  wrong: [
+    "Почти. Следващата седмица задачата е твоя.",
+    "Грешките са просто домашно за следващия път.",
+    "Дори учителите понякога проверяват отговорите отзад.",
+  ],
+} as const;
+
+export interface Greeting {
+  text: string;
+  art: "sun" | "moon";
+}
+
+/** A greeting for the visitor's local hour (0–23). Night owls get a wink instead of "good night". */
+export const greetingFor = (hour: number): Greeting => {
+  if (hour >= 5 && hour < 11) return { text: "Добро утро", art: "sun" };
+  if (hour >= 11 && hour < 18) return { text: "Добър ден", art: "sun" };
+  if (hour >= 18 && hour < 22) return { text: "Добър вечер", art: "moon" };
+  return { text: "Още будуваш", art: "moon" };
+};
+
 export const pickRandom = <T,>(items: readonly T[]): T => (
   items[Math.floor(Math.random() * items.length)]
 );

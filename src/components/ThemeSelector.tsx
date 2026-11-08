@@ -1,15 +1,6 @@
-import {
-  GraduationCap,
-  MonitorCog,
-  Moon,
-  Palette,
-  Sparkles,
-  Sun,
-  Trees,
-  Waves,
-  type LucideIcon,
-} from "lucide-react";
+import { Palette } from "lucide-react";
 import { useTheme } from "next-themes";
+import { SiteArt, type SiteArtName } from "@/components/art/SiteArt";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -26,7 +17,7 @@ export type ThemeOption = {
   value: ThemePreference;
   label: string;
   description: string;
-  icon: LucideIcon;
+  art: SiteArtName;
   colors: readonly [string, string, string];
 };
 
@@ -35,49 +26,49 @@ export const THEME_OPTIONS: readonly ThemeOption[] = [
     value: "system",
     label: "Автоматична",
     description: "Следва устройството",
-    icon: MonitorCog,
+    art: "laptop",
     colors: ["#f8fafc", "#64748b", "#0f172a"],
   },
   {
     value: "light",
     label: "Светла",
     description: "Чиста и светла",
-    icon: Sun,
+    art: "sun",
     colors: ["#f1f8f8", "#14b8a6", "#123838"],
   },
   {
     value: "dark",
     label: "Тъмна",
     description: "Класическа тъмна",
-    icon: Moon,
+    art: "moon",
     colors: ["#0d2626", "#2dd4bf", "#ecfdfb"],
   },
   {
     value: "school",
     label: "Училищна",
     description: "Тюркоаз и златисто",
-    icon: GraduationCap,
+    art: "cap",
     colors: ["#fbf8ef", "#0f8f83", "#e6ad24"],
   },
   {
     value: "ocean",
     label: "Океан",
     description: "Дълбоко синьо и циан",
-    icon: Waves,
+    art: "wave",
     colors: ["#0d1b31", "#22d3ee", "#dff8ff"],
   },
   {
     value: "forest",
     label: "Горска",
     description: "Спокойни зелени тонове",
-    icon: Trees,
+    art: "tree",
     colors: ["#f2f7ed", "#2f855a", "#183a2a"],
   },
   {
     value: "midnight",
     label: "Полунощ",
     description: "Мастилено и виолетово",
-    icon: Sparkles,
+    art: "star",
     colors: ["#101020", "#9b87f5", "#f1efff"],
   },
 ] as const;
@@ -105,22 +96,19 @@ const ThemeSelector = () => {
           aria-label={`Избери цветова тема. Текуща: ${selectedOption?.label ?? "Автоматична"}`}
           title="Цветова тема"
         >
-          <Palette className="h-5 w-5" aria-hidden="true" />
-          <span
-            className="absolute bottom-1.5 right-1.5 h-2 w-2 rounded-full border border-white/80 bg-primary shadow-sm"
-            aria-hidden="true"
-          />
+          {/* The key remounts the drawing on every change, so the new theme's drawing spins in. */}
+          <SiteArt key={selectedTheme} name={selectedOption?.art ?? "laptop"} className="theme-art-swap !size-7 drop-shadow-sm" />
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent align="end" className="w-[min(19rem,calc(100vw-1rem))] rounded-xl p-2 shadow-xl">
+      <DropdownMenuContent align="end" className="w-[min(21rem,calc(100vw-1rem))] rounded-xl p-2 shadow-xl">
         <DropdownMenuLabel className="flex items-center gap-2 px-2 py-2">
           <Palette className="h-4 w-4 text-primary" aria-hidden="true" />
           Цветова тема
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={selectedTheme} onValueChange={setTheme} className="grid gap-1 sm:grid-cols-2">
-          {THEME_OPTIONS.map(({ value, label, description, icon: Icon, colors }) => (
+          {THEME_OPTIONS.map(({ value, label, description, art, colors }) => (
             <DropdownMenuRadioItem
               key={value}
               value={value}
@@ -128,8 +116,8 @@ const ThemeSelector = () => {
             >
               <span className="mt-0.5"><ThemeSwatch colors={colors} /></span>
               <span className="ml-2 min-w-0">
-                <span className="flex items-center gap-1.5 text-sm font-semibold">
-                  <Icon className="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+                <span className="flex items-center gap-1 text-sm font-semibold">
+                  <SiteArt name={art} className="h-4 w-4" />
                   {label}
                 </span>
                 <span className="block whitespace-normal text-[11px] leading-4 text-muted-foreground">{description}</span>

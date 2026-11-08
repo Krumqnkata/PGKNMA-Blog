@@ -16,6 +16,7 @@ import {
   useUsernameValidation,
 } from "@/hooks/use-credential-validation";
 import type { RegisterCredentials, RegistrationResponse } from "@/lib/api";
+import { markWelcomePending } from "@/lib/welcome";
 
 interface RegistrationFormProps {
   onRegistered: (result: RegistrationResponse) => void;
@@ -69,6 +70,7 @@ export function RegistrationForm({
     try {
       if (!response.credential) throw new Error("Не бе получен токен от Google.");
       await loginWithGoogle(response.credential);
+      markWelcomePending();
       toast({
         title: "Успешна регистрация / вход",
         description: "Добре дошли в платформата!",
@@ -90,23 +92,23 @@ export function RegistrationForm({
     setError("");
 
     if (!email || !username || !password || !password2 || !firstName || !lastName) {
-      setError("Моля, попълнете всички задължителни полета.");
+      setError("Пропусна някое поле. Попълни всички, за да продължим.");
       return;
     }
     if (usernameValidation.isValid !== true) {
-      setError("Моля, изберете друго потребителско име.");
+      setError("Това потребителско име не става. Опитай с друго.");
       return;
     }
     if (passwordValidation.isValid !== true) {
-      setError("Паролата не отговаря на изискванията.");
+      setError("Паролата още не покрива изискванията под полето.");
       return;
     }
     if (passwordsMatch !== true) {
-      setError("Паролите не съвпадат.");
+      setError("Двете пароли се разминаха. Напиши ги еднакво.");
       return;
     }
     if (!turnstileToken) {
-      setError("Моля, потвърдете, че не сте робот.");
+      setError("Изчакай проверката, че не си робот, и опитай пак.");
       return;
     }
 
@@ -122,6 +124,7 @@ export function RegistrationForm({
         captcha_answer: turnstileToken,
       };
       const result = await register(credentials);
+      markWelcomePending();
       onRegistered(result);
       toast({
         title: result.verification_required ? "Проверете имейла си" : "Профилът е готов",
@@ -231,7 +234,7 @@ export function RegistrationForm({
       <div className="space-y-1">
         <Label htmlFor="reg-password2">Потвърди паролата</Label>
         <Input id="reg-password2" type={showPassword ? "text" : "password"} autoComplete="new-password" placeholder="••••••••" value={password2} onChange={(event) => setPassword2(event.target.value)} disabled={isLoading} className={passwordsMatch === true ? "border-emerald-500 ring-emerald-500/10" : ""} required aria-invalid={passwordsMatch === false} aria-describedby={passwordsMatch === false ? "registration-password-match-error" : undefined} />
-        {passwordsMatch === false && <p id="registration-password-match-error" className="mt-1 text-xs text-destructive">Паролите не съвпадат.</p>}
+        {passwordsMatch === false && <p id="registration-password-match-error" className="mt-1 text-xs text-destructive">Двете пароли се разминаха. Напиши ги еднакво.</p>}
       </div>
 
       <div className="flex max-w-full justify-center overflow-x-auto py-2">

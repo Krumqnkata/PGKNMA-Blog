@@ -15,6 +15,7 @@ import {
   Type,
 } from "lucide-react";
 
+import { SiteArt } from "@/components/art/SiteArt";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -38,8 +39,8 @@ export default function AccessibilityWidget() {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label="Отвори настройки за достъпност" title="Достъпност" className="relative h-[40px] w-[40px] text-white hover:bg-white/10 hover:text-white">
-          <Accessibility className="h-5 w-5" aria-hidden="true" />
+        <Button variant="ghost" size="icon" aria-label="Отвори настройки за достъпност" title="Достъпност" className="relative h-[40px] w-[40px] text-white transition-transform hover:scale-105 hover:bg-white/10 hover:text-white">
+          <SiteArt name="access" className="!size-7 drop-shadow-sm" />
           {hasCustomSettings && (
             <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-amber-400 ring-2 ring-[#0a2e2e]" aria-hidden="true" />
           )}

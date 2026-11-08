@@ -134,7 +134,7 @@ const BellSongForm = () => {
                   <Input
                     id="link"
                     placeholder="https://www.youtube.com/watch?v=..."
-                    {...register("link", { required: "Моля, поставете линк." })}
+                    {...register("link", { required: "Липсва линкът към песента. Постави го тук." })}
                   />
                   {errors.link && <p className="text-sm text-destructive">{errors.link.message}</p>}
                 </div>
@@ -144,7 +144,7 @@ const BellSongForm = () => {
                   <Input
                     id="title"
                     placeholder="Въведете заглавие на песента"
-                    {...register("title", { required: "Заглавието е задължително." })}
+                    {...register("title", { required: "Как се казва песента? Напиши заглавието." })}
                   />
                   {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
                 </div>
@@ -155,7 +155,7 @@ const BellSongForm = () => {
                     <Controller
                       name="slot"
                       control={control}
-                      rules={{ required: "Изберете предпочитан момент." }}
+                      rules={{ required: "Избери кога да звучи песента." }}
                       render={({ field }) => (
                         <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <SelectTrigger>
