@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 
+import AIAssistant from "@/components/AIAssistant";
 import AppLoadingScreen from "@/components/AppLoadingScreen";
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from "@/components/CookieConsent";
@@ -9,9 +10,11 @@ import Header from "@/components/Header";
 import BottomNavigation from "@/components/BottomNavigation";
 import PageErrorBoundary from "@/components/PageErrorBoundary";
 import PushOptInPrompt from "@/components/PushOptInPrompt";
+import { useSettings } from "@/hooks/use-settings";
 
 const SiteLayout = () => {
   const location = useLocation();
+  const { settings } = useSettings();
 
   return (
     <div className="flex min-h-screen flex-col bg-background pb-[var(--site-bottom-clearance)]">
@@ -29,6 +32,7 @@ const SiteLayout = () => {
       </div>
       <Footer />
       <BackToTop />
+      {settings?.ai_assistant_enabled ? <AIAssistant /> : null}
       <CookieConsent />
       <PushOptInPrompt />
     </div>

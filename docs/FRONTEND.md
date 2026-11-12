@@ -83,6 +83,8 @@ routes; `/tv` е отделен route с `PageErrorBoundary`, за да не с�
 | `SEOManager`, `PageViewTracker` | Client title/meta и anonymous page-view tracking. |
 | `CookieConsent`, `PwaInstallBanner`, `OfflineStatusToast` | Privacy/install/offline UX. |
 | `ShareDropdown` | Web share/social link workflow; не съдържа server-side social publishing. |
+| `AISummaryBox` | Карта „Накратко“ с ИИ резюмето в началото на `Post`. Не се показва, ако `ai_summary` е празно. |
+| `AIAssistant` | Плаващ бутон с роботче (`SiteArt name="robot"`) долу вляво, срещу ракетата на `BackToTop`, и `Sheet` отляво с чат и приветствие. Очите на роботчето мигат, а веднъж на сесия от него изскача балонче „Питайте ме!“ (без анимации при `prefers-reduced-motion`). Монтира се в `SiteLayout` само при `ai_assistant_enabled`. Анонимните посетители минават Turnstile веднъж; разговорът е само в паметта. |
 
 `components/ui/` са reusable shadcn/Radix primitives. Не копирай техни styles
 във всяка page; разширявай variants/component wrapper, когато pattern се
@@ -119,3 +121,9 @@ routes; `/tv` е отделен route с `PageErrorBoundary`, за да не с�
 сайт при transient error; maintenance screen се показва само ако успешен или
 cached response explicitly има `maintenance_mode`. Feature routes за song/poll/
 meme показват `FeatureDisabledPage`, когато backend flag е изключен.
+
+ИИ функциите се управляват от админа (общо копче + отделни копчета). Site
+status връща вече изчислените `ai_summaries_enabled` и `ai_assistant_enabled`
+(взимат предвид и дали сървърът има ключове за Cloudflare). Ако полетата липсват
+(по-стар backend), фронтът ги приема за `false`. Подробности за backend частта:
+`docs/AI.md` в backend repository-то.

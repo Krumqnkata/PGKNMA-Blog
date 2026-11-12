@@ -15,6 +15,8 @@ const SAFE_DEFAULT_SETTINGS: SiteStatus = {
   enable_user_registration: true,
   enable_program_page: true,
   header_logo: null,
+  ai_summaries_enabled: false,
+  ai_assistant_enabled: false,
 };
 
 interface CachedSiteStatus {

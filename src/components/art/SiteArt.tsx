@@ -401,6 +401,28 @@ const art = {
       <rect x="28" y="4" width="8" height="9" rx="4" fill={WOOD} />
     </>
   ),
+  robot: (
+    <>
+      <path d="M32 9v8" stroke={INK} strokeWidth="3" strokeLinecap="round" />
+      <circle cx="32" cy="9" r="4.500" fill={RED_DARK} />
+      <circle cx="32" cy="8" r="4.500" fill={RED} />
+      <rect x="5" y="29" width="8" height="15" rx="3.500" fill={TEAL_DARK} />
+      <rect x="51" y="29" width="8" height="15" rx="3.500" fill={TEAL_DARK} />
+      <rect x="10" y="19" width="44" height="38" rx="12" fill={PAPER_SHADE} />
+      <rect x="10" y="17" width="44" height="38" rx="12" fill={PAPER} />
+      <rect x="16" y="25" width="32" height="16" rx="8" fill={INK} />
+      {/* Grouped so the assistant button can make the robot blink (index.css). */}
+      <g className="site-art-robot-eyes">
+        <circle cx="25" cy="33" r="4" fill={TEAL} />
+        <circle cx="39" cy="33" r="4" fill={TEAL} />
+        <circle cx="26.500" cy="31.500" r="1.300" fill={PAPER} />
+        <circle cx="40.500" cy="31.500" r="1.300" fill={PAPER} />
+      </g>
+      <path d="M26 47c4 3 8 3 12 0" fill="none" stroke={TEAL_DARK} strokeWidth="3" strokeLinecap="round" />
+      <path d="M53 2c1 5 3 7 8 8-5 1-7 3-8 8-1-5-3-7-8-8 5-1 7-3 8-8Z" fill={GOLD_DARK} />
+      <path d="M53 1c1 5 3 7 8 8-5 1-7 3-8 8-1-5-3-7-8-8 5-1 7-3 8-8Z" fill={GOLD} />
+    </>
+  ),
   person: (
     <>
       <circle cx="32" cy="34" r="27" fill={GOLD_DARK} />
