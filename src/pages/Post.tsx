@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import MarkdownRenderer from '@/components/MarkdownRenderer';
 import AudioReader from '@/components/AudioReader';
+import AISummaryBox from '@/components/AISummaryBox';
 import UserAvatar from '@/components/UserAvatar';
 import SiteRoleBadge from '@/components/SiteRoleBadge';
 import { Badge } from "@/components/ui/badge";
@@ -246,6 +247,8 @@ const Post = () => {
                                         </button>
                                     </div>
                                 </div>
+
+                                <AISummaryBox summary={post.ai_summary} />
 
                                 <AudioReader content={post.content} title={post.title} />
 

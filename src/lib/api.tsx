@@ -48,6 +48,8 @@ export interface Post {
     images: string[];
     gallery: PostGalleryImage[];
     documents: PostDocument[];
+    /** „Накратко“ AI summary. Empty when the feature is off or not generated yet. */
+    ai_summary?: string;
 }
 // Helper to safely extract array from DRF paginated response or plain array
 export function normalizeArray<T>(data: unknown): T[] {
@@ -160,6 +162,8 @@ const withResolvedPostMedia = (post: Post): Post => {
 
     return {
         ...post,
+        // Older backends do not send the field yet.
+        ai_summary: typeof post.ai_summary === 'string' ? post.ai_summary.trim() : '',
         banner: resolveApiUrl(post.banner) || null,
         author_avatar_url: resolveApiUrl(post.author_avatar_url) || null,
         images: resolvedImages,
@@ -809,6 +813,54 @@ export async function globalSearch(query: string): Promise<GlobalSearchResponse>
     };
 }
 
+export interface AssistantSource {
+    title: string;
+    url: string;
+}
+
+export interface AssistantTurn {
+    role: 'user' | 'assistant';
+    content: string;
+}
+
+export interface AssistantReply {
+    answer: string;
+    sources: AssistantSource[];
+    /** Short-lived pass for anonymous visitors so Turnstile is not asked on every question. */
+    ai_session?: string;
+}
+
+export interface AssistantQuestion {
+    question: string;
+    history?: AssistantTurn[];
+    turnstile_token?: string;
+    ai_session?: string;
+}
+
+/**
+ * Asks the AI assistant. Throws ApiResponseError with `code` such as
+ * `turnstile_required`, `ai_daily_limit`, `ai_disabled` or `ai_unavailable`.
+ */
+export async function askAssistant(body: AssistantQuestion): Promise<AssistantReply> {
+    const response = await apiRequest('/api/ai/assistant/', {
+        method: 'POST',
+        body: JSON.stringify(body),
+    });
+    if (!response.ok) {
+        throw await createApiResponseError(response, 'Асистентът не е достъпен в момента.');
+    }
+    const data = await response.json() as Partial<AssistantReply>;
+    return {
+        answer: typeof data.answer === 'string' ? data.answer : '',
+        sources: Array.isArray(data.sources)
+            ? data.sources.filter((source): source is AssistantSource => (
+                typeof source?.title === 'string' && typeof source?.url === 'string'
+            ))
+            : [],
+        ai_session: typeof data.ai_session === 'string' ? data.ai_session : undefined,
+    };
+}
+
 export async function recordPageView(path: string): Promise<void> {
     const response = await apiRequest('/api/analytics/page-view/', {
         method: 'POST',
@@ -1160,6 +1212,9 @@ export interface SiteStatus {
     enable_user_registration: boolean;
     enable_program_page: boolean;
     header_logo?: HeaderLogo | null;
+    /** Effective AI switches (main admin switch + feature switch + server keys). */
+    ai_summaries_enabled?: boolean;
+    ai_assistant_enabled?: boolean;
 }
 
 export type HeaderLogoEffect =

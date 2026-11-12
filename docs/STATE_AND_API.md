@@ -31,6 +31,17 @@
 Не използвай raw `fetch('/api/...')` за authenticated data, освен ако има
 конкретна причина и същите auth/error правила са приложени.
 
+ИИ полета и endpoint-и:
+
+- `Post.ai_summary?: string` — резюмето „Накратко“; `withResolvedPostMedia`
+  го нормализира до `''`, ако backend-ът не го връща.
+- `SiteStatus.ai_summaries_enabled?` и `ai_assistant_enabled?` — по подразбиране
+  `false` в `SAFE_DEFAULT_SETTINGS`.
+- `askAssistant()` → `POST /api/ai/assistant/`. Хвърля `ApiResponseError` с
+  `code` (`turnstile_required`, `turnstile_failed`, `ai_daily_limit`,
+  `ai_disabled`, `ai_unavailable`). Отговорът се показва като обикновен текст,
+  не като HTML/Markdown.
+
 ## Authentication lifecycle
 
 1. Login/register/Google result се пази като `accessToken`, `refreshToken` и

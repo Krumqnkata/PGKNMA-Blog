@@ -641,6 +641,45 @@ html[data-accessibility-motion="reduce"] :is(
   }
 }
 
+/* The AI assistant's robot (components/AIAssistant.tsx) tilts its head as if listening. */
+@keyframes robot-listen {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30% { transform: rotate(-8deg) translateY(-1px); }
+  60% { transform: rotate(6deg) translateY(-1px); }
+}
+
+/* Every few seconds the robot blinks, so the button feels alive without flashing. */
+@keyframes robot-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.1); }
+}
+
+/* The "Питай ме!" bubble pops out of the robot. */
+@keyframes ai-bubble-pop {
+  0% { opacity: 0; transform: translate(-0.75rem, 0.5rem) scale(0.6); }
+  70% { opacity: 1; transform: translate(0, 0) scale(1.05); }
+  100% { opacity: 1; transform: translate(0, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ai-assistant-fab:hover .ai-assistant-robot,
+  .ai-assistant-fab:focus-visible .ai-assistant-robot {
+    animation: robot-listen 900ms ease-in-out infinite;
+    transform-origin: 50% 60%;
+  }
+
+  .ai-assistant-fab .site-art-robot-eyes {
+    animation: robot-blink 4.5s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+
+  .ai-assistant-bubble {
+    animation: ai-bubble-pop 450ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    transform-origin: bottom left;
+  }
+}
+
 /* The theme button's drawing spins in whenever the theme changes (components/ThemeSelector.tsx). */
 @keyframes theme-art-swap {
   0% { transform: rotate(-200deg) scale(0.3); opacity: 0; }
