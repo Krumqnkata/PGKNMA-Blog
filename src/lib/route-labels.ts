@@ -1,26 +1,7 @@
-export const routeTitles: Record<string, string> = {
-  "/": "Начало",
-  "/news": "Новини",
-  "/gallery": "Галерия",
-  "/events": "Училищен календар",
-  "/program": "Учебна програма",
-  "/bell-suggest": "Предложи песен за звънеца",
-  "/weekly-poll": "Анкета на седмицата",
-  "/meme-of-the-week": "Меме на седмицата",
-  "/changelog": "История на промените",
-  "/profile": "Моят профил",
-  "/login": "Вход",
-  "/register": "Регистрация",
-  "/contact": "Контакти",
-  "/privacy-policy": "Политика за поверителност",
-  "/terms-of-service": "Условия за ползване",
-  "/developers": "Разработчици",
-  "/faq": "Често задавани въпроси",
-  "/gamification": "Мисии и награди",
-  "/games": "Игри",
-  "/tv": "Информационен екран",
-  "/easter-egg": "Пауза за веселба! 🥚",
-};
+import { PAGE_TITLES } from "@/content/pages";
+
+// Titles live in src/content/pages.ts (also used by the AI assistant).
+export const routeTitles: Record<string, string> = PAGE_TITLES;
 
 // What each page fetches once its code is downloaded, phrased to follow "Зареждане на …".
 const routeContent: Record<string, string> = {

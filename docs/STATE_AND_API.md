@@ -41,10 +41,18 @@
   го нормализира до `''`, ако backend-ът не го връща.
 - `SiteStatus.ai_summaries_enabled?` и `ai_assistant_enabled?` — по подразбиране
   `false` в `SAFE_DEFAULT_SETTINGS`.
-- `askAssistant()` → `POST /api/ai/assistant/`. Хвърля `ApiResponseError` с
-  `code` (`turnstile_required`, `turnstile_failed`, `ai_daily_limit`,
-  `ai_disabled`, `ai_unavailable`). Отговорът се показва като обикновен текст,
-  не като HTML/Markdown.
+- `askAssistant()` → `POST /api/ai/assistant/` с `conversation_id` (влезли) или
+  `history` (анонимни). Връща `answer`, `sources`, `answer_source`
+  (`rule` / `ai` / `none`) и `conversation_id`. Хвърля `ApiResponseError` с
+  `code` (`turnstile_required`, `turnstile_failed`, `ai_disabled`). Изчерпан
+  дневен лимит или недостъпен ИИ идват като обикновен отговор с
+  `answer_source: 'none'`. Отговорът се показва като обикновен текст, не като
+  HTML/Markdown.
+- `getAssistantConversations()`, `getAssistantConversation(id)`,
+  `deleteAssistantConversation(id)` → `/api/ai/conversations/…` — историята на
+  влезлия потребител (само собствените разговори).
+- Анонимните разговори се пазят в localStorage под `ANONYMOUS_CHAT_KEY`
+  (`pgknma-ai-chat-v1`, до 40 съобщения, с `try/catch`).
 
 ## Authentication lifecycle
 

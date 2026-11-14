@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ElementType } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
 import { QueryEmptyState } from "@/components/query/QueryStates";
+import { FAQ_ENTRIES } from "@/content/faq";
 
 const GoogleIcon = ({ className }: { className?: string }) => (
   <svg
@@ -38,200 +39,34 @@ const GoogleIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const faqs = [
-    {
-      question: "Какво е ПГКНМА Блог?",
-      answer: "ПГКНМА Блог е дигитална платформа, създадена за учениците, учителите и родителите на Професионална гимназия по компютърно моделиране и компютърни системи \"Проф. Минко Балкански\". Тук можете да намерите новини, събития и училищни проекти.",
-      icon: Info,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
-      hover: "group-hover:bg-blue-500/20"
-    },
-    {
-      question: "Как мога да се регистрирам?",
-      answer: "Регистрацията става чрез бутона в горния десен ъгъл. Можете да използвате вашия Google акаунт за бърз вход или да създадете нов профил с потребителско име и парола.",
-      icon: UserPlus,
-      color: "text-emerald-500",
-      bg: "bg-emerald-500/10",
-      hover: "group-hover:bg-emerald-500/20"
-    },
-    {
-      question: "Как работи входът с Google?",
-      answer: "Ако имате съществуващ акаунт, регистриран с Google имейл, вече можете да влизате директно чрез опцията „Вход с Google“. Важно е да знаете, че акаунтите, създадени по стандартния начин (с имейл), имат собствена парола за вход, докато акаунтите, създадени директно чрез Google профила, нямат отделна парола в нашата система.",
-      icon: GoogleIcon,
-      color: "", 
-      bg: "bg-gray-500/10",
-      hover: "group-hover:bg-gray-500/20"
-    },
-    {
-      question: "Какво е PWA и как да инсталирам сайта като приложение?",
-      answer: "PWA (Progressive Web App) позволява на сайта да работи като мобилно приложение. В Chrome натиснете трите точки и изберете „Install app“, а в Safari използвайте бутона „Share“ и „Add to Home Screen“. Така ще имате бърз достъп от вашия начален екран.",
-      icon: Smartphone,
-      color: "text-cyan-500",
-      bg: "bg-cyan-500/10",
-      hover: "group-hover:bg-cyan-500/20"
-    },
-    {
-      question: "Как мога да предложа песен за училищния звънец?",
-      answer: "След като влезете в профила си, отидете на страницата \"Предложения за звънец\". Там можете да поставите линк към песен (например от YouTube) и да изберете за кой час се отнася вашето предложение.",
-      icon: Music,
-      color: "text-pink-500",
-      bg: "bg-pink-500/10",
-      hover: "group-hover:bg-pink-500/20"
-    },
-    {
-      question: "Колко пъти мога да гласувам за песен?",
-      answer: "Всеки потребител може да предложи до неограничен брой песни на ден. Гласуването за вече предложени песни е неограничено, но системата следи за злоупотреби и автоматизиран вот.",
-      icon: Zap,
-      color: "text-yellow-500",
-      bg: "bg-yellow-500/10",
-      hover: "group-hover:bg-yellow-500/20"
-    },
-    {
-      question: "Къде мога да видя седмичната програма?",
-      answer: "Програмата е достъпна в менюто \"Програма\" в заглавната част на сайта. Тя се актуализира редовно от училищното ръководство, за да отразява всички промени.",
-      icon: Calendar,
-      color: "text-orange-500",
-      bg: "bg-orange-500/10",
-      hover: "group-hover:bg-orange-500/20"
-    },
-    {
-      question: "Кога се сменят меметата в „Меме на седмицата“?",
-      answer: "Всяка седмица е от понеделник до неделя. Гласуването приключва в неделя в 23:59, а в понеделник се обявява победителят. Меметата от изминалата седмица отиват в архива „Минали седмици“, където могат да се разглеждат, но вече не се гласува за тях. Новото меме участва в седмицата, в която е одобрено.",
-      icon: Calendar,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10",
-      hover: "group-hover:bg-purple-500/20"
-    },
-    {
-      question: "Забравих си паролата. Какво да направя?",
-      answer: "В момента платформата не поддържа автоматично възстановяване на парола. Моля, свържете се с администратор на сайта или използвайте Google Login, ако сте го активирали при регистрацията.",
-      icon: ShieldAlert,
-      color: "text-red-500",
-      bg: "bg-red-500/10",
-      hover: "group-hover:bg-red-500/20"
-    },
-    {
-      question: "Къде да съобщя за забелязан бъг или проблем?",
-      answer: "Можете да използвате формата за контакт или да се свържете директно с екипа разработчици през Discord или в училище. Всяка обратна връзка ни помага да направим сайта по-добър.",
-      icon: Bug,
-      color: "text-red-400",
-      bg: "bg-red-400/10",
-      hover: "group-hover:bg-red-400/20"
-    },
-    {
-      question: "Как работи офлайн режимът?",
-      answer: "Благодарение на Service Workers, веднъж зареден, сайтът запазва основните новини и програмата в кеша на вашия браузър. Можете да преглеждате това съдържание дори без активна интернет връзка.",
-      icon: Globe,
-      color: "text-blue-400",
-      bg: "bg-blue-400/10",
-      hover: "group-hover:bg-blue-400/20"
-    },
-    {
-      question: "Кой поддържа и развива този сайт?",
-      answer: "Сайтът е разработен и се поддържа от екип ученици на ПГКНМА \"Проф. Минко Балкански\" като част от техните извънкласни дейности и практически ИТ проекти.",
-      icon: Code,
-      color: "text-indigo-500",
-      bg: "bg-indigo-500/10",
-      hover: "group-hover:bg-indigo-500/20"
-    },
-    {
-      question: "Как мога да стана автор на статии в блога?",
-      answer: "Търсим активни ученици с интерес към писането! Свържете се с редакционния екип или с преподавател по БЕЛ/ИТ. След кратко одобрение ще получите авторски права в системата.",
-      icon: MessageSquare,
-      color: "text-green-500",
-      bg: "bg-green-500/10",
-      hover: "group-hover:bg-green-500/20"
-    },
-    {
-      question: "Как се одобряват коментарите?",
-      answer: "Коментарите се модерират автоматично за спам и нецензурни думи. В определени случаи администратор може да прегледа коментар ръчно, преди той да стане видим за всички.",
-      icon: ShieldAlert,
-      color: "text-orange-400",
-      bg: "bg-orange-400/10",
-      hover: "group-hover:bg-orange-400/20"
-    },
-    {
-      question: "Мога ли да предложа нова функционалност за сайта?",
-      answer: "Да! Отворени сме за идеи. Можете да споделите вашето предложение през страницата за контакт или да участвате в нашите периодични анкети за развитие на сайта.",
-      icon: Zap,
-      color: "text-yellow-600",
-      bg: "bg-yellow-600/10",
-      hover: "group-hover:bg-yellow-600/20"
-    },
-    {
-      question: "Как се избира „Меме на седмицата“?",
-      answer: "Всеки регистриран потребител може да качи свое меме. След одобрение то участва в текущата седмица и всички влезли потребители могат да гласуват за него. Мемето с най-много гласове в края на седмицата става „Меме на седмицата“ (при равен брой гласове печели каченото по-рано). То се показва на началната страница и на телевизорите в училище, а авторът му получава бонус точки.",
-      icon: Music,
-      color: "text-purple-500",
-      bg: "bg-purple-500/10",
-      hover: "group-hover:bg-purple-500/20"
-    },
-    {
-      question: "Какво представлява страницата „ТВ Екран“?",
-      answer: "Тази страница е оптимизирана за визуализация на информационните монитори в коридорите на училището. Тя показва актуални новини, предстоящи събития, меме на седмицата и друга важна информация в реално време.",
-      icon: Smartphone,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
-      hover: "group-hover:bg-blue-500/20"
-    },
-    {
-      question: "Безопасни ли са данните ми в платформата?",
-      answer: "Да, ние спазваме строги правила за поверителност. Използваме съвременни методи за защита на потребителските профили и не споделяме лична информация с трети страни.",
-      icon: ShieldAlert,
-      color: "text-rose-500",
-      bg: "bg-rose-500/10",
-      hover: "group-hover:bg-rose-500/20"
-    },
-    {
-      question: "Какво се случва при нарушение на правилата?",
-      answer: "При системни нарушения на правилата на общността (обидни коментари, спам и др.), потребителят може да получи предупреждение или временна забрана за достъп до определени функции на сайта.",
-      icon: ShieldAlert,
-      color: "text-orange-600",
-      bg: "bg-orange-600/10",
-      hover: "group-hover:bg-orange-600/20"
-    },
-    {
-      question: "Сайтът официален източник на информация ли е?",
-      answer: "Блогът е ученическа инициатива, подкрепена от училището. Въпреки че се стремим към точност, за официални административни въпроси винаги проверявайте и основния сайт на гимназията.",
-      icon: Info,
-      color: "text-sky-500",
-      bg: "bg-sky-500/10",
-      hover: "group-hover:bg-sky-500/20"
-    },
-    {
-      question: "Как мога да променя данните в профила си?",
-      answer: "Отидете на страницата „Моят профил“ и изберете „Настройки“. Там можете да промените вашето потребителско име, парола или аватар.",
-      icon: UserPlus,
-      color: "text-lime-600",
-      bg: "bg-lime-600/10",
-      hover: "group-hover:bg-lime-600/20"
-    },
-    {
-      question: "Мога ли да редактирам или изтривам моите коментари?",
-      answer: "Да, след като влезете в профила си, можете да управлявате своите коментари през профилната ви страница.",
-      icon: MessageSquare,
-      color: "text-teal-500",
-      bg: "bg-teal-500/10",
-      hover: "group-hover:bg-teal-500/20"
-    },
-    {
-      question: "Има ли правила за избор на песни за звънеца?",
-      answer: "Песните не трябва да съдържат нецензурни думи, политически послания или неподходящо съдържание. Администраторите преглеждат предложенията преди да бъдат пуснати в училищната уредба.",
-      icon: Music,
-      color: "text-fuchsia-500",
-      bg: "bg-fuchsia-500/10",
-      hover: "group-hover:bg-fuchsia-500/20"
-    },
-    {
-      question: "Мога ли да видя историята на промените по сайта?",
-      answer: "Да, в страницата „Changelog“ можете да проследите всички нови функции, подобрения и поправки на бъгове, които сме направили от началото на проекта.",
-      icon: Code,
-      color: "text-slate-500",
-      bg: "bg-slate-500/10",
-      hover: "group-hover:bg-slate-500/20"
-    },
-];
+const FAQ_STYLES: Record<string, { icon: ElementType; color: string; bg: string; hover: string }> = {
+  "faq-01": { icon: Info, color: "text-blue-500", bg: "bg-blue-500/10", hover: "group-hover:bg-blue-500/20" },
+  "faq-02": { icon: UserPlus, color: "text-emerald-500", bg: "bg-emerald-500/10", hover: "group-hover:bg-emerald-500/20" },
+  "faq-03": { icon: GoogleIcon, color: "", bg: "bg-gray-500/10", hover: "group-hover:bg-gray-500/20" },
+  "faq-04": { icon: Smartphone, color: "text-cyan-500", bg: "bg-cyan-500/10", hover: "group-hover:bg-cyan-500/20" },
+  "faq-05": { icon: Music, color: "text-pink-500", bg: "bg-pink-500/10", hover: "group-hover:bg-pink-500/20" },
+  "faq-06": { icon: Zap, color: "text-yellow-500", bg: "bg-yellow-500/10", hover: "group-hover:bg-yellow-500/20" },
+  "faq-07": { icon: Calendar, color: "text-orange-500", bg: "bg-orange-500/10", hover: "group-hover:bg-orange-500/20" },
+  "faq-08": { icon: Calendar, color: "text-purple-500", bg: "bg-purple-500/10", hover: "group-hover:bg-purple-500/20" },
+  "faq-09": { icon: ShieldAlert, color: "text-red-500", bg: "bg-red-500/10", hover: "group-hover:bg-red-500/20" },
+  "faq-10": { icon: Bug, color: "text-red-400", bg: "bg-red-400/10", hover: "group-hover:bg-red-400/20" },
+  "faq-11": { icon: Globe, color: "text-blue-400", bg: "bg-blue-400/10", hover: "group-hover:bg-blue-400/20" },
+  "faq-12": { icon: Code, color: "text-indigo-500", bg: "bg-indigo-500/10", hover: "group-hover:bg-indigo-500/20" },
+  "faq-13": { icon: MessageSquare, color: "text-green-500", bg: "bg-green-500/10", hover: "group-hover:bg-green-500/20" },
+  "faq-14": { icon: ShieldAlert, color: "text-orange-400", bg: "bg-orange-400/10", hover: "group-hover:bg-orange-400/20" },
+  "faq-15": { icon: Zap, color: "text-yellow-600", bg: "bg-yellow-600/10", hover: "group-hover:bg-yellow-600/20" },
+  "faq-16": { icon: Music, color: "text-purple-500", bg: "bg-purple-500/10", hover: "group-hover:bg-purple-500/20" },
+  "faq-17": { icon: Smartphone, color: "text-blue-500", bg: "bg-blue-500/10", hover: "group-hover:bg-blue-500/20" },
+  "faq-18": { icon: ShieldAlert, color: "text-rose-500", bg: "bg-rose-500/10", hover: "group-hover:bg-rose-500/20" },
+  "faq-19": { icon: ShieldAlert, color: "text-orange-600", bg: "bg-orange-600/10", hover: "group-hover:bg-orange-600/20" },
+  "faq-20": { icon: Info, color: "text-sky-500", bg: "bg-sky-500/10", hover: "group-hover:bg-sky-500/20" },
+  "faq-21": { icon: UserPlus, color: "text-lime-600", bg: "bg-lime-600/10", hover: "group-hover:bg-lime-600/20" },
+  "faq-22": { icon: MessageSquare, color: "text-teal-500", bg: "bg-teal-500/10", hover: "group-hover:bg-teal-500/20" },
+  "faq-23": { icon: Music, color: "text-fuchsia-500", bg: "bg-fuchsia-500/10", hover: "group-hover:bg-fuchsia-500/20" },
+  "faq-24": { icon: Code, color: "text-slate-500", bg: "bg-slate-500/10", hover: "group-hover:bg-slate-500/20" },
+};
+
+const faqs = FAQ_ENTRIES.map((entry) => ({ ...entry, ...FAQ_STYLES[entry.id] }));
 
 const FAQ = () => {
   const [searchQuery, setSearchQuery] = useState("");

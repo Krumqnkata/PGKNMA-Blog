@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import { SiteArt, type SiteArtName } from "@/components/art/SiteArt";
+import { HOME_BENEFITS, HOME_BENEFITS_EYEBROW, HOME_BENEFITS_TITLE } from "@/content/home";
 
 interface Benefit {
   title: string;
@@ -13,32 +14,8 @@ interface Benefit {
   accent: string;
 }
 
-const BENEFITS: Benefit[] = [
-  {
-    title: "Важното, веднага",
-    description: "Официални новини, успехи и възможности — подредени ясно, без да губиш време в търсене.",
-    href: "/news",
-    action: "Отвори новините",
-    art: "newspaper",
-    accent: "from-sky-500/25 via-cyan-500/10 to-transparent",
-  },
-  {
-    title: "Планирай с увереност",
-    description: "Виж предстоящите събития и важните дати навреме, за да знаеш какво следва.",
-    href: "/events",
-    action: "Виж календара",
-    art: "calendar",
-    accent: "from-violet-500/25 via-fuchsia-500/10 to-transparent",
-  },
-  {
-    title: "Участвай, не само чети",
-    description: "Гласувай, предлагай идеи и бъди активна част от решенията и настроението в училище.",
-    href: "/weekly-poll",
-    action: "Включи се сега",
-    art: "poll",
-    accent: "from-amber-500/25 via-orange-500/10 to-transparent",
-  },
-];
+// Texts live in src/content/home.ts (also used by the AI assistant).
+const BENEFITS: Benefit[] = HOME_BENEFITS.map((benefit) => ({ ...benefit, art: benefit.art as SiteArtName }));
 
 export default function HomeBenefits() {
   return (
@@ -53,10 +30,10 @@ export default function HomeBenefits() {
       <div className="container mx-auto px-4">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.24em] text-primary">
-            Създадено за твоя ден
+            {HOME_BENEFITS_EYEBROW}
           </p>
           <h2 id="home-benefits-title" className="mt-3 text-balance text-3xl font-black tracking-[-0.04em] sm:text-5xl">
-            Един портал. Три начина да си една крачка напред.
+            {HOME_BENEFITS_TITLE}
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-pretty text-base leading-relaxed text-muted-foreground sm:text-lg">
             По-малко търсене, повече яснота и реално участие в училищния живот.

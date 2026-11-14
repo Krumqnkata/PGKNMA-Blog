@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import type React from "react";
 import PageLoadStats from "./PageLoadStats";
 import DevicePushSettingsDialog from "@/components/DevicePushSettingsDialog";
+import { CONTACT, FOOTER_QUICK_LINKS, FOOTER_RESOURCES, FOOTER_TAGLINE, SOCIAL_LINKS } from "@/content/contact";
 
 const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg
@@ -22,28 +23,18 @@ const TikTokIcon = (props: React.SVGProps<SVGSVGElement>) => (
 );
 
 const Footer: React.FC = () => {
-  const quickLinks = [
-    { label: "Мисии и награди", href: "/gamification" },
-    { label: "Контакт", href: "/contact" },
-    { label: "Прием", href: "https://pgknma.com/priem" },
-    { label: "Новини", href: "/news" },
-  ];
-
-  const resources = [
-    { label: "Сайт на гимназията", href: "https://pgknma.com/" },
-    { label: "Често задавани въпроси", href: "/faq" },
-    { label: "Политика за поверителност", href: "/privacy-policy" },
-    { label: "Условия за ползване", href: "/terms-of-service" },
-    { label: "История на промени", href: "/changelog" },
-  ];
+  // Texts and links live in src/content/contact.ts (also used by the AI assistant).
+  const quickLinks = FOOTER_QUICK_LINKS;
+  const resources = FOOTER_RESOURCES;
   
-  const socialLinks = [
-    { icon: Facebook, href: "https://facebook.com/pgknma", label: "Facebook" },
-    { icon: TikTokIcon, href: "https://www.tiktok.com/@pgknma.proffbalkanski", label: "TikTok" },
-    { icon: Instagram, href: "https://www.instagram.com/pgknma.prof.minko.balkanski/", label: "Instagram" },
-    { icon: Youtube, href: "https://www.youtube.com/@pgknma", label: "YouTube" },
-    { icon: Globe, href: "https://pgknma.com/", label: "Website" },
-  ];
+  const socialIcons: Record<string, React.ElementType> = {
+    Facebook,
+    TikTok: TikTokIcon,
+    Instagram,
+    YouTube: Youtube,
+    Website: Globe,
+  };
+  const socialLinks = SOCIAL_LINKS.map((link) => ({ ...link, icon: socialIcons[link.label] ?? Globe }));
 
   return (
     <footer className="relative z-10 border-t border-border bg-[hsl(var(--footer-background))] text-[hsl(var(--footer-foreground))]">
@@ -56,7 +47,7 @@ const Footer: React.FC = () => {
               <span className="text-xl font-bold">ПГКНМА Блог</span>
             </div>
             <p className="text-sm text-[hsl(var(--footer-foreground))]/80 leading-relaxed">
-              Овластяване на учениците и активно партньорство с родителите чрез иновации и споделени ценности.
+              {FOOTER_TAGLINE}
             </p>
           </div>
 
@@ -99,19 +90,19 @@ const Footer: React.FC = () => {
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-[hsl(var(--footer-foreground))]/80">
                 <MapPin className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary" />
-                <span>ул. Стефан Сливков №7, град Стара Загора</span>
+                <span>{CONTACT.address}</span>
               </li>
-              <li><a href="tel:+359884994500" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+              <li><a href={CONTACT.phoneHref} className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Phone className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span>+359 88 499 4500</span>
+                <span>{CONTACT.phone}</span>
               </a></li>
-              <li><a href="mailto:info-2400020@edu.mon.bg" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+              <li><a href={`mailto:${CONTACT.officialEmail}`} className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span className="break-all">info-2400020@edu.mon.bg</span>
+                <span className="break-all">{CONTACT.officialEmail}</span>
               </a></li>
-              <li><a href="mailto:support@pgknma.space" className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
+              <li><a href={`mailto:${CONTACT.supportEmail}`} className="flex items-center gap-3 text-sm text-[hsl(var(--footer-foreground))]/80 transition-colors hover:text-primary hover:underline cursor-pointer">
                 <Mail className="h-5 w-5 flex-shrink-0 text-primary" />
-                <span className="break-all">support@pgknma.space</span>
+                <span className="break-all">{CONTACT.supportEmail}</span>
               </a></li>
             </ul>
           </div>
