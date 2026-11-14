@@ -658,6 +658,7 @@ export interface NotificationPreferences {
     posts_enabled: boolean;
     events_enabled: boolean;
     polls_enabled: boolean;
+    memes_enabled: boolean;
     changelog_enabled: boolean;
     comment_replies_enabled: boolean;
     submissions_enabled: boolean;
@@ -701,6 +702,7 @@ export interface PushSubscriptionPayload {
     posts_enabled?: boolean;
     events_enabled?: boolean;
     polls_enabled?: boolean;
+    memes_enabled?: boolean;
     changelog_enabled?: boolean;
 }
 
@@ -709,6 +711,7 @@ export interface PushDevicePreferences {
     posts_enabled: boolean;
     events_enabled: boolean;
     polls_enabled: boolean;
+    memes_enabled: boolean;
     changelog_enabled: boolean;
 }
 
@@ -1080,6 +1083,30 @@ export interface Meme {
     status: "pending" | "approved" | "rejected";
     votes: number;
     has_voted: boolean;
+    /** Monday of the meme's week (YYYY-MM-DD). Missing on older backends. */
+    week_start?: string | null;
+    /** Voting is open only for memes of the running week. */
+    is_current_week?: boolean;
+}
+
+export interface MemeWeekSummary {
+    week_start: string;
+    meme_count: number;
+    winner: Meme | null;
+    winner_votes: number;
+}
+
+export interface MemeWeeksResponse {
+    current_week_start: string | null;
+    voting_ends_at: string | null;
+    results: MemeWeekSummary[];
+    has_more: boolean;
+}
+
+export interface MemeWinner {
+    week_start: string;
+    winner_votes: number;
+    winner: Meme;
 }
 
 export interface MemeSubmission {
@@ -1087,8 +1114,10 @@ export interface MemeSubmission {
     image: File;
 }
 
-export async function getMemes(): Promise<Meme[]> {
-    const response = await apiRequest(`/api/memes/`, { method: 'GET' });
+/** Memes of the running week, or of a past week when `week` (YYYY-MM-DD) is given. */
+export async function getMemes(week?: string): Promise<Meme[]> {
+    const query = week ? `?week=${encodeURIComponent(week)}` : '';
+    const response = await apiRequest(`/api/memes/${query}`, { method: 'GET' });
 
     if (!response.ok) {
         throw new Error(await getApiErrorMessage(response, 'Не може да се заредят мемовете.'));
@@ -1096,6 +1125,42 @@ export async function getMemes(): Promise<Meme[]> {
 
     const data = await response.json();
     return normalizeArray<Meme>(data).map(withResolvedMemeImage);
+}
+
+/** Closed weeks with their winners, newest first. Empty on older backends. */
+export async function getMemeWeeks(before?: string): Promise<MemeWeeksResponse> {
+    const query = before ? `?before=${encodeURIComponent(before)}` : '';
+    const response = await apiRequest(`/api/memes/weeks/${query}`, { method: 'GET' });
+    if (response.status === 404) {
+        return { current_week_start: null, voting_ends_at: null, results: [], has_more: false };
+    }
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Не може да се зареди архивът с мемета.'));
+    }
+    const data = await response.json() as MemeWeeksResponse;
+    return {
+        ...data,
+        results: (data.results || []).map((week) => ({
+            ...week,
+            winner: week.winner ? withResolvedMemeImage(week.winner) : null,
+        })),
+    };
+}
+
+/** The latest weekly winner, or null when there is none yet. */
+export async function getMemeWinner(): Promise<MemeWinner | null> {
+    const response = await apiRequest('/api/memes/winner/', { method: 'GET' });
+    if (response.status === 404) return null;
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Не може да се зареди мемето на седмицата.'));
+    }
+    const data = await response.json() as Partial<MemeWinner>;
+    if (!data.winner || !data.week_start) return null;
+    return {
+        week_start: data.week_start,
+        winner_votes: data.winner_votes ?? data.winner.votes,
+        winner: withResolvedMemeImage(data.winner),
+    };
 }
 
 export async function submitMeme(data: MemeSubmission): Promise<Meme> {

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { BellOff, BellRing, CalendarDays, History, Loader2, Megaphone, Newspaper, Smartphone, Vote } from 'lucide-react';
+import { BellOff, BellRing, CalendarDays, History, Loader2, Megaphone, Newspaper, Smartphone, Trophy, Vote } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
@@ -124,6 +124,7 @@ export default function BrowserPushSettings() {
             ['posts_enabled', 'Нови публикации', Newspaper],
             ['events_enabled', 'Събития и напомняния', CalendarDays],
             ['polls_enabled', 'Нови анкети', Vote],
+            ['memes_enabled', 'Меме на седмицата', Trophy],
             ['changelog_enabled', 'Промени по сайта', History],
           ] as const).map(([key, label, Icon]) => (
             <label key={key} className="flex cursor-pointer items-center gap-3 rounded-xl border border-border/60 bg-background/70 p-3 text-sm font-semibold">

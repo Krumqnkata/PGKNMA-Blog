@@ -11,11 +11,13 @@ vi.mock("@/hooks/use-accessibility", () => ({
 
 const auth = vi.hoisted(() => ({ user: null as null | { id: number; username: string } }));
 vi.mock("@/hooks/use-auth", () => ({ useAuth: () => auth }));
+vi.mock("@/hooks/use-settings", () => ({ useSettings: () => ({ settings: { enable_meme_of_the_week: true } }) }));
 
 vi.mock("@/lib/api", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/lib/api")>(),
   getPosts: vi.fn().mockResolvedValue([]),
   getEvents: vi.fn().mockResolvedValue([]),
+  getMemeWinner: vi.fn().mockResolvedValue(null),
 }));
 
 describe("home landing page", () => {

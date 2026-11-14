@@ -20,6 +20,7 @@ import {
   getApprovedSongs,
   getEvents,
   getMemes,
+  getMemeWinner,
   getPollStatistics,
 } from "@/lib/api";
 import { useResilientTVQuery } from "@/hooks/use-resilient-tv-query";
@@ -34,7 +35,9 @@ const SECTION_COUNT = 4;
 const TVScreen = () => {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const songsQuery = useResilientTVQuery<ApprovedSong[]>("songs", getApprovedSongs, 30_000);
-  const memesQuery = useResilientTVQuery<Meme[]>("memes", getMemes, 30_000);
+  // This week's memes (voting is weekly) plus last week's winner.
+  const memesQuery = useResilientTVQuery<Meme[]>("memes", () => getMemes(), 30_000);
+  const memeWinnerQuery = useResilientTVQuery("meme-winner", getMemeWinner, 5 * 60_000);
   const pollQuery = useResilientTVQuery<PollStatistics>("polls", getPollStatistics, 30_000);
   const eventsQuery = useResilientTVQuery<TVEvent[]>("events", getEvents, 60_000);
 
@@ -69,7 +72,7 @@ const TVScreen = () => {
       : <div key="songs" className="relative"><SongsSection songs={topSongs} />{songsQuery.isRefetchError && <TVDataNotice>Показваме последно запазените песни</TVDataNotice>}</div>,
     memesQuery.data === undefined
       ? memesQuery.isPending ? <TVModulePlaceholder key="memes" title="Зареждане на топ меметата" /> : <TVModuleUnavailable key="memes" title="Топ мемета" />
-      : <div key="memes" className="relative"><MemesSection memes={topMemes} />{memesQuery.isRefetchError && <TVDataNotice>Показваме последно запазените мемета</TVDataNotice>}</div>,
+      : <div key="memes" className="relative"><MemesSection memes={topMemes} winner={memeWinnerQuery.data ?? null} />{memesQuery.isRefetchError && <TVDataNotice>Показваме последно запазените мемета</TVDataNotice>}</div>,
     pollQuery.data === undefined
       ? pollQuery.isPending ? <TVModulePlaceholder key="polls" title="Зареждане на класацията" /> : <TVModuleUnavailable key="polls" title="Класация на анкетите" />
       : <div key="polls" className="relative"><PollUsersSection users={topPollUsers} />{pollQuery.isRefetchError && <TVDataNotice>Показваме последно запазената класация</TVDataNotice>}</div>,

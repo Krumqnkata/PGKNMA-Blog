@@ -31,6 +31,10 @@
 Не използвай raw `fetch('/api/...')` за authenticated data, освен ако има
 конкретна причина и същите auth/error правила са приложени.
 
+„Меме на седмицата“: `getMemes()` връща само текущата седмица, `getMemes(week)` — минала
+седмица (без гласуване, `is_current_week: false`); `getMemeWeeks(before?)` дава архива с победителите, а
+`getMemeWinner()` — последния победител за началната страница и ТВ екрана (`null`, ако няма).
+
 ИИ полета и endpoint-и:
 
 - `Post.ai_summary?: string` — резюмето „Накратко“; `withResolvedPostMedia`

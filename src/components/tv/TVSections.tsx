@@ -22,6 +22,12 @@ export interface Meme {
   votes: number;
 }
 
+export interface MemeWinner {
+  week_start: string;
+  winner_votes: number;
+  winner: Pick<Meme, "title" | "user_username"> & { user_username: string | null };
+}
+
 export interface LeaderboardEntry {
   id: number;
   username: string;
@@ -115,10 +121,15 @@ export function SongsSection({ songs }: { songs: ApprovedSong[] }) {
   );
 }
 
-export function MemesSection({ memes }: { memes: Meme[] }) {
+export function MemesSection({ memes, winner = null }: { memes: Meme[]; winner?: MemeWinner | null }) {
   return (
-    <SectionShell title="😂 Топ Мемета" titleClassName="text-purple-400" info="За да разгледате и качите мем, посетете:">
-      <PodiumGrid items={memes} emptyText="Все още няма одобрени мемета." renderItem={(meme) => <><span className="mb-2 text-2xl font-bold leading-tight md:text-4xl">{meme.title}</span><img src={meme.image_url} alt={meme.title} className="mb-4 h-32 w-full flex-grow rounded-md bg-gray-800 object-contain p-2 md:h-40" /><span className="mb-4 text-lg text-gray-300 md:text-2xl">({meme.user_username})</span><span className="mt-auto text-2xl text-blue-300 md:text-3xl">{meme.votes} гласа</span></>} />
+    <SectionShell title="😂 Мемета на седмицата" titleClassName="text-purple-400" info="За да разгледате, гласувате и качите меме, посетете:">
+      {winner ? (
+        <p className="mx-auto mb-6 max-w-5xl rounded-lg border-2 border-yellow-400/70 bg-yellow-400/10 px-6 py-3 text-center text-2xl font-bold text-yellow-200 md:text-3xl">
+          🏆 Меме на миналата седмица: „{winner.winner.title}“ ({winner.winner.user_username ?? "изтрит потребител"}) — {winner.winner_votes} гласа
+        </p>
+      ) : null}
+      <PodiumGrid items={memes} emptyText="Тази седмица все още няма одобрени мемета." renderItem={(meme) => <><span className="mb-2 text-2xl font-bold leading-tight md:text-4xl">{meme.title}</span><img src={meme.image_url} alt={meme.title} className="mb-4 h-32 w-full flex-grow rounded-md bg-gray-800 object-contain p-2 md:h-40" /><span className="mb-4 text-lg text-gray-300 md:text-2xl">({meme.user_username})</span><span className="mt-auto text-2xl text-blue-300 md:text-3xl">{meme.votes} гласа</span></>} />
     </SectionShell>
   );
 }
