@@ -8,13 +8,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useGoToLogin } from '@/hooks/use-go-to-login';
+import { GAMIFICATION_QUESTIONS } from '@/content/gamification';
 
-const questions = [
-  { question: 'Нужен ли ми е профил?', answer: 'Класацията можеш да разглеждаш и без профил. За да събираш точки и да виждаш личната си статистика, трябва да си влязъл. Значките, мисиите и наградите са в „Моят прогрес“ в профила.' },
-  { question: 'Защо не получавам точки за всяко действие?', answer: 'Действията имат правила и може да имат дневни ограничения. Предложенията за песни и мемета носят точки след одобрение. Размерът на точките и ограниченията се управляват от екипа. Начислените точки можеш да провериш в „Последни точки“ в профила.' },
-  { question: 'Задължително ли е да участвам в класацията?', answer: 'Не. Публичното участие е по избор. Можеш да го включиш или изключиш от „Моят прогрес“ в профила и да продължиш да следиш личните си точки. Мястото ти се показва, когато участваш публично и имаш положителен брой точки за избрания период.' },
-  { question: 'Как използвам отключените награди?', answer: 'Отвори „Моят прогрес“ в профила си. В „Моите дигитални награди“ избери „Използвай наградата“. Можеш да активираш по една награда от всеки вид и до три потребителски титли.' },
-];
+// Texts live in src/content/gamification.ts (also used by the AI assistant).
+const questions = GAMIFICATION_QUESTIONS;
 
 export default function Gamification() {
   const { user, isLoading } = useAuth();

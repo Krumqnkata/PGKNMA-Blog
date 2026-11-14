@@ -2,19 +2,20 @@ import { ContactForm } from "@/components/ContactForm";
 import { Mail, MapPin, Phone } from "lucide-react";
 
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
+import { CONTACT, CONTACT_PAGE_INTRO } from "@/content/contact";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Contact = () => {
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Свържете се с нас" title={<>Нека <span className="text-primary">поговорим</span></>} description="Въпрос, идея или технически проблем — изпратете ни съобщение или използвайте директните контакти." art="envelope" />
+      <InteriorPageHero eyebrow="Свържете се с нас" title={<>Нека <span className="text-primary">поговорим</span></>} description={CONTACT_PAGE_INTRO} art="envelope" />
       <InteriorSection>
           <div className="grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
             <Card className="overflow-hidden">
               <CardHeader className="border-b border-border/60 bg-gradient-to-r from-primary/10 to-transparent"><CardTitle>Информация за контакт</CardTitle></CardHeader>
               <CardContent className="space-y-5 pt-5 sm:pt-6">
-                <ContactDetail icon={MapPin} label="Адрес">гр. Стара Загора, ул. „Стефан Сливков“ №7</ContactDetail>
-                <ContactDetail icon={Phone} label="Телефон"><a className="underline-offset-4 hover:underline" href="tel:+359884994500">+359 88 499 4500</a></ContactDetail>
-                <ContactDetail icon={Mail} label="Имейл"><a className="break-all underline-offset-4 hover:underline" href="mailto:info-2400020@edu.mon.bg">info-2400020@edu.mon.bg</a><br /><a className="break-all underline-offset-4 hover:underline" href="mailto:support@pgknma.space">support@pgknma.space</a></ContactDetail>
+                <ContactDetail icon={MapPin} label="Адрес">{CONTACT.address}</ContactDetail>
+                <ContactDetail icon={Phone} label="Телефон"><a className="underline-offset-4 hover:underline" href={CONTACT.phoneHref}>{CONTACT.phone}</a></ContactDetail>
+                <ContactDetail icon={Mail} label="Имейл"><a className="break-all underline-offset-4 hover:underline" href={`mailto:${CONTACT.officialEmail}`}>{CONTACT.officialEmail}</a><br /><a className="break-all underline-offset-4 hover:underline" href={`mailto:${CONTACT.supportEmail}`}>{CONTACT.supportEmail}</a></ContactDetail>
                 <div className="relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl border border-border/70 shadow-inner sm:aspect-video lg:aspect-[4/3]">
                 <iframe
                   width="100%"

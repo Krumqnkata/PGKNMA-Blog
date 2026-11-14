@@ -5,38 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Github, Rocket, Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InteriorPage, InteriorPageHero, InteriorSection } from "@/components/InteriorPage";
+import { TEAM_INTRO, TEAM_JOIN_TEXT, TEAM_JOIN_TITLE, TEAM_MEMBERS, TEAM_NOTE } from "@/content/team";
 
-const developers = [
-  {
-    name: "Александър /@ad0312/",
-    role: "Full-Stack гуру и главен архитект",
-    avatar: "https://avatars.githubusercontent.com/u/246351746?v=4",
-    github: "https://github.com/ythef0",
-    skills: ["Python", "Django", "MySQL", "System Architecture"],
-    color: "blue",
-  },
-  {
-    name: "Крум /@Krumqnkata/",
-    role: "UI/UX нинджа и фронтенд магьосник",
-    avatar: "https://avatars.githubusercontent.com/u/213969107?v=4",
-    github: "https://github.com/Krumqnkata",
-    skills: ["React", "TypeScript", "Tailwind CSS", "Design Systems"],
-    color: "emerald",
-  },
-  {
-    name: "Инж. Людмил Бонев",
-    role: "Ментор и двигател на проекта",
-    avatar: "https://avatars.githubusercontent.com/u/86717130?v=4",
-    github: "https://github.com/lkbonev72",
-    skills: ["Mentorship", "Project Management", "Technical Advisory"],
-    color: "orange",
-  },
-];
+// Texts live in src/content/team.ts (also used by the AI assistant).
+const developers = TEAM_MEMBERS;
 
 const Developers = () => {
   return (
     <InteriorPage>
-      <InteriorPageHero eyebrow="Технологичен екип" title={<>Хората зад <span className="text-primary">ПГКНМА Блог</span></>} description="Ученици и ментори, които изграждат по-добра дигитална среда за училищната общност." art="laptop" />
+      <InteriorPageHero eyebrow="Технологичен екип" title={<>Хората зад <span className="text-primary">ПГКНМА Блог</span></>} description={TEAM_INTRO} art="laptop" />
       <InteriorSection>
 
         <div className="mb-16 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -107,10 +84,9 @@ const Developers = () => {
               </div>
               
               <div className="flex-grow text-center md:text-left space-y-3">
-                <CardTitle className="text-3xl md:text-4xl font-bold">Тук можеш да бъдеш ти!</CardTitle>
+                <CardTitle className="text-3xl md:text-4xl font-bold">{TEAM_JOIN_TITLE}</CardTitle>
                 <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
-                  Имаш умения в програмирането, дизайна или писането на статии? 
-                  Стани част от нашия растящ екип и развивай платформата заедно с нас.
+                  {TEAM_JOIN_TEXT}
                 </p>
               </div>
 
@@ -127,7 +103,7 @@ const Developers = () => {
         </div>
 
         <div className="text-center text-muted-foreground text-sm opacity-60 italic">
-          * Проектът е разработен с образователна цел и е с отворен код.
+          * {TEAM_NOTE}
         </div>
       </InteriorSection>
     </InteriorPage>

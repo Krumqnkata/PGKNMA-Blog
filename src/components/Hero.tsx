@@ -16,12 +16,10 @@ import { Button } from "@/components/ui/button";
 import { useAccessibility } from "@/hooks/use-accessibility";
 import { useAuth } from "@/hooks/use-auth";
 import { greetingFor } from "@/lib/playful-messages";
+import { HOME_HERO, HOME_HERO_SIGNALS } from "@/content/home";
 
-const HERO_SIGNALS = [
-  "Актуални новини",
-  "Важни дати",
-  "Гласът на общността",
-];
+// Texts live in src/content/home.ts (also used by the AI assistant).
+const HERO_SIGNALS = HOME_HERO_SIGNALS;
 
 const VIDEO_RETRY_DELAYS = [1_000, 3_000, 8_000];
 
@@ -141,7 +139,7 @@ export default function Hero() {
             </p>
           ) : (
             <PageEyebrow icon={Sparkles} className="home-hero-enter">
-              Официалният дигитален портал на ПГКНМА
+              {HOME_HERO.eyebrow}
             </PageEyebrow>
           )}
 
@@ -149,15 +147,14 @@ export default function Hero() {
             id="home-hero-title"
             className="home-hero-enter home-hero-enter-delay-1 mt-4 text-balance text-[clamp(2.25rem,7vw,5rem)] font-black lg:text-[clamp(2.75rem,4.6vw,5rem)] leading-[1] tracking-[-0.05em] sm:mt-6"
           >
-            Не просто следвай училищния живот.{" "}
+            {HOME_HERO.headlineStart}{" "}
             <span className="mt-2 block bg-gradient-to-r from-primary via-teal-500 to-sky-500 bg-clip-text pb-2 text-transparent">
-              Бъди част от него.
+              {HOME_HERO.headlineEnd}
             </span>
           </h1>
 
           <p className="home-hero-enter home-hero-enter-delay-2 mx-auto mt-5 max-w-2xl text-pretty text-base font-medium leading-relaxed text-muted-foreground sm:mt-6 sm:text-xl lg:mx-0 lg:text-2xl">
-            Новини, събития и възможности от ПГКНМА — поднесени ясно,
-            навреме и на едно място.
+            {HOME_HERO.description}
           </p>
 
           <div className="home-hero-enter home-hero-enter-delay-3 mt-7 flex flex-col items-stretch justify-center gap-3 sm:mt-9 sm:flex-row sm:items-center sm:gap-4 lg:justify-start">

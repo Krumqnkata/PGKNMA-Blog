@@ -5,6 +5,8 @@ import { InteriorPage, InteriorPageHero, InteriorSection } from '@/components/In
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { BALKANSKI_CAREER, BALKANSKI_CAREER_TITLE, BALKANSKI_CHARITY, BALKANSKI_CHARITY_TITLE, BALKANSKI_INTRO, BALKANSKI_TITLE } from '@/content/minko-balkanski';
+
 const EasterEgg: React.FC = () => {
   const [revealed, setRevealed] = useState(false);
   const [answerInput, setAnswerInput] = useState('');
@@ -82,11 +84,11 @@ const EasterEgg: React.FC = () => {
             </div>
             <Card className="w-full overflow-hidden">
               <CardContent className="p-6 text-base leading-relaxed sm:p-8 lg:p-10">
-              <h2 className="mb-5 text-2xl font-black tracking-tight sm:text-3xl">Професор Минко Балкански – бележит учен и филантроп</h2>
+              <h2 className="mb-5 text-2xl font-black tracking-tight sm:text-3xl">{BALKANSKI_TITLE}</h2>
               
               <div className="mb-4">
                 <p className="mb-2">
-                  Минко Балкански е виден френски физик от български произход. Роден в село Ореш, област Хасково, той е известен като професор в престижния Парижки университет „Пиер и Мария Кюри“ и е признат за един от най-изтъкнатите български физици в света. Завършва докторат едва на 27 години, а само година по-късно става професор по физика – забележително постижение.
+                  {BALKANSKI_INTRO}
                 </p>
                 <div className="my-6 text-center">
                   <img
@@ -101,16 +103,16 @@ const EasterEgg: React.FC = () => {
               </div>
 
               <div className="mb-4">
-                <h3 className="text-xl font-semibold mb-2">Научна кариера и приноси</h3>
+                <h3 className="text-xl font-semibold mb-2">{BALKANSKI_CAREER_TITLE}</h3>
                 <p className="mb-2">
-                  Научната кариера на професор Балкански е белязана от значими изследвания и ръководни позиции. Той провежда научни изследвания в École Normale Supérieure, работи в Масачузетския технологичен институт (MIT) и ръководи лаборатория по физика на твърдото тяло в Университета Париж VI. Неговото научно наследство включва авторството на 30 книги и над 2000 научни статии, които допринасят съществено за развитието на физиката.
+                  {BALKANSKI_CAREER}
                 </p>
               </div>
 
               <div className="mb-4">
-                <h3 className="text-xl font-semibold mb-2">Благотворителност и признание</h3>
+                <h3 className="text-xl font-semibold mb-2">{BALKANSKI_CHARITY_TITLE}</h3>
                 <p className="mb-2">
-                  Освен с научните си постижения, професор Балкански е известен и с мащабната си благотворителна дейност в България. Той основава фондация „Миню Балкански“, чиято мисия е да подкрепя културата, образованието и науката в родния му край. Фондацията осигурява компютърни кабинети на училища, организира олимпиади по математика и физика и провежда подготвителни курсове за талантливи ученици. За изключителния си принос е удостоен с множество отличия, сред които орден „Стара планина“ през 2003 г.
+                  {BALKANSKI_CHARITY}
                 </p>
               </div>
               </CardContent>

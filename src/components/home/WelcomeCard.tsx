@@ -6,12 +6,10 @@ import { SiteArt, type SiteArtName } from "@/components/art/SiteArt";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { clearWelcome, isWelcomePending } from "@/lib/welcome";
+import { HOME_FIRST_STEPS } from "@/content/home";
 
-const FIRST_STEPS: { to: string; label: string; hint: string; art: SiteArtName }[] = [
-  { to: "/bell-suggest", label: "Предложи песен", hint: "за училищния звънец", art: "bell" },
-  { to: "/games", label: "Изиграй игра", hint: "и събери първите си точки", art: "gamepad" },
-  { to: "/weekly-poll", label: "Реши задачата на седмицата", hint: "и сравни се с другите", art: "poll" },
-];
+// Texts live in src/content/home.ts (also used by the AI assistant).
+const FIRST_STEPS = HOME_FIRST_STEPS.map((step) => ({ ...step, art: step.art as SiteArtName }));
 
 /** Shown once on the home page after someone registers in this browser (see lib/welcome.ts). */
 export default function WelcomeCard() {

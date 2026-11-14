@@ -826,18 +826,90 @@ export interface AssistantTurn {
     content: string;
 }
 
+/** Where an answer came from: the site's rules (no AI), the AI model, or nobody knew. */
+export type AssistantAnswerSource = 'rule' | 'ai' | 'none';
+
 export interface AssistantReply {
     answer: string;
     sources: AssistantSource[];
+    answer_source: AssistantAnswerSource;
+    /** Saved conversation of a logged-in user. */
+    conversation_id?: number;
     /** Short-lived pass for anonymous visitors so Turnstile is not asked on every question. */
     ai_session?: string;
 }
 
 export interface AssistantQuestion {
     question: string;
+    /** Only for anonymous visitors; logged-in users continue `conversation_id` on the server. */
     history?: AssistantTurn[];
+    conversation_id?: number | null;
     turnstile_token?: string;
     ai_session?: string;
+}
+
+export interface AssistantConversationSummary {
+    id: number;
+    title: string;
+    updated_at: string;
+}
+
+export interface AssistantStoredMessage {
+    id: number;
+    role: 'user' | 'assistant';
+    content: string;
+    answer_source: AssistantAnswerSource | '';
+    sources: AssistantSource[];
+    created_at: string;
+}
+
+export interface AssistantConversationDetail extends AssistantConversationSummary {
+    messages: AssistantStoredMessage[];
+}
+
+const asAnswerSource = (value: unknown): AssistantAnswerSource => (
+    value === 'rule' || value === 'ai' ? value : 'none'
+);
+
+const asSources = (value: unknown): AssistantSource[] => (
+    Array.isArray(value)
+        ? value.filter((source): source is AssistantSource => (
+            typeof source?.title === 'string' && typeof source?.url === 'string'
+        ))
+        : []
+);
+
+/** The user's saved assistant conversations, newest first (empty for older backends). */
+export async function getAssistantConversations(): Promise<AssistantConversationSummary[]> {
+    const response = await apiRequest('/api/ai/conversations/', { method: 'GET' });
+    if (response.status === 404) return [];
+    if (!response.ok) {
+        throw new Error(await getApiErrorMessage(response, 'Историята с асистента не може да се зареди.'));
+    }
+    return normalizeArray<AssistantConversationSummary>(await response.json());
+}
+
+export async function getAssistantConversation(id: number): Promise<AssistantConversationDetail> {
+    const response = await apiRequest(`/api/ai/conversations/${id}/`, { method: 'GET' });
+    if (!response.ok) {
+        throw await createApiResponseError(response, 'Разговорът не може да се зареди.');
+    }
+    const data = await response.json() as AssistantConversationDetail;
+    return {
+        ...data,
+        messages: (data.messages || []).map((message) => ({
+            ...message,
+            answer_source: message.role === 'assistant' ? asAnswerSource(message.answer_source) : '',
+            sources: asSources(message.sources),
+        })),
+    };
+}
+
+export async function deleteAssistantConversation(id: number): Promise<void> {
+    const response = await apiRequest(`/api/ai/conversations/${id}/`, { method: 'DELETE' });
+    if (!response.ok && response.status !== 404) {
+        throw new Error(await getApiErrorMessage(response, 'Разговорът не може да се изтрие.'));
+    }
 }
 
 /**
@@ -855,11 +927,10 @@ export async function askAssistant(body: AssistantQuestion): Promise<AssistantRe
     const data = await response.json() as Partial<AssistantReply>;
     return {
         answer: typeof data.answer === 'string' ? data.answer : '',
-        sources: Array.isArray(data.sources)
-            ? data.sources.filter((source): source is AssistantSource => (
-                typeof source?.title === 'string' && typeof source?.url === 'string'
-            ))
-            : [],
+        sources: asSources(data.sources),
+        // Older backends do not say; their answers always came from the AI.
+        answer_source: data.answer_source === undefined ? 'ai' : asAnswerSource(data.answer_source),
+        conversation_id: typeof data.conversation_id === 'number' ? data.conversation_id : undefined,
         ai_session: typeof data.ai_session === 'string' ? data.ai_session : undefined,
     };
 }

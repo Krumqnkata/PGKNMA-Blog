@@ -85,7 +85,7 @@ routes; `/tv` е отделен route с `PageErrorBoundary`, за да не с�
 | `ShareDropdown` | Web share/social link workflow; не съдържа server-side social publishing. |
 | `HomeMemeWinner` | Карта „Меме на седмицата“ на началната страница с победителя от последната приключила седмица (`getMemeWinner`). Не се показва, ако функцията е спряна или няма победител. |
 | `AISummaryBox` | Карта „Накратко“ с ИИ резюмето в началото на `Post`. Не се показва, ако `ai_summary` е празно. |
-| `AIAssistant` | Плаващ бутон с роботче (`SiteArt name="robot"`) долу вляво, срещу ракетата на `BackToTop`, и `Sheet` отляво с чат и приветствие. Очите на роботчето мигат, а веднъж на сесия от него изскача балонче „Питайте ме!“ (без анимации при `prefers-reduced-motion`). Монтира се в `SiteLayout` само при `ai_assistant_enabled`. Анонимните посетители минават Turnstile веднъж; разговорът е само в паметта. |
+| `AIAssistant` | Плаващ бутон с роботче (`SiteArt name="robot"`) долу вляво, срещу ракетата на `BackToTop`, и `Sheet` отляво с чат и приветствие. Очите на роботчето мигат, а веднъж на сесия от него изскача балонче „Питайте ме!“ (без анимации при `prefers-reduced-motion`). Монтира се в `SiteLayout` само при `ai_assistant_enabled`. Анонимните посетители минават Turnstile веднъж и разговорът им се пази в localStorage. Влезлите виждат последния си разговор, „Нов разговор“ и „История“ (с изтриване). Под всеки отговор има етикет „⚡ Отговор от сайта“ или „🤖 ИИ — може да греши“. |
 
 `components/ui/` са reusable shadcn/Radix primitives. Не копирай техни styles
 във всяка page; разширявай variants/component wrapper, когато pattern се
@@ -128,3 +128,23 @@ status връща вече изчислените `ai_summaries_enabled` и `ai_
 (взимат предвид и дали сървърът има ключове за Cloudflare). Ако полетата липсват
 (по-стар backend), фронтът ги приема за `false`. Подробности за backend частта:
 `docs/AI.md` в backend repository-то.
+
+## Текстове на сайта и знанията на ИИ асистента (`src/content/`)
+
+Информационните текстове, които съществуват само във фронтенда, са в
+`src/content/*.ts` като обикновени данни (без React и иконки):
+`faq.ts`, `rules.ts`, `contact.ts`, `team.ts`, `minko-balkanski.ts`,
+`gamification.ts`, `home.ts` и `pages.ts` (заглавия и описания на страниците).
+Страниците ги импортират, така че текстът е на едно място.
+
+`site-knowledge.ts` (`buildSiteKnowledge()`) ги събира в раздели със заглавие,
+текст и адрес. Vite плъгинът `siteKnowledge()` във `vite.config.ts` записва
+`dist/site-knowledge.json` при `npm run build` и го сервира на
+`/site-knowledge.json` в `npm run dev`. Backend-ът го чете, за да може
+асистентът да отговаря и за тези текстове.
+
+- Промяна на текст в `src/content/` → новият build обновява и знанията.
+- Нова страница → добави я в `PAGE_DESCRIPTIONS` в `pages.ts` (или в
+  `PAGES_WITHOUT_DESCRIPTION`); `pages.spec.ts` пада, ако маршрут от `App.tsx`
+  няма описание.
+- Гатанката от великденското яйце нарочно не влиза в знанията.

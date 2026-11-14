@@ -11,6 +11,7 @@ import { useGoToLogin } from '@/hooks/use-go-to-login';
 import { useSEO } from '@/hooks/use-seo';
 import { GameApiError, getGames, getGameSession, sendGameAction, startGame } from '@/lib/games-api';
 import type { GameAction, GameMode, GameSession, StartGame, SubmitGameAction } from '@/lib/games-api';
+import { GAMES_POINTS_TEXT, GAMES_POINTS_TITLE } from '@/content/gamification';
 
 const statusLabels = { active: 'Започната', won: 'Решена', lost: 'Приключена', expired: 'Изтекла' };
 const recordLabels = { quiz: 'верни отговора', word: 'грешки', code: 'опита', robot: 'проверки', memory: 'хода', hunt: 'опита' };
@@ -102,7 +103,7 @@ function GamesScreen() {
             <div className="flex items-center justify-between border-t pt-4"><span className="text-sm font-medium text-primary">{item.daily_status ? <><Check className="mr-1 inline size-4" />{statusLabels[item.daily_status]}</> : `До +${item.points} точки`}</span><ArrowUpRight className="size-5 text-muted-foreground group-hover:text-primary" /></div>
             {user && item.best_score !== null && <p className="mt-3 text-xs text-muted-foreground">Личен рекорд: {item.best_score} {recordLabels[item.slug]} · {item.wins} победи</p>}
           </Link>)}</div>
-          <div className="rounded-2xl border bg-muted/30 p-6 text-sm leading-7 text-muted-foreground"><h2 className="mb-2 font-bold text-foreground">Как печелиш точки</h2><p>Дневното предизвикателство е еднакво за всички. Допълнителните игри също носят точки, докато стигнеш общия дневен лимит. Вече играна задача е упражнение и не носи нова награда. Играеш със своя профил, за да запазим напредъка ти.</p></div>
+          <div className="rounded-2xl border bg-muted/30 p-6 text-sm leading-7 text-muted-foreground"><h2 className="mb-2 font-bold text-foreground">{GAMES_POINTS_TITLE}</h2><p>{GAMES_POINTS_TEXT}</p></div>
         </>}
         {slug && !game && <p role="alert">Тази игра не съществува. Избери игра от каталога.</p>}
         {game && <>
