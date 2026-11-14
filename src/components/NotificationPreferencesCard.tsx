@@ -45,6 +45,12 @@ const options: Array<{
     icon: Vote,
   },
   {
+    key: 'memes_enabled',
+    title: 'Меме на седмицата',
+    description: 'Когато в понеделник се обяви победителят от изминалата седмица.',
+    icon: Trophy,
+  },
+  {
     key: 'changelog_enabled',
     title: 'Промени по сайта',
     description: 'Когато бъде публикуван нов запис в дневника на промените.',

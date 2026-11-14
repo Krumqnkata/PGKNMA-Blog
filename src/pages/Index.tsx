@@ -5,6 +5,7 @@ import RevealOnScroll from "@/components/RevealOnScroll";
 import HomeBenefits from "@/components/home/HomeBenefits";
 import HomeFinalCTA from "@/components/home/HomeFinalCTA";
 import HomeGallery from "@/components/home/HomeGallery";
+import HomeMemeWinner from "@/components/home/HomeMemeWinner";
 import WelcomeCard from "@/components/home/WelcomeCard";
 
 const Index = () => (
@@ -17,6 +18,9 @@ const Index = () => (
     </RevealOnScroll>
     <RevealOnScroll>
       <Events />
+    </RevealOnScroll>
+    <RevealOnScroll>
+      <HomeMemeWinner />
     </RevealOnScroll>
     <RevealOnScroll>
       <HomeGallery />

@@ -83,6 +83,7 @@ routes; `/tv` е отделен route с `PageErrorBoundary`, за да не с�
 | `SEOManager`, `PageViewTracker` | Client title/meta и anonymous page-view tracking. |
 | `CookieConsent`, `PwaInstallBanner`, `OfflineStatusToast` | Privacy/install/offline UX. |
 | `ShareDropdown` | Web share/social link workflow; не съдържа server-side social publishing. |
+| `HomeMemeWinner` | Карта „Меме на седмицата“ на началната страница с победителя от последната приключила седмица (`getMemeWinner`). Не се показва, ако функцията е спряна или няма победител. |
 | `AISummaryBox` | Карта „Накратко“ с ИИ резюмето в началото на `Post`. Не се показва, ако `ai_summary` е празно. |
 | `AIAssistant` | Плаващ бутон с роботче (`SiteArt name="robot"`) долу вляво, срещу ракетата на `BackToTop`, и `Sheet` отляво с чат и приветствие. Очите на роботчето мигат, а веднъж на сесия от него изскача балонче „Питайте ме!“ (без анимации при `prefers-reduced-motion`). Монтира се в `SiteLayout` само при `ai_assistant_enabled`. Анонимните посетители минават Turnstile веднъж; разговорът е само в паметта. |
 
