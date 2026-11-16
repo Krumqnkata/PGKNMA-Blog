@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SuccessMoment } from '@/components/art/SuccessMoment';
+import { FittedImage } from '@/components/FittedImage';
 import { QueryEmptyState } from '@/components/query/QueryStates';
 import { InteriorPage, InteriorPageHero, InteriorSection, SectionHeading } from '@/components/InteriorPage';
 import { useToast } from "@/hooks/use-toast";
@@ -45,8 +46,8 @@ const MemeCard = ({ meme, canVote, onVote, isWinner = false }: MemeCardProps) =>
           <Trophy className="h-3.5 w-3.5" aria-hidden="true" /> Победител
         </span>
       )}
-      <div className="aspect-square overflow-hidden bg-muted">
-        <img src={meme.image_url} alt={meme.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100" />
+      <div className="relative aspect-square overflow-hidden bg-muted">
+        <FittedImage src={meme.image_url} alt={meme.title} loading="lazy" className="transition-transform duration-500 group-hover:scale-105 motion-reduce:group-hover:scale-100" />
       </div>
     </CardContent>
     <div className="p-5">
@@ -107,7 +108,9 @@ const ArchivedWeek = ({ week }: { week: MemeWeekSummary }) => {
         className="flex w-full items-center gap-4 p-4 text-left transition-colors hover:bg-muted/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring"
       >
         {week.winner ? (
-          <img src={week.winner.image_url} alt="" className="h-14 w-14 shrink-0 rounded-xl object-cover" loading="lazy" />
+          <span className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-muted">
+            <FittedImage src={week.winner.image_url} alt="" loading="lazy" />
+          </span>
         ) : (
           <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground"><History className="h-5 w-5" aria-hidden="true" /></span>
         )}
@@ -284,7 +287,9 @@ const MemeOfTheWeek: React.FC = () => {
           {winner && (
             <section aria-labelledby="meme-winner-heading" className="mx-auto mb-12 max-w-3xl overflow-hidden rounded-3xl border border-amber-400/50 bg-gradient-to-br from-amber-100/70 via-card to-card shadow-xl dark:from-amber-500/10">
               <div className="grid gap-0 sm:grid-cols-[minmax(0,15rem)_1fr]">
-                <img src={winner.winner.image_url} alt={winner.winner.title} className="aspect-square h-full w-full object-cover" />
+                <div className="relative aspect-square h-full w-full overflow-hidden bg-muted">
+                  <FittedImage src={winner.winner.image_url} alt={winner.winner.title} />
+                </div>
                 <div className="flex flex-col justify-center gap-2 p-6">
                   <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
                     <Trophy className="h-4 w-4" aria-hidden="true" /> Меме на миналата седмица

@@ -54,7 +54,7 @@ export default function GalleryAlbum() {
             </div>
           </header>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
-            {album.photos.map((photo, index) => <button key={photo.image_url} type="button" onClick={() => setPhotoIndex(index)} aria-label={`Отвори снимка ${index + 1}${photo.title ? `: ${photo.title}` : ""}`} className="group aspect-[4/3] overflow-hidden rounded-xl bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+            {album.photos.map((photo, index) => <button key={photo.image_url} type="button" onClick={() => setPhotoIndex(index)} aria-label={`Отвори снимка ${index + 1}${photo.title ? `: ${photo.title}` : ""}`} className="group relative aspect-[4/3] overflow-hidden rounded-xl bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
               <GalleryPhoto photo={photo} alt={slides[index].alt} />
             </button>)}
           </div>

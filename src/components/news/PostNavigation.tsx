@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { FittedImage } from "@/components/FittedImage";
 import type { Post } from "@/lib/api";
 import { formatSiteDate } from "@/lib/date-time";
 import { cn } from "@/lib/utils";
@@ -66,11 +67,12 @@ export const RelatedPosts = ({ post, posts }: PostNavigationProps) => {
               to={`/post/${item.id}`}
               className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
-              <div className="aspect-[16/9] overflow-hidden bg-muted">
-                <img
+              <div className="relative aspect-[16/9] overflow-hidden bg-muted">
+                <FittedImage
                   src={item.banner || "/logo-light.png"}
+                  backdrop={Boolean(item.banner)}
                   alt=""
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   loading="lazy"
                   decoding="async"
                 />

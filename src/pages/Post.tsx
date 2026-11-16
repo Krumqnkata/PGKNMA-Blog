@@ -31,6 +31,7 @@ import { formatMonthlyViews } from '@/lib/post-analytics';
 import { usePosts } from '@/hooks/use-posts';
 import { PostPager, RelatedPosts } from '@/components/news/PostNavigation';
 import { PostPrintView } from '@/components/news/PostPrintView';
+import { FittedImage } from '@/components/FittedImage';
 import { usePostPrint } from '@/hooks/use-post-print';
 
 const getReadTime = (content: string, hook: string) => {
@@ -253,14 +254,16 @@ const Post = () => {
                                 <AudioReader content={post.content} title={post.title} />
 
                                 {post.banner && (
-                                    <img
-                                        src={post.banner}
-                                        alt={`Банер за ${post.title}`}
-                                        className="mb-8 max-h-[32rem] w-full rounded-2xl border border-border/60 object-cover shadow-lg"
-                                        loading="eager"
-                                        fetchPriority="high"
-                                        decoding="async"
-                                    />
+                                    <div className="relative mb-8 overflow-hidden rounded-2xl border border-border/60 bg-muted shadow-lg">
+                                        <FittedImage
+                                            src={post.banner}
+                                            alt={`Банер за ${post.title}`}
+                                            className="block h-auto max-h-[32rem]"
+                                            loading="eager"
+                                            fetchPriority="high"
+                                            decoding="async"
+                                        />
+                                    </div>
                                 )}
 
                                 {/* ~70 characters per line keeps long articles comfortable to read on wide screens. */}
@@ -286,18 +289,18 @@ const Post = () => {
                                                 >
                                                     <button
                                                         type="button"
-                                                        className="group block w-full cursor-pointer overflow-hidden rounded-2xl border border-border/60 bg-muted text-left shadow-sm transition-shadow hover:shadow-lg"
+                                                        className={`group relative block w-full cursor-pointer overflow-hidden rounded-2xl border border-border/60 bg-muted text-left shadow-sm transition-shadow hover:shadow-lg ${image.is_featured ? "aspect-video" : "aspect-square"}`}
                                                         onClick={() => {
                                                             setLightboxIndex(index);
                                                             setLightboxOpen(true);
                                                         }}
                                                         aria-label={`Отвори снимка ${index + 1} от галерията`}
                                                     >
-                                                        <img
+                                                        <FittedImage
                                                             src={image.thumbnail_url || image.image_url}
                                                             alt={image.alt_text || image.title || `Снимка ${index + 1} към ${post.title}`}
-                                                            className={`w-full object-cover transition-transform duration-300 group-hover:scale-105 ${image.is_featured ? "aspect-video" : "aspect-square"}`}
-                                                            style={{ objectPosition: `${image.focus_x}% ${image.focus_y}%` }}
+                                                            className="transition-transform duration-300 group-hover:scale-105"
+                                                            backdropPosition={`${image.focus_x}% ${image.focus_y}%`}
                                                             loading="lazy"
                                                             decoding="async"
                                                         />

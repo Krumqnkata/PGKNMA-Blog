@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ArrowRight, Heart, Trophy } from "lucide-react";
 
+import { FittedImage } from "@/components/FittedImage";
 import { useSettings } from "@/hooks/use-settings";
 import { getMemeWinner } from "@/lib/api";
 import { formatMemeWeek } from "@/lib/meme-weeks";
@@ -25,12 +26,9 @@ const HomeMemeWinner = () => {
         to="/meme-of-the-week"
         className="group mx-auto grid max-w-4xl overflow-hidden rounded-3xl border border-amber-400/50 bg-gradient-to-br from-amber-100/70 via-card to-card shadow-xl transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring motion-reduce:hover:translate-y-0 dark:from-amber-500/10 sm:grid-cols-[minmax(0,16rem)_1fr]"
       >
-        <img
-          src={winner.winner.image_url}
-          alt={winner.winner.title}
-          loading="lazy"
-          className="aspect-square h-full w-full object-cover"
-        />
+        <div className="relative aspect-square h-full w-full overflow-hidden bg-muted">
+          <FittedImage src={winner.winner.image_url} alt={winner.winner.title} loading="lazy" />
+        </div>
         <div className="flex flex-col justify-center gap-3 p-6 sm:p-8">
           <p className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
             <Trophy className="h-4 w-4" aria-hidden="true" /> Меме на седмицата

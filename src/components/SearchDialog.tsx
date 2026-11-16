@@ -26,6 +26,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
+import { FittedImage } from "@/components/FittedImage";
 import { globalSearch, type GlobalSearchResultKind } from "@/lib/api";
 
 interface SearchDialogProps {
@@ -140,7 +141,9 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
                   className="group cursor-pointer gap-3 rounded-xl py-3"
                 >
                   {result.image_url ? (
-                    <img src={result.image_url} alt="" className="h-11 w-14 shrink-0 rounded-lg object-cover" />
+                    <span className="relative h-11 w-14 shrink-0 overflow-hidden rounded-lg bg-muted">
+                      <FittedImage src={result.image_url} alt="" />
+                    </span>
                   ) : (
                     <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                       <Icon className="h-5 w-5" aria-hidden="true" />
