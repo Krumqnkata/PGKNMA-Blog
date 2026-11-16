@@ -2,6 +2,7 @@ import { ArrowUpRight, Calendar, Eye, Share2, Tag, UserRound } from "lucide-reac
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
+import { FittedImage } from "@/components/FittedImage";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { Post } from "@/lib/api";
@@ -44,10 +45,11 @@ const NewsCard = ({ article, priority = false }: NewsCardProps) => (
   <Card className="group relative h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/35 hover:shadow-2xl hover:shadow-primary/10 motion-reduce:hover:translate-y-0">
     <article className="flex h-full flex-col">
     <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
-      <img
+      <FittedImage
         src={article.banner || "/logo-light.png"}
+        backdrop={Boolean(article.banner)}
         alt=""
-        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+        className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
         loading={priority ? "eager" : "lazy"}
         fetchPriority={priority ? "high" : "low"}
         decoding="async"

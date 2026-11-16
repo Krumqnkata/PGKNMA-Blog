@@ -8,6 +8,7 @@ import { formatSiteDate } from "@/lib/date-time";
 import { formatMonthlyViews } from "@/lib/post-analytics";
 import { LoadingCaption } from "@/components/query/QueryStates";
 import { SiteArt } from "@/components/art/SiteArt";
+import { FittedImage } from "@/components/FittedImage";
 
 const displayCategories = (post: Post) => {
   const names = post.categories.map((c) => c.full_name);
@@ -77,10 +78,11 @@ const NewsGrid = () => {
                   <article className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
                     <div className="relative aspect-[16/9] w-full overflow-hidden flex flex-col justify-end p-5 sm:p-8 lg:p-12">
 
-                      <img
+                      <FittedImage
                         src={posts[0].banner || '/logo-light.png'}
+                        backdrop={Boolean(posts[0].banner)}
                         alt={posts[0].title}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="absolute inset-0 transition-transform duration-700 group-hover:scale-105"
                         loading="eager"
                         fetchPriority="high"
                         decoding="async"
@@ -123,10 +125,11 @@ const NewsGrid = () => {
                   <Link key={item.id} to={`/post/${item.id}`} className="group block">
                     <article className="relative flex items-center gap-4 sm:gap-6 rounded-2xl border border-transparent p-2 sm:p-4 transition-all duration-300 hover:border-border hover:bg-card hover:shadow-xl overflow-hidden">
                       <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-muted sm:h-32 sm:w-32">
-                        <img
+                        <FittedImage
                           src={item.banner || '/logo-light.png'}
+                          backdrop={Boolean(item.banner)}
                           alt={item.title}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                          className="transition-transform duration-500 group-hover:scale-110"
                           loading="lazy"
                           decoding="async"
                         />
